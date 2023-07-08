@@ -107,7 +107,7 @@ function intersectObjects (objs,org,dir) {
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
 
   let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
-  if (ld < 0) ld = 0.1; // minimum global ambience
+  if (ld < 0) ld = 0;
 
   hit.c[0] = hit.o.color[0] * ld;
   hit.c[1] = hit.o.color[1] * ld;
