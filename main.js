@@ -79,7 +79,7 @@ function intersectObjects (objs,org,dir) {
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let t = o.intersect(o,org,dir);
-    if (t < hit.t) {hit.o = o; hit.t = t;}
+    if (t < hit.t) {hit.o = o; hit.t = t; hit.c = o.color;}
   }
   return hit;
 }
