@@ -26,15 +26,10 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let texture = loadTexture(loading,'./spheremap.png');
-  let sphere0 = {origin:[0.0,0.0,0.0],radius:1.0,texture:texture,intersect:intersectSphere};
+  let sphere0 = {origin:[0.0,0.0,0.0],radius:1.0,color:[1.0,1.0,1.0,1.0],intersect:intersectSphere};
   let objects = [sphere0];
 
-  redraw(); // draw with default resources
-
-  function loading () {
-    redraw(); // redraw when resouces are loaded
-  }
+  redraw();
 
   function redraw () {
     let timestamp = Date.now();
@@ -106,25 +101,10 @@ function intersectObjects (objs,org,dir) {
   let nl = hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2];
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
-  let u = Math.atan2(hit.n[0],hit.n[2]) / (2*Math.PI) + 1.0;
-  let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
-
-  u = Math.min(1,Math.max(0,u));
-  v = Math.min(1,Math.max(0,v));
-
-  u = Math.ceil(u*hit.o.texture.width)-1;
-  v = Math.ceil(v*hit.o.texture.height)-1;
-
-  u = Math.min(hit.o.texture.width-1,Math.max(0,u));
-  v = Math.min(hit.o.texture.height-1,Math.max(0,v));
-
-  let itexel = (v * hit.o.texture.width + u) * 4;
-  hit.c = [
-    hit.o.texture.texels[itexel+0] / 255,
-    hit.o.texture.texels[itexel+1] / 255,
-    hit.o.texture.texels[itexel+2] / 255,
-    hit.o.texture.texels[itexel+3] / 255
-  ];
+  hit.c[0] = hit.o.color[0];
+  hit.c[1] = hit.o.color[1];
+  hit.c[2] = hit.o.color[2];
+  hit.c[3] = hit.o.color[3];
 
   return hit;
 }
@@ -148,29 +128,4 @@ function intersectSphere (obj,org,dir) {
     else t = t0;
   }
   return t < 0.001 ? Infinity : t;
-}
-
-function loadTexture (cb,src) {
-  var texture = {};
-  texture.width = 2;
-  texture.height = 2;
-  texture.texels = [0,0,0,255, 255,255,255,255, 255,255,255,255, 0,0,0,255];
-  texture.loaded = false;
-  var image = new Image();
-  image.onload = function(e) {
-    var canvas = document.createElement('canvas');
-    canvas.width = e.target.width;
-    canvas.height = e.target.height;
-    var context = canvas.getContext('2d');
-    context.imageSmoothingEnabled = false;
-    context.drawImage(e.target,0,0,canvas.width,canvas.height);
-    var data = context.getImageData(0,0,canvas.width,canvas.height);
-    texture.width = canvas.width;
-    texture.height = canvas.height;
-    texture.texels = data.data;
-    texture.loaded = true;
-    cb();
-  };
-  image.src = src;
-  return texture;
 }
