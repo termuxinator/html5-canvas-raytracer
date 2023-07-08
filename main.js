@@ -116,7 +116,9 @@ function intersectObjects (objs,org,dir) {
   v = Math.ceil(v * hit.o.texture.height) - 1;
 
   if (u < 0) u = 0;
+  if (u >= hit.o.texture.width) u = hit.o.texture.width - 1;
   if (v < 0) v = 0;
+  if (v >= hit.o.texture.height) v = hit.o.texture.height - 1;
 
   let itexel = (v * hit.o.texture.width + u) * 4;
   hit.c = [
