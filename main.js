@@ -62,9 +62,9 @@ function main () {
 }
 
 function intersectWorld (org,dir) {
-  let r = Math.abs(dir[0]);
-  let g = Math.abs(dir[1]);
-//let b = Math.abs(dir[2]); // is const, no fun :(
-  let b = r * g;
-  return [r,g,b,1];
+  let r = dir[0] >= 0 ? dir[0] : 1 - -dir[0];
+  let g = dir[1] >= 0 ? dir[1] : 1 - -dir[1];
+  let b = 1;
+  let a = 1;
+  return [r,g,b,a];
 }
