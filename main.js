@@ -114,7 +114,7 @@ function intersectObjects (objs,org,dir) {
   hit.n[1] = hit.p[1] - hit.o.origin[1];
   hit.n[2] = hit.p[2] - hit.o.origin[2];
 
-  let nl = hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2];
+  let nl = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
   return hit;
