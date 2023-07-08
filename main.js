@@ -26,7 +26,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let texture = loadTexture(loading,'./lambert.png');
+  let texture = loadTexture(loading,'./spheremap.png');
   let sphere0 = {origin:[0.0,0.5,0.0],radius:0.5,texture:texture,intersect:intersectSphere};
   let objects = [sphere0];
 
