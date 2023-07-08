@@ -64,6 +64,7 @@ function main () {
 function intersectWorld (org,dir) {
   let r = Math.abs(dir[0]);
   let g = Math.abs(dir[1]);
-  let b = Math.abs(dir[2]);
+//let b = Math.abs(dir[2]); // is const, no fun :(
+  let b = r * g;
   return [r,g,b,1];
 }
