@@ -109,15 +109,8 @@ function intersectObjects (objs,org,dir) {
   let u = Math.atan2(hit.n[0],hit.n[2]) / (2*Math.PI) + 1.0;
   let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
 
-  if (u > 1) u = 1;
-
-  u = Math.ceil(u * hit.o.texture.width) - 1;
-  v = Math.ceil(v * hit.o.texture.height) - 1;
-
-  if (u < 0) u = 0;
-  if (u >= hit.o.texture.width) u = hit.o.texture.width - 1;
-  if (v < 0) v = 0;
-  if (v >= hit.o.texture.height) v = hit.o.texture.height - 1;
+  u = Math.max(0,Math.ceil((u*hit.o.texture.width)-1)&1);
+  v = Math.max(0,Math.ceil((v*hit.o.texture.height)-1)&1);
 
   let itexel = (v * hit.o.texture.width + u) * 4;
   hit.c = [
