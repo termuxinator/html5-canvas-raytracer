@@ -112,11 +112,8 @@ function intersectObjects (objs,org,dir) {
   let u = Math.min(1,raw_u+1);
   let v = raw_v + 0.5;
 
-  let un = hit.o.texture.width / 16;
-  let vn = hit.o.texture.height / 8;
-
-  u = Math.ceil(u * un) - 1;
-  v = Math.ceil(v * vn) - 1;
+  u = Math.ceil(u * hit.o.texture.width) - 1;
+  v = Math.ceil(v * hit.o.texture.height) - 1;
 
   if (u < 0) u = 0;
   if (v < 0) v = 0;
