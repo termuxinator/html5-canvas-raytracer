@@ -101,7 +101,7 @@ function intersectObjects (objs,org,dir) {
   let nl = hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2];
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
-  let light = [-5.0,10.0,0.0];
+  let light = [-5.0,10.0,-5.0];
   let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
   let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
