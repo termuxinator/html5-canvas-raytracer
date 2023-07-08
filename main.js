@@ -15,7 +15,7 @@ function main () {
 
   let colorbuf = context.createImageData(canvas.width,canvas.height);
 
-  let origin = [0,5,-10];
+  let origin = [0,0,-10];
   let axisX = [1,0,0];
   let axisY = [0,1,0];
   let axisZ = [0,0,1];
@@ -106,11 +106,10 @@ function intersectObjects (objs,org,dir) {
   let nl = hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2];
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
-  let raw_u = Math.atan2(hit.n[0],hit.n[2]) / (2*Math.PI);
-  let raw_v = Math.acos(hit.n[1]) / Math.PI;
+  let u = Math.atan2(hit.n[0],hit.n[2]) / (2*Math.PI) + 1.0;
+  let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
 
-  let u = Math.min(1,raw_u+1);
-  let v = raw_v + 0.5;
+  if (u > 1) u = 1;
 
   u = Math.ceil(u * hit.o.texture.width) - 1;
   v = Math.ceil(v * hit.o.texture.height) - 1;
