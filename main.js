@@ -99,9 +99,9 @@ function intersectObjects (objs,org,dir) {
   hit.p[1] = org[1] + dir[1] * hit.t;
   hit.p[2] = org[2] + dir[2] * hit.t;
 
-  hir.n[0] = hit.p[0] - hit.o.origin[0];
-  hir.n[1] = hit.p[1] - hit.o.origin[1];
-  hir.n[2] = hit.p[2] - hit.o.origin[2];
+  hit.n[0] = hit.p[0] - hit.o.origin[0];
+  hit.n[1] = hit.p[1] - hit.o.origin[1];
+  hit.n[2] = hit.p[2] - hit.o.origin[2];
 
   let nl = hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2];
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
