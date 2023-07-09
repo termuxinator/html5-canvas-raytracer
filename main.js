@@ -105,12 +105,17 @@ function intersectWorld (objs,org,dir) {
   let ref = intersectObject(objs,hit.p,rv);
   if (ref.o == undefined) return rgb;
 
+  let rgb2 = [];
   let intensity2 = lightPoint(objs,ref.p,ref.n);
-  rgb[0] = Math.max(ref.o.mtl.a[0], ref.o.mtl.d[0] * intensity2);
-  rgb[1] = Math.max(ref.o.mtl.a[1], ref.o.mtl.d[1] * intensity2);
-  rgb[2] = Math.max(ref.o.mtl.a[2], ref.o.mtl.d[2] * intensity2);  
+  rgb2[0] = Math.max(ref.o.mtl.a[0], ref.o.mtl.d[0] * intensity2);
+  rgb2[1] = Math.max(ref.o.mtl.a[1], ref.o.mtl.d[1] * intensity2);
+  rgb2[2] = Math.max(ref.o.mtl.a[2], ref.o.mtl.d[2] * intensity2);
 
-  return rgb;
+  return [
+    Math.min(1, rgb[0] + rgb2[0]),
+    Math.min(1, rgb[1] + rgb2[1]),
+    Math.min(1, rgb[2] + rgb2[2])
+  ];
 }
 
 function intersectObject (objs,org,dir) {
