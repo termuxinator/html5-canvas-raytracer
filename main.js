@@ -81,67 +81,76 @@ function main () {
 }
 
 function intersectWorld (objs,org,dir) {
-  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0], c:[0.4,0.5,0.6]};
+  let rgb = [0.4,0.5,0.6];
+  let hit = intersectObject(objs,org,dir);
+  if (hit.o == undefined) return rgb;
 
-  for (let i=0; i<objs.length; i++) {
-    let o = objs[i];
-    let t = o.intersect(o,org,dir);
-    if (t < hit.t) {hit.o=o; hit.t=t;}
-  }
-  if (hit.o == undefined) return hit.c;
+  let hit_p = [
+    org[0] + dir[0] * hit.t,
+    org[1] + dir[1] * hit.t,
+    org[2] + dir[2] * hit.t
+  ];
 
-  hit.p[0] = org[0] + dir[0] * hit.t;
-  hit.p[1] = org[1] + dir[1] * hit.t;
-  hit.p[2] = org[2] + dir[2] * hit.t;
+  let hit_n = [
+    hit_p[0] - hit.o.origin[0],
+    hit_p[1] - hit.o.origin[1];
+    hit_p[2] - hit.o.origin[2];
+  ];
 
-  hit.n[0] = hit.p[0] - hit.o.origin[0];
-  hit.n[1] = hit.p[1] - hit.o.origin[1];
-  hit.n[2] = hit.p[2] - hit.o.origin[2];
-
-  let nl = Math.sqrt(dot3(hit.n,hit.n));
-  if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
+  let nl = Math.sqrt(dot3(hit_n,hit_n));
+  if (nl != 0) {hit_n[0]/=nl; hit_n[1]/=nl; hit_n[2]/=nl;}
 
   let light = [10.0,10.0,10.0];
-  let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
+  let lv = [light[0]-hit_p[0], light[1]-hit_p[1], light[2]-hit_p[2]];
   let ll = Math.sqrt(dot3(lv,lv));
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
 
-  let ld = dot3(hit.n,lv);
+  let ld = dot3(hit_n,lv);
   if (ld <= 0) return hit.o.mtl.a;
 
   let intensity = ld;
   let j = 0;
   for ( ; j<objs.length; j++) {
     let o = objs[j];
-    let t = o.intersect(o,hit.p,lv);
+    let t = o.intersect(o,hit_p,lv);
     if (t < ll) {intensity*=0.5; break;}
   }
   if (j == objs.length) {
     // TODO specular
   }
 
-  hit.c[0] = Math.max(hit.o.mtl.a[0], hit.o.mtl.d[0] * intensity);
-  hit.c[1] = Math.max(hit.o.mtl.a[1], hit.o.mtl.d[1] * intensity);
-  hit.c[2] = Math.max(hit.o.mtl.a[2], hit.o.mtl.d[2] * intensity);
+  rgb[0] = Math.max(hit.o.mtl.a[0], hit.o.mtl.d[0] * intensity);
+  rgb[1] = Math.max(hit.o.mtl.a[1], hit.o.mtl.d[1] * intensity);
+  rgb[2] = Math.max(hit.o.mtl.a[2], hit.o.mtl.d[2] * intensity);
 
-  // WIP reflect
+  // reflection
 
-  let rt = -(2 * dot3(dir,hit.n));
+  let rt = -(2 * dot3(dir,hit_n));
   let rv = [
-    dir[0] + hit.n[0] * rt,
-    dir[1] + hit.n[1] * rt,
-    dir[2] + hit.n[2] * rt
+    dir[0] + hit_n[0] * rt,
+    dir[1] + hit_n[1] * rt,
+    dir[2] + hit_n[2] * rt
   ];
   let rl = Math.sqrt(dot3(rv,rv));
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
-//TODO intersect from hit point toward reflection vector
+  let ref = intersectObjects(objs,hit_p,rv);
+  if (ref.o == undefined) return rgb;
 
-  // WIP blend
+  // WIP shade and mix
+  rgb = ref.o.mtl.a;
 
+  return rgb;
+}
 
-
-  return hit.c;
+function intersectObject (objs,org,dir) {
+  let hit = {o:undefined, t:Infinity};
+  for (let i=0; i<objs.length; i++) {
+    let o = objs[i];
+    let t = o.intersect(o,org,dir);
+    if (t < hit.t) {hit.o=o; hit.t=t;}
+  }
+  return hit;
 }
 
 function createMaterial (c,ai,di) {
