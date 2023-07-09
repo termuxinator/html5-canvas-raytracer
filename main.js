@@ -26,11 +26,16 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
+  let mtl0 = createMaterial([1.0,1.0,1.0,1.0],0.1,1.0);
+  let mtl1 = createMaterial([1.0,0.0,0.0,1.0],0.1,1.0);
+  let mtl2 = createMaterial([0.0,1.0,0.0,1.0],0.1,1.0);
+  let mtl3 = createMaterial([0.0,0.0,1.0,1.0],0.1,1.0);
+
   let objects = [
-    createSphere([ 0.0,2.0,2.0],0.5,[1.0,1.0,1.0,1.0]),
-    createSphere([-1.5,1.0,0.0],1.0,[1.0,0.0,0.0,1.0]),
-    createSphere([ 1.5,1.0,0.0],1.0,[0.0,1.0,0.0,1.0]),
-    createSphere([0.0,1.0,-1.5],1.0,[0.0,0.0,1.0,1.0])
+    createSphere([ 0.0,2.0,2.0],0.5,mtl0),
+    createSphere([-1.5,1.0,0.0],1.0,mtl1),
+    createSphere([ 1.5,1.0,0.0],1.0,mtl2),
+    createSphere([0.0,1.0,-1.5],1.0,mtl3)
   ];
 
   redraw();
@@ -109,15 +114,22 @@ function intersectWorld (objs,org,dir) {
     }
   }
 
-  hit.c[0] = hit.o.color[0] * intensity;
-  hit.c[1] = hit.o.color[1] * intensity;
-  hit.c[2] = hit.o.color[2] * intensity;
-  hit.c[3] = hit.o.color[3];
+  hit.c[0] = Math.max(hit.o.mtl.a[0], hit.o.mtl.d[0] * intensity);
+  hit.c[1] = Math.max(hit.o.mtl.a[1], hit.o.mtl.d[1] * intensity);
+  hit.c[2] = Math.max(hit.o.mtl.a[2], hit.o.mtl.d[2] * intensity);
+  hit.c[3] = Math.max(hit.o.mtl.a[3], hit.o.mtl.d[3]);
   return hit.c;
 }
 
-function createSphere (o,r,c) {
-  return {origin:o, radius:r, color:c, intersect:intersectSphere};
+function createMaterial (c,ai,di) {
+  return {
+    a: [c[0]*ai,c[1]*ai,c[2]*ai,c[3]],
+    d: [c[0]*di,c[1]*di,c[2]*di,c[3]]
+  };
+}
+
+function createSphere (o,r,m) {
+  return {origin:o, radius:r, mtl:m, intersect:intersectSphere};
 }
 
 function intersectSphere (obj,org,dir) {
