@@ -15,7 +15,7 @@ function main () {
 
   let colorbuf = context.createImageData(canvas.width,canvas.height);
 
-  let origin = [0,1.5,10];
+  let origin = [0,1.5,13];
   let axisX = [-1,0,0];
   let axisY = [0,1,0];
   let axisZ = [0,0,-1];
