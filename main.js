@@ -27,7 +27,7 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([ 0.0,1.5,1.0],0.5,[1.0,1.0,1.0,1.0]),
+    createSphere([ 0.0,1.5,1.5],0.5,[1.0,1.0,1.0,1.0]),
     createSphere([-1.5,1.0,0.0],1.0,[1.0,0.0,0.0,1.0]),
     createSphere([ 1.5,1.0,0.0],1.0,[0.0,1.0,0.0,1.0]),
     createSphere([0.0,1.0,-1.5],1.0,[0.0,0.0,1.0,1.0])
