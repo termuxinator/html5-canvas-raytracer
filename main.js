@@ -15,10 +15,10 @@ function main () {
 
   let colorbuf = context.createImageData(canvas.width,canvas.height);
 
-  let origin = [0,0,-10];
-  let axisX = [1,0,0];
+  let origin = [0,1.5,10];
+  let axisX = [-1,0,0];
   let axisY = [0,1,0];
-  let axisZ = [0,0,1];
+  let axisZ = [0,0,-1];
 
   let projA = 60 * Math.PI / 180;
   let projW = canvas.width / 2;
@@ -95,7 +95,7 @@ function intersectWorld (objs,org,dir) {
   let nl = Math.sqrt(dot3(hit.n,hit.n));
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
-  let light = [-10.0,10.0,-10.0];
+  let light = [10.0,10.0,10.0];
   let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
   let ll = Math.sqrt(dot3(lv,lv));
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
