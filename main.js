@@ -102,8 +102,8 @@ function intersectWorld (objs,org,dir) {
   let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]; // range -1.0 to 1.0
   let intensity = Math.max(0,ld); // remap 0.0 to 1.0
 
-  for (let i=0; i<objs.length; i++) {
-    let o = objs[i];
+  for (let j=0; j<objs.length; j++) {
+    let o = objs[j];
     let t = o.intersect(o,hit.p,lv);
     if (t < ll) {intensity*=0.5; break;}
   }
