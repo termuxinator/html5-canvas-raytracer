@@ -107,23 +107,40 @@ function intersectWorld (objs,org,dir) {
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
 
   let ld = dot3(hit.n,lv);
+  if (ld <= 0) return hit.o.mtl.a;
 
-  let intensity = Math.max(0,ld);
-  if (intensity > 0) {
-    let j = 0;
-    for ( ; j<objs.length; j++) {
-      let o = objs[j];
-      let t = o.intersect(o,hit.p,lv);
-      if (t < ll) {intensity*=0.5; break;}
-    }
-    if (j == objs.length) {
-      // TODO specular
-    }
+  let intensity = ld;
+  let j = 0;
+  for ( ; j<objs.length; j++) {
+    let o = objs[j];
+    let t = o.intersect(o,hit.p,lv);
+    if (t < ll) {intensity*=0.5; break;}
+  }
+  if (j == objs.length) {
+    // TODO specular
   }
 
   hit.c[0] = Math.max(hit.o.mtl.a[0], hit.o.mtl.d[0] * intensity);
   hit.c[1] = Math.max(hit.o.mtl.a[1], hit.o.mtl.d[1] * intensity);
   hit.c[2] = Math.max(hit.o.mtl.a[2], hit.o.mtl.d[2] * intensity);
+
+  // WIP reflect
+
+  let rt = -(2 * dot3(dir,hit.n));
+  let rv = [
+    dir[0] + hit.n[0] * rt,
+    dir[1] + hit.n[1] * rt,
+    dir[2] + hit.n[2] * rt
+  ];
+  let rl = Math.sqrt(dot3(rv,rv));
+  if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
+
+//TODO intersect from hit point toward reflection vector
+
+  // WIP blend
+
+
+
   return hit.c;
 }
 
