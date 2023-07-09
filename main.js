@@ -100,25 +100,7 @@ function intersectWorld (objs,org,dir) {
   let nl = Math.sqrt(dot3(hit_n,hit_n));
   if (nl != 0) {hit_n[0]/=nl; hit_n[1]/=nl; hit_n[2]/=nl;}
 
-  let light = [10.0,10.0,10.0];
-  let lv = [light[0]-hit_p[0], light[1]-hit_p[1], light[2]-hit_p[2]];
-  let ll = Math.sqrt(dot3(lv,lv));
-  if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-
-  let ld = dot3(hit_n,lv);
-  if (ld <= 0) return hit.o.mtl.a;
-
-  let intensity = ld;
-  let j = 0;
-  for ( ; j<objs.length; j++) {
-    let o = objs[j];
-    let t = o.intersect(o,hit_p,lv);
-    if (t < ll) {intensity*=0.5; break;}
-  }
-  if (j == objs.length) {
-    // TODO specular
-  }
-
+  let intensity = lightPoint(objs,hit_p,hit_n);
   rgb[0] = Math.max(hit.o.mtl.a[0], hit.o.mtl.d[0] * intensity);
   rgb[1] = Math.max(hit.o.mtl.a[1], hit.o.mtl.d[1] * intensity);
   rgb[2] = Math.max(hit.o.mtl.a[2], hit.o.mtl.d[2] * intensity);
@@ -137,8 +119,25 @@ function intersectWorld (objs,org,dir) {
   let ref = intersectObject(objs,hit_p,rv);
   if (ref.o == undefined) return rgb;
 
-  // WIP shade and mix
-  rgb = ref.o.mtl.a;
+  let ref_p = [
+    hit_p[0] + rv[0] * ref.t,
+    hit_p[1] + rv[1] * ref.t,
+    hit_p[2] + rv[2] * ref.t
+  ];
+
+  let ref_n = [
+    hit_p[0] - ref_p[0],
+    hit_p[1] - ref_p[1],
+    hit_p[2] - ref_p[2]
+  ];
+
+  let fl = Math.sqrt(dot3(ref_n,ref_n));
+  if (fl != 0) {ref_n[0]/=fl; ref_n[1]/=fl; ref_n[2]/=fl;}
+
+  let intensity2 = lightPoint(objs,ref_p,ref_n);
+  rgb[0] = Math.max(ref.o.mtl.a[0], ref.o.mtl.d[0] * intensity2);
+  rgb[1] = Math.max(ref.o.mtl.a[1], ref.o.mtl.d[1] * intensity2);
+  rgb[2] = Math.max(ref.o.mtl.a[2], ref.o.mtl.d[2] * intensity2);  
 
   return rgb;
 }
@@ -151,6 +150,25 @@ function intersectObject (objs,org,dir) {
     if (t < hit.t) {hit.o=o; hit.t=t;}
   }
   return hit;
+}
+
+function lightPoint (objs,p,n) {
+  let light = [10.0,10.0,10.0];
+  let lv = [light[0]-p[0], light[1]-p[1], light[2]-p[2]];
+  let ll = Math.sqrt(dot3(lv,lv));
+  if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
+  let intensity = dot3(n,lv);
+  if (intensity <= 0) return 0;
+  let i = 0;
+  for ( ; i<objs.length; i++) {
+    let o = objs[i];
+    let t = o.intersect(o,p,lv);
+    if (t < ll) {intensity*=0.5; break;}
+  }
+  if (i == objs.length) {
+    // TODO specular
+  }
+  return intensity;
 }
 
 function createMaterial (c,ai,di) {
