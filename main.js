@@ -50,7 +50,7 @@ function main () {
         ];
 
         let ray = [target[0] - origin[0], target[1] - origin[1], target[2] - origin[2]];
-        let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
+        let len = Math.sqrt(dot3(ray,ray));
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
     
         let color = intersectWorld(objects,origin,ray);
@@ -91,21 +91,15 @@ function intersectWorld (objs,org,dir) {
   hit.n[1] = hit.p[1] - hit.o.origin[1];
   hit.n[2] = hit.p[2] - hit.o.origin[2];
 
-  let nl = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
+  let nl = Math.sqrt(dot3(hit.n,hit.n));
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
-
-  hit.c[0] = hit.o.color[0];
-  hit.c[1] = hit.o.color[1];
-  hit.c[2] = hit.o.color[2];
-  hit.c[3] = hit.o.color[3];
 
   let light = [-5.0,5.0,0.0];
   let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
-  let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
+  let ll = Math.sqrt(dot3(lv,lv));
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
   
-  let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]; // range -1.0 to 1.0
-  intensity = Math.max(0,intensity); // remap 0.0 to 1.0
+  let intensity = Math.max(0,dot3(lv,hit.n));
   if (intensity > 0) {
     for (let j=0; j<objs.length; j++) {
       let o = objs[j];
@@ -113,9 +107,11 @@ function intersectWorld (objs,org,dir) {
       if (t < ll) {intensity*=0.5; break;}
     }
   }
-  hit.c[0] *= intensity;
-  hit.c[1] *= intensity;
-  hit.c[2] *= intensity;
+
+  hit.c[0] = hit.o.color[0] * intensity;
+  hit.c[1] = hit.o.color[1] * intensity;
+  hit.c[2] = hit.o.color[2] * intensity;
+  hit.c[3] = hit.o.color[3];
   return hit.c;
 }
 
@@ -126,9 +122,9 @@ function createSphere (o,r,c) {
 function intersectSphere (obj,org,dir) {
   let t = Infinity;
   let L = [obj.origin[0] - org[0], obj.origin[1] - org[1], obj.origin[2] - org[2]];
-  let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
+  let tca = dot3(L,dir);
   if (tca <= 0) return t;
-  let d2 = L[0]*L[0] + L[1]*L[1] + L[2]*L[2] - tca*tca;
+  let d2 = dot3(L,L) - tca*tca;
   let r2 = obj.radius * obj.radius;
   if (d2 > r2) return t;
   let thc = Math.sqrt(r2 - d2);
@@ -143,3 +139,5 @@ function intersectSphere (obj,org,dir) {
   }
   return t < 0.001 ? Infinity : t;
 }
+
+function dot3 (a,b) {return(a[0]*b[0]+a[1]*b[1]+a[2]*b[2]);}
