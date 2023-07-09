@@ -27,7 +27,7 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([0.0,2.0,-2.0],0.5,[1.0,1.0,1.0,1.0]),
+    createSphere([0.0,2.0,-3.0],0.5,[1.0,1.0,1.0,1.0]),
     createSphere([-2.0,1.0,0.0],1.0,[1.0,0.0,0.0,1.0]),
     createSphere([ 2.0,1.0,0.0],1.0,[0.0,1.0,0.0,1.0])
   ];
@@ -94,7 +94,7 @@ function intersectWorld (objs,org,dir) {
   let nl = Math.sqrt(dot3(hit.n,hit.n));
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
-  let light = [-5.0,5.0,0.0];
+  let light = [-5.0,5.0,-5.0];
   let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
   let ll = Math.sqrt(dot3(lv,lv));
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
