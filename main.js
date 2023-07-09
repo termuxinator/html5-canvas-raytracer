@@ -82,59 +82,30 @@ function main () {
 
 function intersectWorld (objs,org,dir) {
   let rgb = [0.4,0.5,0.6];
+
   let hit = intersectObject(objs,org,dir);
   if (hit.o == undefined) return rgb;
 
-  let hit_p = [
-    org[0] + dir[0] * hit.t,
-    org[1] + dir[1] * hit.t,
-    org[2] + dir[2] * hit.t
-  ];
-
-  let hit_n = [
-    hit_p[0] - hit.o.origin[0],
-    hit_p[1] - hit.o.origin[1],
-    hit_p[2] - hit.o.origin[2]
-  ];
-
-  let nl = Math.sqrt(dot3(hit_n,hit_n));
-  if (nl != 0) {hit_n[0]/=nl; hit_n[1]/=nl; hit_n[2]/=nl;}
-
-  let intensity = lightPoint(objs,hit_p,hit_n);
+  let intensity = lightPoint(objs,hit.p,hit.n);
   rgb[0] = Math.max(hit.o.mtl.a[0], hit.o.mtl.d[0] * intensity);
   rgb[1] = Math.max(hit.o.mtl.a[1], hit.o.mtl.d[1] * intensity);
   rgb[2] = Math.max(hit.o.mtl.a[2], hit.o.mtl.d[2] * intensity);
 
   // reflection
 
-  let rt = -(2 * dot3(dir,hit_n));
+  let rt = -(2 * dot3(dir,hit.n));
   let rv = [
-    dir[0] + hit_n[0] * rt,
-    dir[1] + hit_n[1] * rt,
-    dir[2] + hit_n[2] * rt
+    dir[0] + hit.n[0] * rt,
+    dir[1] + hit.n[1] * rt,
+    dir[2] + hit.n[2] * rt
   ];
   let rl = Math.sqrt(dot3(rv,rv));
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
-  let ref = intersectObject(objs,hit_p,rv);
+  let ref = intersectObject(objs,hit.p,rv);
   if (ref.o == undefined) return rgb;
 
-  let ref_p = [
-    hit_p[0] + rv[0] * ref.t,
-    hit_p[1] + rv[1] * ref.t,
-    hit_p[2] + rv[2] * ref.t
-  ];
-
-  let ref_n = [
-    hit_p[0] - ref_p[0],
-    hit_p[1] - ref_p[1],
-    hit_p[2] - ref_p[2]
-  ];
-
-  let fl = Math.sqrt(dot3(ref_n,ref_n));
-  if (fl != 0) {ref_n[0]/=fl; ref_n[1]/=fl; ref_n[2]/=fl;}
-
-  let intensity2 = lightPoint(objs,ref_p,ref_n);
+  let intensity2 = lightPoint(objs,ref.p,ref.n);
   rgb[0] = Math.max(ref.o.mtl.a[0], ref.o.mtl.d[0] * intensity2);
   rgb[1] = Math.max(ref.o.mtl.a[1], ref.o.mtl.d[1] * intensity2);
   rgb[2] = Math.max(ref.o.mtl.a[2], ref.o.mtl.d[2] * intensity2);  
@@ -143,12 +114,21 @@ function intersectWorld (objs,org,dir) {
 }
 
 function intersectObject (objs,org,dir) {
-  let hit = {o:undefined, t:Infinity};
+  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0]};
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let t = o.intersect(o,org,dir);
     if (t < hit.t) {hit.o=o; hit.t=t;}
   }
+  if (hit.o == undefined) return hit;
+  hit.p[0] = org[0] + dir[0] * hit.t;
+  hit.p[1] = org[1] + dir[1] * hit.t;
+  hit.p[2] = org[2] + dir[2] * hit.t;
+  hit.n[0] = hit.p[0] - hit.o.origin[0];
+  hit.n[1] = hit.p[1] - hit.o.origin[1];
+  hit.n[2] = hit.p[2] - hit.o.origin[2];
+  let nl = Math.sqrt(dot3(hit.n,hit.n));
+  if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
   return hit;
 }
 
