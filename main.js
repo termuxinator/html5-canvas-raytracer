@@ -26,14 +26,14 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let mtl0 = createMaterial([1.0,1.0,1.0],0.1,1.0);
-  let mtl1 = createMaterial([1.0,0.0,0.0],0.1,1.0);
-  let mtl2 = createMaterial([0.0,1.0,0.0],0.1,1.0);
-  let mtl3 = createMaterial([0.0,0.0,1.0],0.1,1.0);
-  let mtl4 = createMaterial([1.0,1.0,1.0],1.0,1.0);
+  let mtl0 = createMaterial([1.0,1.0,1.0],0.1,1.0,0.0,0.0);
+  let mtl1 = createMaterial([1.0,0.0,0.0],0.1,1.0,0.0,0.0);
+  let mtl2 = createMaterial([0.0,1.0,0.0],0.1,1.0,0.0,0.0);
+  let mtl3 = createMaterial([0.0,0.0,1.0],0.1,1.0,0.0,0.0);
+  let mtl4 = createMaterial([1.0,1.0,1.0],1.0,1.0,0.0,0.0);
 
   let objects = [
-    createSphere([ 0.0,2.0,2.0],0.5,mtl0),
+    createSphere([ 0.0,2.5,2.0],0.5,mtl0),
     createSphere([-1.5,1.0,0.0],1.0,mtl1),
     createSphere([ 1.5,1.0,0.0],1.0,mtl2),
     createSphere([0.0,1.0,-1.5],1.0,mtl3),
@@ -156,10 +156,12 @@ function lightPoint (objs,p,n) {
   return intensity;
 }
 
-function createMaterial (c,ai,di) {
+function createMaterial (c,ai,di,si,sf) {
   return {
     a: [c[0]*ai,c[1]*ai,c[2]*ai],
-    d: [c[0]*di,c[1]*di,c[2]*di]
+    d: [c[0]*di,c[1]*di,c[2]*di],
+    s: [c[0]*si,c[1]*si,c[2]*si],
+    sf: sf
   };
 }
 
