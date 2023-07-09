@@ -15,7 +15,7 @@ function main () {
 
   let colorbuf = context.createImageData(canvas.width,canvas.height);
 
-  let origin = [0,1.5,13];
+  let origin = [0,1.5,10];
   let axisX = [-1,0,0];
   let axisY = [0,1,0];
   let axisZ = [0,0,-1];
@@ -82,7 +82,7 @@ function main () {
 }
 
 function intersectWorld (objs,org,dir) {
-  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0], c:[0.2,0.3,0.4,1.0]};
+  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0], c:[0.4,0.5,0.6,1.0]};
 
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
@@ -106,13 +106,19 @@ function intersectWorld (objs,org,dir) {
   let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
   let ll = Math.sqrt(dot3(lv,lv));
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-  
-  let intensity = Math.max(0,dot3(lv,hit.n));
+
+  let ld = dot3(hit.n,lv);
+
+  let intensity = Math.max(0,ld);
   if (intensity > 0) {
-    for (let j=0; j<objs.length; j++) {
+    let j = 0;
+    for ( ; j<objs.length; j++) {
       let o = objs[j];
       let t = o.intersect(o,hit.p,lv);
       if (t < ll) {intensity*=0.5; break;}
+    }
+    if (j == objs.length) {
+      // TODO specular
     }
   }
 
