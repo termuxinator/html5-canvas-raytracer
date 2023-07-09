@@ -105,16 +105,17 @@ function intersectWorld (objs,org,dir) {
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
   
   let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]; // range -1.0 to 1.0
+  intensity = Math.max(0,intensity); // remap 0.0 to 1.0
   if (intensity > 0) {
     for (let j=0; j<objs.length; j++) {
       let o = objs[j];
       let t = o.intersect(o,hit.p,lv);
       if (t < ll) {intensity*=0.5; break;}
     }
-    hit.c[0] *= intensity;
-    hit.c[1] *= intensity;
-    hit.c[2] *= intensity;
   }
+  hit.c[0] *= intensity;
+  hit.c[1] *= intensity;
+  hit.c[2] *= intensity;
   return hit.c;
 }
 
