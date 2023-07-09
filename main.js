@@ -26,11 +26,11 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let mtl0 = createMaterial([1.0,1.0,1.0,1.0],0.1,1.0);
-  let mtl1 = createMaterial([1.0,0.0,0.0,1.0],0.1,1.0);
-  let mtl2 = createMaterial([0.0,1.0,0.0,1.0],0.1,1.0);
-  let mtl3 = createMaterial([0.0,0.0,1.0,1.0],0.1,1.0);
-  let mtl4 = createMaterial([1.0,1.0,1.0,1.0],1.0,1.0);
+  let mtl0 = createMaterial([1.0,1.0,1.0],0.1,1.0);
+  let mtl1 = createMaterial([1.0,0.0,0.0],0.1,1.0);
+  let mtl2 = createMaterial([0.0,1.0,0.0],0.1,1.0);
+  let mtl3 = createMaterial([0.0,0.0,1.0],0.1,1.0);
+  let mtl4 = createMaterial([1.0,1.0,1.0],1.0,1.0);
 
   let objects = [
     createSphere([ 0.0,2.0,2.0],0.5,mtl0),
@@ -61,12 +61,11 @@ function main () {
         let len = Math.sqrt(dot3(ray,ray));
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
     
-        let color = intersectWorld(objects,origin,ray);
-        colorbuf.data[ipixel+0] = color[0] * 255;
-        colorbuf.data[ipixel+1] = color[1] * 255;
-        colorbuf.data[ipixel+2] = color[2] * 255;
-        colorbuf.data[ipixel+3] = color[3] * 255;
-        ipixel += 4;
+        let rgb = intersectWorld(objects,origin,ray);
+        colorbuf.data[ipixel++] = 255 * rgb[0];
+        colorbuf.data[ipixel++] = 255 * rgb[1];
+        colorbuf.data[ipixel++] = 255 * rgb[2];
+        colorbuf.data[ipixel++] = 255;
       }
     }
     context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
@@ -82,7 +81,7 @@ function main () {
 }
 
 function intersectWorld (objs,org,dir) {
-  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0], c:[0.4,0.5,0.6,1.0]};
+  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0], c:[0.4,0.5,0.6]};
 
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
@@ -125,14 +124,13 @@ function intersectWorld (objs,org,dir) {
   hit.c[0] = Math.max(hit.o.mtl.a[0], hit.o.mtl.d[0] * intensity);
   hit.c[1] = Math.max(hit.o.mtl.a[1], hit.o.mtl.d[1] * intensity);
   hit.c[2] = Math.max(hit.o.mtl.a[2], hit.o.mtl.d[2] * intensity);
-  hit.c[3] = Math.max(hit.o.mtl.a[3], hit.o.mtl.d[3]);
   return hit.c;
 }
 
 function createMaterial (c,ai,di) {
   return {
-    a: [c[0]*ai,c[1]*ai,c[2]*ai,c[3]],
-    d: [c[0]*di,c[1]*di,c[2]*di,c[3]]
+    a: [c[0]*ai,c[1]*ai,c[2]*ai],
+    d: [c[0]*di,c[1]*di,c[2]*di]
   };
 }
 
