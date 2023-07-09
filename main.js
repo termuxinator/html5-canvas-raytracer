@@ -93,8 +93,8 @@ function intersectWorld (objs,org,dir) {
 
   let hit_n = [
     hit_p[0] - hit.o.origin[0],
-    hit_p[1] - hit.o.origin[1];
-    hit_p[2] - hit.o.origin[2];
+    hit_p[1] - hit.o.origin[1],
+    hit_p[2] - hit.o.origin[2]
   ];
 
   let nl = Math.sqrt(dot3(hit_n,hit_n));
