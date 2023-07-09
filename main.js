@@ -29,7 +29,7 @@ function main () {
   let mtl0 = createMaterial([1.0,1.0,1.0],0.1,1.0,0.0,0.0,0.2);
   let mtl1 = createMaterial([1.0,0.0,0.0],0.1,1.0,0.0,0.0,0.0);
   let mtl2 = createMaterial([0.0,1.0,0.0],0.1,1.0,0.0,0.0,0.2);
-  let mtl3 = createMaterial([0.0,0.0,1.0],0.1,1.0,0.0,0.0,1.0);
+  let mtl3 = createMaterial([0.0,0.0,1.0],0.0,1.0,0.0,0.0,1.0);
   let mtl4 = createMaterial([1.0,1.0,1.0],1.0,1.0,0.0,0.0,0.0);
 
   let objects = [
@@ -58,7 +58,7 @@ function main () {
         ];
 
         let ray = [target[0] - origin[0], target[1] - origin[1], target[2] - origin[2]];
-        let len = Math.sqrt(dot3(ray,ray));
+        let len = Math.sqrt(mag3(ray));
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
     
         let rgb = intersectWorld(objects,origin,ray);
@@ -99,7 +99,7 @@ function intersectWorld (objs,org,dir) {
     dir[1] + hit.n[1] * rt,
     dir[2] + hit.n[2] * rt
   ];
-  let rl = Math.sqrt(dot3(rv,rv));
+  let rl = Math.sqrt(mag3(rv));
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
   let ref = intersectObject(objs,hit.p,rv);
@@ -132,7 +132,7 @@ function intersectObject (objs,org,dir) {
   hit.n[0] = hit.p[0] - hit.o.origin[0];
   hit.n[1] = hit.p[1] - hit.o.origin[1];
   hit.n[2] = hit.p[2] - hit.o.origin[2];
-  let nl = Math.sqrt(dot3(hit.n,hit.n));
+  let nl = Math.sqrt(mag3(hit.n));
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
   return hit;
 }
@@ -140,7 +140,7 @@ function intersectObject (objs,org,dir) {
 function lightPoint (objs,p,n) {
   let light = [10.0,10.0,10.0];
   let lv = [light[0]-p[0], light[1]-p[1], light[2]-p[2]];
-  let ll = Math.sqrt(dot3(lv,lv));
+  let ll = Math.sqrt(mag3(lv));
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
   let intensity = dot3(n,lv);
   if (intensity <= 0) return 0;
@@ -167,7 +167,13 @@ function createMaterial (c,ai,di,si,sf,rf) {
 }
 
 function createSphere (o,r,m) {
-  return {origin:o, radius:r, mtl:m, intersect:intersectSphere};
+  return {
+    origin: o,
+    radius: r,
+    r2: (r * r),
+    mtl: m,
+    intersect: intersectSphere
+  };
 }
 
 function intersectSphere (obj,org,dir) {
@@ -175,10 +181,9 @@ function intersectSphere (obj,org,dir) {
   let L = [obj.origin[0] - org[0], obj.origin[1] - org[1], obj.origin[2] - org[2]];
   let tca = dot3(L,dir);
   if (tca <= 0) return t;
-  let d2 = dot3(L,L) - tca*tca;
-  let r2 = obj.radius * obj.radius;
-  if (d2 > r2) return t;
-  let thc = Math.sqrt(r2 - d2);
+  let d2 = mag3(L) - tca*tca;
+  if (d2 > obj.r2) return t;
+  let thc = Math.sqrt(obj.r2 - d2);
   let t0 = tca - thc;
   let t1 = tca + thc;
   if (t0 > t1) {
@@ -191,4 +196,5 @@ function intersectSphere (obj,org,dir) {
   return t <= 0 ? Infinity : t;
 }
 
+function mag3 (v)   {return(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);}
 function dot3 (a,b) {return(a[0]*b[0]+a[1]*b[1]+a[2]*b[2]);}
