@@ -152,7 +152,7 @@ function createMaterial (c,ai,di,si,sf,rf) {
   return {
     a: [c[0]*ai,c[1]*ai,c[2]*ai],
     d: [c[0]*di,c[1]*di,c[2]*di],
-    s: [c[0]*si,c[1]*si,c[2]*si],
+    si: si,
     sf: sf,
     rf: rf
   };
@@ -203,7 +203,7 @@ function intersectSphereEx (obj,org,dir) {
 }
 
 function vec3_at (o,v,t) {return[o[0]+v[0]*t,o[1]+v[1]*t,o[2]+v[2]*t];}
-function vec3_len (v)   {return(Math.sqrt(vec3_mag3(v)));}
+function vec3_len (v)   {return(Math.sqrt(vec3_mag(v)));}
 function vec3_mag (v)   {return(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);}
 function vec3_dot (a,b) {return(a[0]*b[0]+a[1]*b[1]+a[2]*b[2]);}
 
