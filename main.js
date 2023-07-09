@@ -57,9 +57,9 @@ function main () {
           origin[2] + axisX[2]*distZ + axisY[2]*distZ + axisZ[2]*distZ
         ];
 
-        let ray = [target[0] - origin[0], target[1] - origin[1], target[2] - origin[2]];
-        let len = Math.sqrt(mag3(ray));
-        if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
+        let ray = vec3_sub3(target,origin);
+        let len = vec3_len(ray);
+        if (len != 0) ray = vec3_mul1(ray,len);
     
         let rgb = intersectWorld(objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
@@ -93,14 +93,10 @@ function intersectWorld (objs,org,dir) {
 
   // reflection
 
-  let rt = -(2 * dot3(dir,hit.n));
-  let rv = [
-    dir[0] + hit.n[0] * rt,
-    dir[1] + hit.n[1] * rt,
-    dir[2] + hit.n[2] * rt
-  ];
-  let rl = Math.sqrt(mag3(rv));
-  if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
+  let rt = -(2 * vec3_dot(dir,hit.n));
+  let rv = vec3_at(dir,hit.n,rt);
+  let rl = vec3_len(rv);
+  if (rl != 0) rv = vec3_mul1(rv,1/rl);
 
   let ref = intersectObject(objs,hit.p,rv);
   if (ref.o == undefined) return rgb;
@@ -135,10 +131,10 @@ function intersectObject (objs,org,dir) {
 
 function lightPoint (objs,p,n) {
   let light = [10.0,10.0,10.0];
-  let lv = [light[0]-p[0], light[1]-p[1], light[2]-p[2]];
-  let ll = Math.sqrt(mag3(lv));
-  if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-  let intensity = dot3(n,lv);
+  let lv = vec3_sub3(light,p);
+  let ll = vec3_len(lv);
+  if (ll != 0) lv = vec3_mul1(lv,1/ll);
+  let intensity = vec3_dot(n,lv);
   if (intensity <= 0) return 0;
   let i = 0;
   for ( ; i<objs.length; i++) {
@@ -175,10 +171,10 @@ function createSphere (o,r,m) {
 
 function intersectSphere (obj,org,dir) {
   let t = Infinity;
-  let L = [obj.origin[0] - org[0], obj.origin[1] - org[1], obj.origin[2] - org[2]];
-  let tca = dot3(L,dir);
+  let L = vec3_sub3(obj.origin,org);
+  let tca = vec3_dot(L,dir);
   if (tca <= 0) return t;
-  let d2 = mag3(L) - tca*tca;
+  let d2 = vec3_mag(L) - tca*tca;
   if (d2 > obj.r2) return t;
   let thc = Math.sqrt(obj.r2 - d2);
   let t0 = tca - thc;
@@ -199,16 +195,20 @@ function intersectSphereEx (obj,org,dir) {
   if (t == Infinity) return hit;
   hit.o = obj;
   hit.t = t;
-  hit.p[0] = org[0] + dir[0] * t;
-  hit.p[1] = org[1] + dir[1] * t;
-  hit.p[2] = org[2] + dir[2] * t;
-  hit.n[0] = hit.p[0] - obj.origin[0];
-  hit.n[1] = hit.p[1] - obj.origin[1];
-  hit.n[2] = hit.p[2] - obj.origin[2];
-  let nl = Math.sqrt(mag3(hit.n));
-  if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
+  hit.p = vec3_at(org,dir,t);
+  hit.n = vec3_sub3(hit.p,obj.origin);
+  let nl = vec3_len(hit.n);
+  if (nl != 0) hit.n = vec3_mul1(hit.n,1/nl);
   return hit;
 }
 
-function mag3 (v)   {return(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);}
-function dot3 (a,b) {return(a[0]*b[0]+a[1]*b[1]+a[2]*b[2]);}
+function vec3_at (o,v,t) {return[o[0]+v[0]*t,o[1]+v[1]*t,o[2]+v[2]*t];}
+function vec3_len (v)   {return(Math.sqrt(vec3_mag3(v)));}
+function vec3_mag (v)   {return(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);}
+function vec3_dot (a,b) {return(a[0]*b[0]+a[1]*b[1]+a[2]*b[2]);}
+
+function vec3_add3 (l,r) {return[l[0]+r[0],l[1]+r[1],l[2]+r[2]];}
+function vec3_sub3 (l,r) {return[l[0]-r[0],l[1]-r[1],l[2]-r[2]];}
+
+function vec3_mul1 (v,s) {return[v[0]*s,v[1]*s,v[2]*s];}
+function vec3_div1 (v,s) {return[v[0]/s,v[1]/s,v[2]/s];}
