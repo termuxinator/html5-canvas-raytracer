@@ -37,7 +37,7 @@ function main () {
     createSphere([-1.5,1.0,0.0],1.0,mtl1),
     createSphere([ 1.5,1.0,0.0],1.0,mtl2),
     createSphere([0.0,1.0,-1.5],1.0,mtl3),
-    createSphere([ 5.0,5.0,5.0],0.5,mtl4)
+    createSphere([ 0.0,0.5,2.0],0.5,mtl4)
   ];
 
   redraw();
