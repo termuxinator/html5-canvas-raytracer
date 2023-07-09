@@ -33,7 +33,7 @@ function main () {
   let mtl4 = createMaterial([1.0,1.0,1.0],1.0,1.0,0.0,0.0);
 
   let objects = [
-    createSphere([ 0.0,2.5,2.5],0.5,mtl0),
+    createSphere([0.0,2.5,-1.5],0.5,mtl0),
     createSphere([-1.5,1.0,0.0],1.0,mtl1),
     createSphere([ 1.5,1.0,0.0],1.0,mtl2),
     createSphere([0.0,1.0,-1.5],1.0,mtl3),
