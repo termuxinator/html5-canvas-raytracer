@@ -134,7 +134,7 @@ function intersectWorld (objs,org,dir) {
   let rl = Math.sqrt(dot3(rv,rv));
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
-  let ref = intersectObjects(objs,hit_p,rv);
+  let ref = intersectObject(objs,hit_p,rv);
   if (ref.o == undefined) return rgb;
 
   // WIP shade and mix
