@@ -119,22 +119,18 @@ function intersectWorld (objs,org,dir) {
 }
 
 function intersectObject (objs,org,dir) {
-  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0]};
+  let out = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0]};
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
-    let t = o.intersect(o,org,dir);
-    if (t < hit.t) {hit.o=o; hit.t=t;}
+    let hit = o.intersectEx(o,org,dir);
+    if (hit.t < out.t) {
+      out.o = hit.o;
+      out.t = hit.t;
+      out.p = hit.p;
+      out.n = hit.n;
+    }
   }
-  if (hit.o == undefined) return hit;
-  hit.p[0] = org[0] + dir[0] * hit.t;
-  hit.p[1] = org[1] + dir[1] * hit.t;
-  hit.p[2] = org[2] + dir[2] * hit.t;
-  hit.n[0] = hit.p[0] - hit.o.origin[0];
-  hit.n[1] = hit.p[1] - hit.o.origin[1];
-  hit.n[2] = hit.p[2] - hit.o.origin[2];
-  let nl = Math.sqrt(mag3(hit.n));
-  if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
-  return hit;
+  return out;
 }
 
 function lightPoint (objs,p,n) {
@@ -172,7 +168,8 @@ function createSphere (o,r,m) {
     radius: r,
     r2: (r * r),
     mtl: m,
-    intersect: intersectSphere
+    intersect: intersectSphere, // returns distance
+    intersectEx: intersectSphereEx // returns packet
   };
 }
 
@@ -194,6 +191,23 @@ function intersectSphere (obj,org,dir) {
     else t = t0;
   }
   return t <= 0 ? Infinity : t;
+}
+
+function intersectSphereEx (obj,org,dir) {
+  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0]};
+  let t = intersectSphere(obj,org,dir);
+  if (t == Infinity) return hit;
+  hit.o = obj;
+  hit.t = t;
+  hit.p[0] = org[0] + dir[0] * t;
+  hit.p[1] = org[1] + dir[1] * t;
+  hit.p[2] = org[2] + dir[2] * t;
+  hit.n[0] = hit.p[0] - obj.origin[0];
+  hit.n[1] = hit.p[1] - obj.origin[1];
+  hit.n[2] = hit.p[2] - obj.origin[2];
+  let nl = Math.sqrt(mag3(hit.n));
+  if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
+  return hit;
 }
 
 function mag3 (v)   {return(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);}
