@@ -28,8 +28,8 @@ function main () {
 
   let mtl0 = createMaterial([1.0,1.0,1.0],0.1,1.0,0.0,0.0,1.0);
   let mtl1 = createMaterial([1.0,0.0,0.0],0.1,1.0,0.0,0.0,0.0);
-  let mtl2 = createMaterial([0.0,1.0,0.0],0.1,1.0,0.0,0.0,1.0);
-  let mtl3 = createMaterial([0.0,0.0,1.0],0.1,1.0,0.0,0.0,1.0);
+  let mtl2 = createMaterial([0.0,1.0,0.0],0.1,1.0,0.0,0.0,0.5);
+  let mtl3 = createMaterial([0.0,0.0,1.0],0.1,1.0,0.0,0.0,0.5);
   let mtl4 = createMaterial([1.0,1.0,1.0],1.0,1.0,0.0,0.0,0.0);
 
   let objects = [
