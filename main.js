@@ -26,8 +26,10 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let sphere0 = {origin:[0.0,0.0,0.0],radius:1.0,color:[1.0,1.0,1.0,1.0],intersect:intersectSphere};
-  let objects = [sphere0];
+  let objects = [
+    createSphere([0.0,0.5,0.0],0.5,[1.0,1.0,1.0,1.0]),
+    createSphere([2.0,1.0,0.0],1.0,[1.0,0.0,0.0,1.0])
+  ];
 
   redraw();
 
@@ -118,6 +120,10 @@ function intersectObjects (objs,org,dir) {
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
   return hit;
+}
+
+function createSphere (o,r,c) {
+  return {origin:o, radius:r, color:c, intersect:intersectSphere};
 }
 
 function intersectSphere (obj,org,dir) {
