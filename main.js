@@ -27,7 +27,7 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([ 0.0,2.5,0.0],0.5,[1.0,1.0,1.0,1.0]),
+    createSphere([0.0,2.5,-1.0],0.5,[1.0,1.0,1.0,1.0]),
     createSphere([-2.0,1.0,0.0],1.0,[1.0,0.0,0.0,1.0]),
     createSphere([ 2.0,1.0,0.0],1.0,[0.0,1.0,0.0,1.0])
   ];
@@ -94,25 +94,27 @@ function intersectWorld (objs,org,dir) {
   let nl = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
+  hit.c[0] = hit.o.color[0];
+  hit.c[1] = hit.o.color[1];
+  hit.c[2] = hit.o.color[2];
+  hit.c[3] = hit.o.color[3];
+
   let light = [-5.0,5.0,0.0];
   let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
   let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
   
-  let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]; // range -1.0 to 1.0
-  let intensity = Math.max(0,ld); // remap 0.0 to 1.0
-
-  for (let j=0; j<objs.length; j++) {
-    let o = objs[j];
-    let t = o.intersect(o,hit.p,lv);
-    if (t < ll) {intensity*=0.5; break;}
+  let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]; // range -1.0 to 1.0
+  if (intensity > 0) {
+    for (let j=0; j<objs.length; j++) {
+      let o = objs[j];
+      let t = o.intersect(o,hit.p,lv);
+      if (t < ll) {intensity*=0.5; break;}
+    }
+    hit.c[0] *= intensity;
+    hit.c[1] *= intensity;
+    hit.c[2] *= intensity;
   }
-
-  hit.c[0] = hit.o.color[0] * intensity;
-  hit.c[1] = hit.o.color[1] * intensity;
-  hit.c[2] = hit.o.color[2] * intensity;
-  hit.c[3] = hit.o.color[3];
-
   return hit.c;
 }
 
