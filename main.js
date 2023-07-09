@@ -27,8 +27,9 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([0.0,0.5,0.0],0.5,[1.0,1.0,1.0,1.0]),
-    createSphere([2.0,1.0,0.0],1.0,[1.0,0.0,0.0,1.0])
+    createSphere([ 0.0,2.5,0.0],0.5,[1.0,1.0,1.0,1.0]),
+    createSphere([-2.0,1.0,0.0],1.0,[1.0,0.0,0.0,1.0]),
+    createSphere([ 2.0,1.0,0.0],1.0,[0.0,1.0,0.0,1.0])
   ];
 
   redraw();
@@ -72,41 +73,15 @@ function main () {
   }
 }
 
-function lightPoint (l,p,n) {
-  let lv = [l[0]-p[0], l[1]-p[1], l[2]-p[2]];
-  let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
-  if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-  let ld = lv[0]*n[0] + lv[1]*n[1] + lv[2]*n[2];
-  return Math.max(0,ld); // range 0.0 to 1.0
-}
-
 function intersectWorld (objs,org,dir) {
-  let hit = intersectObjects(objs,org,dir);
-  if (hit.o != undefined) {
-    let light = [-5.0,5.0,-5.0];
-    let intensity = lightPoint(light,hit.p,hit.n);
-    hit.c[0] = hit.o.color[0] * intensity;
-    hit.c[1] = hit.o.color[1] * intensity;
-    hit.c[2] = hit.o.color[2] * intensity;
-    hit.c[3] = hit.o.color[3];
-    return hit.c;
-  }
-  // temp background
-  let r = Math.abs(dir[0]);
-  let g = Math.abs(dir[1]);
-  let b = 0.0;
-  let a = 1.0;
-  return [r,g,b,a];
-}
-
-function intersectObjects (objs,org,dir) {
   let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0], c:[0.2,0.3,0.4,1.0]};
+
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let t = o.intersect(o,org,dir);
-    if (t < hit.t) {hit.o = o; hit.t = t;}
+    if (t < hit.t) {hit.o=o; hit.t=t;}
   }
-  if (hit.o == undefined) return hit;
+  if (hit.o == undefined) return hit.c;
 
   hit.p[0] = org[0] + dir[0] * hit.t;
   hit.p[1] = org[1] + dir[1] * hit.t;
@@ -119,7 +94,26 @@ function intersectObjects (objs,org,dir) {
   let nl = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
-  return hit;
+  let light = [-5.0,5.0,-5.0];
+  let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
+  let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
+  if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
+  
+  let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]; // range -1.0 to 1.0
+  let intensity = Math.max(0,ld); // remap 0.0 to 1.0
+
+  for (let i=0; i<objs.length; i++) {
+    let o = objs[i];
+    let t = o.intersect(o,hit.p,lv);
+    if (t < ll) {intensity*=0.5; break;}
+  }
+
+  hit.c[0] = hit.o.color[0] * intensity;
+  hit.c[1] = hit.o.color[1] * intensity;
+  hit.c[2] = hit.o.color[2] * intensity;
+  hit.c[3] = hit.o.color[3];
+
+  return hit.c;
 }
 
 function createSphere (o,r,c) {
