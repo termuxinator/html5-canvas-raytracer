@@ -59,7 +59,7 @@ function main () {
 
         let ray = vec3_sub3(target,origin);
         let len = vec3_len(ray);
-        if (len != 0) ray = vec3_mul1(ray,len);
+        if (len != 0) ray = vec3_mul1(ray,1/len);
     
         let rgb = intersectWorld(objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
