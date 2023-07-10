@@ -99,7 +99,7 @@ function createIntersect () {
     t: Infinity,
     p: [0,0,0],
     n: [0,0,0],
-    c: [0.4,0.5,0.6] // background
+    c: [1,1,1] // background
   };
 }
 
