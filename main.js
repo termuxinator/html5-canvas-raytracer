@@ -121,8 +121,8 @@ function intersectWorld (rec,objs,org,dir) {
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
     let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
     if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-    diffuse_intensity += Math.max(0, lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]);
-    if (diffuse_intensity > 0) {
+    let ld = Math.max(0, lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]);
+    if (ld > 0) {
       let j = 0;
       for ( ; j<objs.length; j++) {
         let o = objs[j];
@@ -138,13 +138,15 @@ function intersectWorld (rec,objs,org,dir) {
         srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
         specular_intensity += Math.pow(specular_dot,hit.m.sf);
+        diffuse_intensity += ld;
       }
     }
   }
-  diffuse_intensity *= hit.m.di;
+
+  diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.di;
   let diffuse_color = [rgb[0]*diffuse_intensity, rgb[1]*diffuse_intensity, rgb[2]*diffuse_intensity];
 
-  specular_intensity *= hit.m.si;
+  specular_intensity = Math.min(1,specular_intensity) * hit.m.si;
   let specular_color = [rgb[0]*specular_intensity, rgb[1]*specular_intensity, rgb[2]*specular_intensity];
 
   if (hit.m.rf == 0.0) { // non reflective
