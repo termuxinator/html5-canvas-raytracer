@@ -1,3 +1,5 @@
+'use strict';
+
 (function(){
   var output = document.createElement('pre');
   document.body.appendChild(output);
