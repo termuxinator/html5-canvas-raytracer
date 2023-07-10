@@ -113,14 +113,16 @@ function intersectWorld (objs,org,dir) {
   let rgb2 = [];
   let intensity2 = lightPoint(objs,ref.p,ref.n);
   intensity2 *= ref.o.mtl.di;
+  intensity2 *= hit.o.mtl.rf;
+  if (intensity2 == 0) return rgb;
   rgb2[0] = ref.o.mtl.rgb[0] * intensity2;
   rgb2[1] = ref.o.mtl.rgb[1] * intensity2;
   rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
 
   return [
-    rgb[0] + Math.abs(rgb[0]-rgb2[0]) / 2 * hit.o.mtl.rf,
-    rgb[1] + Math.abs(rgb[1]-rgb2[1]) / 2 * hit.o.mtl.rf,
-    rgb[2] + Math.abs(rgb[2]-rgb2[2]) / 2 * hit.o.mtl.rf
+    Math.abs(rgb[0] - rgb2[0]) / 2,
+    Math.abs(rgb[1] - rgb2[1]) / 2,
+    Math.abs(rgb[2] - rgb2[2]) / 2
   ];
 }
 
