@@ -132,7 +132,7 @@ function intersectObject (objs,org,dir) {
       out.t = hit.t;
       out.p = hit.p;
       out.n = hit.n;
-      out.c = [hit.c[0],hit.c[1],hit.c[2]]; // copy for shader
+    //out.c = hit.c;
     }
   }
   if (out.o != undefined) out.c = lightPoint(objs,out);
