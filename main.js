@@ -188,7 +188,6 @@ function intersectSphere (obj,org,dir) {
 
   let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
 //if (tca <= 0) return t;
-if (tca < 0) tca *= -1;
 
   let d2 = (L[0]*L[0] + L[1]*L[1] + L[2]*L[2]) - tca*tca;
   if (d2 > obj.r2) return t;
@@ -223,7 +222,6 @@ function intersectSphereEx (obj,org,dir) {
   let nl = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
 
-//hit.c = lightPoint() ...later...
   hit.m = obj.mtl;
 
   return hit;
