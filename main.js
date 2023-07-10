@@ -102,7 +102,7 @@ function createIntersect () {
 }
 
 function intersectWorld (rec,objs,org,dir) {
-  let rgb = [0.4,0.5,0.6];
+  let rgb = [0,0,0];
 
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
