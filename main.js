@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '291';
+let build = '292';
 
 (function() {
 /*
@@ -104,6 +104,12 @@ function createIntersect () {
 function intersectWorld (rec,objs,org,dir) {
   let rgb = [0.4,0.6,0.8];
 
+if (rec == 0) return rgb;
+
+let diffuse_color = [];
+let specular_color = [];
+let reflect_color = [];
+
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
@@ -114,7 +120,9 @@ function intersectWorld (rec,objs,org,dir) {
 
   rgb = hit.m.sampler(hit);
 
-  let diffuse_intensity = 0;
+let diffuse_intensity = 0;
+let specular_intensity = 0;
+
   if (hit.m.di > 0) {
     let light = [5.0,5.0,5.0];
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
@@ -143,18 +151,22 @@ function intersectWorld (rec,objs,org,dir) {
         srv[2] *= -1;
         //
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
-        let specular_intensity = Math.pow(specular_dot,hit.m.sf);
-        diffuse_intensity = (diffuse_intensity*hit.m.di + specular_intensity*hit.m.si) * 0.5;
-      } else diffuse_intensity *= /*hit.m.di **/ 0.1; // in shadow
+        specular_intensity = Math.pow(specular_dot,hit.m.sf);
+      } else diffuse_intensity *= 0.1; // in shadow
     }
   }
-  rgb[0] *= diffuse_intensity;
-  rgb[1] *= diffuse_intensity;
-  rgb[2] *= diffuse_intensity;
 
-  if (hit.m.rf == 0.0) return rgb;
+  diffuse_intensity *= hit.m.di;
+  diffuse_color[0] = rgb[0] * diffuse_intensity;
+  diffuse_color[1] = rgb[1] * diffuse_intensity;
+  diffuse_color[2] = rgb[2] * diffuse_intensity;
 
-  if (rec == 0) return rgb;
+  specular_intensity *= hit.m.si;
+  specular_color[0] = rgb[0] * specular_intensity;
+  specular_color[1] = rgb[1] * specular_intensity;
+  specular_color[2] = rgb[2] * specular_intensity;
+
+  //if (hit.m.rf == 0.0) return rgb;
 
   // reflect
 
@@ -164,13 +176,25 @@ function intersectWorld (rec,objs,org,dir) {
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
   let ref = intersectWorld(rec-1,objs,hit.p,rv);
+
+  reflect_color = ref.m.sampler(ref);
+  reflect_color[0] *= hit.m.rf;
+  reflect_color[1] *= hit.m.rf;
+  reflect_color[2] *= hit.m.rf;
+
+  return [
+    Math.min(1, diffuse_color[0] + specular_color[0] + reflect_color[0]),
+    Math.min(1, diffuse_color[1] + specular_color[1] + reflect_color[1]),
+    Math.min(1, diffuse_color[2] + specular_color[2] + reflect_color[2])
+  ];
+
 if(0){
   return [
     rgb[0] + (ref[0] - rgb[0]) * hit.m.rf,
     rgb[1] + (ref[1] - rgb[1]) * hit.m.rf,
     rgb[2] + (ref[2] - rgb[2]) * hit.m.rf
   ];
-}else{
+}elseif(0){
   return [
     Math.min(1, rgb[0] + ref[0] * hit.m.rf),
     Math.min(1, rgb[1] + ref[1] * hit.m.rf),
