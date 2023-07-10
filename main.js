@@ -18,7 +18,7 @@
 })();
 
 function main () {
-  let build = '238';
+  let build = '239';
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -38,13 +38,13 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,1.0,1000.0, 0.9)),
-    createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.5,50.0, 0.1)),
-    createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.5,50.0, 0.1)),
-    createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.5,50.0, 0.1)),
-    createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.5,2.0, 0.0)),
-createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,50.0, 0.3)),
-  //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0, 0.0))
+    createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,1.0,500.0,0.9)),
+    createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.5,50.0,0.1)),
+    createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.5,50.0,0.1)),
+    createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.5,50.0,0.1)),
+    createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.5,2.0,0.0)),
+    createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,100.0,0.3)),
+  //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0))
   ];
   // override material sampler with sphere checker mapper
   objects[5].mtl.sampler = function (hit) {
@@ -143,7 +143,7 @@ function intersectWorld (rec,objs,org,dir) {
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
         let specular_intensity = Math.pow(specular_dot,hit.m.sf);
         diffuse_intensity = (specular_intensity*hit.m.si + diffuse_intensity*hit.m.di) / 2;
-      } else diffuse_intensity *= 0.1; // in shadow
+      } else diffuse_intensity *= hit.m.di * 0.1; // in shadow
     }
   }
   rgb[0] *= diffuse_intensity;
