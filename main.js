@@ -44,7 +44,7 @@ function main () {
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.1)),
     createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.0)),
     createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.3)),
-    createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0))
+  //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0))
   ];
 
   redraw();
@@ -97,7 +97,7 @@ function createIntersect () {
 }
 
 function intersectWorld (rec,objs,org,dir) {
-  let rgb = [0,0,0];
+  let rgb = [0.4,0.6,0.8];
 
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
