@@ -187,7 +187,7 @@ function intersectSphere (obj,org,dir) {
   ];
 
   let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
-//if (tca <= 0) return t;
+  //if (tca <= 0) return t;
 
   let d2 = (L[0]*L[0] + L[1]*L[1] + L[2]*L[2]) - tca*tca;
   if (d2 > obj.r2) return t;
@@ -195,7 +195,7 @@ function intersectSphere (obj,org,dir) {
   let thc = Math.sqrt(obj.r2 - d2);
   let t0 = tca - thc;
   let t1 = tca + thc;
-
+/*
   if (t0 > t1) {
     if (t1 < 0) t = t0;
     else t = t1;
@@ -204,6 +204,10 @@ function intersectSphere (obj,org,dir) {
     else t = t0;
   }
   return t <= 0 ? Infinity : t;
+*/
+  if (t0 > 0) return t0;
+  if (t1 > 0) return t1;
+  return Infinity;
 }
 
 function intersectSphereEx (obj,org,dir) {
