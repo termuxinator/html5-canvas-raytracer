@@ -26,11 +26,11 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let mtl0 = createMaterial([1.0,1.0,1.0],0.1,1.0,0.0,0.0,0.2);
-  let mtl1 = createMaterial([1.0,0.0,0.0],0.1,1.0,0.0,0.0,0.0);
-  let mtl2 = createMaterial([0.0,1.0,0.0],0.1,1.0,0.0,0.0,0.2);
-  let mtl3 = createMaterial([0.0,0.0,1.0],0.0,1.0,0.0,0.0,1.0);
-  let mtl4 = createMaterial([1.0,1.0,1.0],1.0,1.0,0.0,0.0,0.0);
+  let mtl0 = createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.2);
+  let mtl1 = createMaterial([1.0,0.0,0.0],1.0,0.0,0.0,0.0);
+  let mtl2 = createMaterial([0.0,1.0,0.0],1.0,0.0,0.0,0.2);
+  let mtl3 = createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,1.0);
+  let mtl4 = createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.0);
 
   let objects = [
     createSphere([0.0,2.5,-2.0],0.5,mtl0),
@@ -91,9 +91,10 @@ function intersectWorld (objs,org,dir) {
   if (hit.o == undefined) return rgb;
 
   let intensity = lightPoint(objs,hit.p,hit.n);
-  rgb[0] = Math.max(hit.o.mtl.a[0], hit.o.mtl.d[0] * intensity);
-  rgb[1] = Math.max(hit.o.mtl.a[1], hit.o.mtl.d[1] * intensity);
-  rgb[2] = Math.max(hit.o.mtl.a[2], hit.o.mtl.d[2] * intensity);
+  intensity *= hit.o.mtl.di;
+  rgb[0] = hit.o.mtl.rgb[0] * intensity;
+  rgb[1] = hit.o.mtl.rgb[1] * intensity;
+  rgb[2] = hit.o.mtl.rgb[2] * intensity;
 
   // reflect
 
@@ -111,14 +112,15 @@ function intersectWorld (objs,org,dir) {
 
   let rgb2 = [];
   let intensity2 = lightPoint(objs,ref.p,ref.n);
-  rgb2[0] = Math.max(ref.o.mtl.a[0], ref.o.mtl.d[0] * intensity2);
-  rgb2[1] = Math.max(ref.o.mtl.a[1], ref.o.mtl.d[1] * intensity2);
-  rgb2[2] = Math.max(ref.o.mtl.a[2], ref.o.mtl.d[2] * intensity2);
+  intensity2 *= ref.o.mtl.di;
+  rgb2[0] = ref.o.mtl.rgb[0] * intensity2;
+  rgb2[1] = ref.o.mtl.rgb[1] * intensity2;
+  rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
 
   return [
-    Math.max(hit.o.mtl.a[0], Math.min(1, rgb[0] + rgb2[0] * hit.o.mtl.rf)),
-    Math.max(hit.o.mtl.a[1], Math.min(1, rgb[1] + rgb2[1] * hit.o.mtl.rf)),
-    Math.max(hit.o.mtl.a[2], Math.min(1, rgb[2] + rgb2[2] * hit.o.mtl.rf))
+    Math.min(1, rgb[0] + rgb2[0] * hit.o.mtl.rf),
+    Math.min(1, rgb[1] + rgb2[1] * hit.o.mtl.rf),
+    Math.min(1, rgb[2] + rgb2[2] * hit.o.mtl.rf)
   ];
 }
 
@@ -162,10 +164,9 @@ function lightPoint (objs,p,n) {
   return intensity;
 }
 
-function createMaterial (c,ai,di,si,sf,rf) {
+function createMaterial (rgb,di,si,sf,rf) {
   return {
-    a: [c[0]*ai,c[1]*ai,c[2]*ai],
-    d: [c[0]*di,c[1]*di,c[2]*di],
+    rgb: rgb,
     si: si,
     sf: sf,
     rf: rf
