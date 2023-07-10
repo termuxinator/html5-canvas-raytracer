@@ -193,6 +193,7 @@ function intersectSphere (obj,org,dir) {
 
   let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
   //if (tca <= 0) return t;
+  if (tca == 0) return t;
 
   let d2 = (L[0]*L[0] + L[1]*L[1] + L[2]*L[2]) - tca*tca;
   if (d2 > obj.r2) return t;
