@@ -100,19 +100,24 @@ function createIntersect () {
     t: Infinity,
     p: [0,0,0],
     n: [0,0,0],
-    c: [0.0,0.0,0.0], // shader writes this
     m: createMaterial([0.4,0.5,0.6],1.0,0.0,0.0,0.0)
   };
 }
 
 function intersectWorld (rec,objs,org,dir) {
+  let rgb = [0.4,0.5,0.6];
 
   let hit = intersectObject(objs,org,dir);
-  if (hit.t == Infinity) return hit.c;
+  if (hit.t == Infinity) return rgb;
 
-  if (hit.m.rf == 0.0) return hit.c;
+  let intensity = hit.m.di * lightPoint(objs,hit.p,hit.n);
+  rgb[0] = hit.m.rgb[0] * intensity;
+  rgb[1] = hit.m.rgb[1] * intensity;
+  rgb[2] = hit.m.rgb[2] * intensity;
 
-  if (rec == 0) return hit.c;
+  if (hit.m.rf == 0.0) return rgb;
+
+  if (rec == 0) return rgb;
 
   // reflect
 
@@ -125,12 +130,12 @@ function intersectWorld (rec,objs,org,dir) {
   let rl = Math.sqrt(rv[0]*rv[0] + rv[1]*rv[1] + rv[2]*rv[2]);
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
-  let ref_c = intersectWorld(rec-1,objs,hit.p,rv);
+  let ref = intersectWorld(rec-1,objs,hit.p,rv);
 
   return [
-    hit.c[0] + (ref_c[0] - hit.c[0]) * hit.m.rf,
-    hit.c[1] + (ref_c[1] - hit.c[1]) * hit.m.rf,
-    hit.c[2] + (ref_c[2] - hit.c[2]) * hit.m.rf
+    rgb[0] + (ref[0] - rgb[0]) * hit.m.rf,
+    rgb[1] + (ref[1] - rgb[1]) * hit.m.rf,
+    rgb[2] + (ref[2] - rgb[2]) * hit.m.rf
   ];
 }
 
@@ -141,36 +146,30 @@ function intersectObject (objs,org,dir) {
     let hit = o.intersectEx(o,org,dir);
     if (hit.t < out.t) out = hit;
   }
-  if (out.t != Infinity) lightPoint(objs,out);
   return out;
 }
 
-function lightPoint (objs,hit) {
+function lightPoint (objs,p,n) {
   let light = [10.0,10.0,10.0];
-
   let lv = [
-    light[0] - hit.p[0],
-    light[1] - hit.p[1],
-    light[2] - hit.p[2]
+    light[0] - p[0],
+    light[1] - p[1],
+    light[2] - p[2]
   ];
   let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-
-  let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
-  if (intensity <= 0) {hit.c=[0,0,0]; return;}
+  let intensity = lv[0]*n[0] + lv[1]*n[1] + lv[2]*n[2];
+  if (intensity <= 0) return 0;
   let i = 0;
   for ( ; i<objs.length; i++) {
     let o = objs[i];
-    let t = o.intersect(o,hit.p,lv);
+    let t = o.intersect(o,p,lv);
     if (t < ll) {intensity*=0.5; break;} // shadow
   }
-  intensity *= hit.m.di;
   if (i == objs.length) {
     // TODO specular
   }
-  hit.c[0] = hit.m.rgb[0] * intensity;
-  hit.c[1] = hit.m.rgb[1] * intensity;
-  hit.c[2] = hit.m.rgb[2] * intensity;
+  return intensity;
 }
 
 function createMaterial (rgb,di,si,sf,rf) {
