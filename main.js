@@ -167,6 +167,7 @@ function lightPoint (objs,p,n) {
 function createMaterial (rgb,di,si,sf,rf) {
   return {
     rgb: rgb,
+    di: di,
     si: si,
     sf: sf,
     rf: rf
