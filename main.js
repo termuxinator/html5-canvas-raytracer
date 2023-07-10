@@ -96,6 +96,8 @@ function intersectWorld (objs,org,dir) {
   rgb[1] = hit.o.mtl.rgb[1] * intensity;
   rgb[2] = hit.o.mtl.rgb[2] * intensity;
 
+//if (hit.o.mtl.rf == 0) return rgb;
+
   // reflect
 
   let rt = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
@@ -113,15 +115,26 @@ function intersectWorld (objs,org,dir) {
   let rgb2 = [];
   let intensity2 = lightPoint(objs,ref.p,ref.n);
   intensity2 *= ref.o.mtl.di;
-  intensity2 *= hit.o.mtl.rf;
   rgb2[0] = ref.o.mtl.rgb[0] * intensity2;
   rgb2[1] = ref.o.mtl.rgb[1] * intensity2;
   rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
 
+  let min = [
+    Math.min(rgb[0],rgb2[0]),
+    Math.min(rgb[1],rgb2[1]),
+    Math.min(rgb[2],rgb2[2]),
+  ];
+
+  let max = [
+    Math.max(rgb[0],rgb2[0]),
+    Math.max(rgb[1],rgb2[1]),
+    Math.max(rgb[2],rgb2[2]),
+  ];
+
   return [
-    Math.abs(rgb[0] - rgb2[0]) / 2,
-    Math.abs(rgb[1] - rgb2[1]) / 2,
-    Math.abs(rgb[2] - rgb2[2]) / 2
+    min[0] + (max[0] - min[0]) * hit.o.mtl.rf,
+    min[1] + (max[1] - min[1]) * hit.o.mtl.rf,
+    min[2] + (max[2] - min[2]) * hit.o.mtl.rf
   ];
 }
 
