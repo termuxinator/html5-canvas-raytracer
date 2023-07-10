@@ -50,7 +50,7 @@ function main () {
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.5)),
     createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.0)),
     createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.8)),
-    createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],1.0,0.0,0.0,0.0))
+    createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0))
   ];
 
   redraw();
@@ -113,28 +113,33 @@ function intersectWorld (rec,objs,org,dir) {
   }
   if (hit.t == Infinity) return rgb;
 
-  let light = [10.0,10.0,10.0];
-  let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
-  let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
-  if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-  let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
-  if (intensity < 0) intensity = 0;
-  if (intensity > 0) {
-    let i = 0;
-    for ( ; i<objs.length; i++) {
-      let o = objs[i];
-      let t = o.intersect(o,hit.p,lv);
-      if (t < ll) {intensity*=0.5; break;} // shadow
-    }
-    intensity *= hit.m.di;
-    if (i == objs.length) {
-      // TODO specular
-    }
-  }
+  rgb[0] = hit.m.rgb[0];
+  rgb[1] = hit.m.rgb[1];
+  rgb[2] = hit.m.rgb[2];
 
-  rgb[0] = hit.m.rgb[0] * intensity;
-  rgb[1] = hit.m.rgb[1] * intensity;
-  rgb[2] = hit.m.rgb[2] * intensity;
+  if (hi.m.di > 0) {
+    let light = [10.0,10.0,10.0];
+    let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
+    let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
+    if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
+    let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
+    if (intensity < 0) intensity = 0;
+    if (intensity > 0) {
+      let i = 0;
+      for ( ; i<objs.length; i++) {
+        let o = objs[i];
+        let t = o.intersect(o,hit.p,lv);
+        if (t < ll) {intensity*=0.5; break;} // shadow
+      }
+      intensity *= hit.m.di;
+      if (i == objs.length) {
+        // TODO specular
+      }
+    }
+    rgb[0] *= intensity;
+    rgb[1] *= intensity;
+    rgb[2] *= intensity;
+  }
 
   if (hit.m.rf == 0.0) return rgb;
 
