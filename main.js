@@ -185,15 +185,10 @@ function createSphere (o,r,m) {
 function intersectSphere (obj,org,dir) {
   let t = Infinity;
 
-  let L = [
-    obj.origin[0] - org[0],
-    obj.origin[1] - org[1],
-    obj.origin[2] - org[2]
-  ];
+  let L = [obj.origin[0]-org[0], obj.origin[1]-org[1], obj.origin[2]-org[2]];
 
   let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
-  //if (tca <= 0) return t;
-  if (tca == 0) return t;
+//if (tca <= 0) return t;
 
   let d2 = (L[0]*L[0] + L[1]*L[1] + L[2]*L[2]) - tca*tca;
   if (d2 > obj.r2) return t;
@@ -211,8 +206,8 @@ function intersectSphere (obj,org,dir) {
   }
   return t <= 0 ? Infinity : t;
 */
-  if (t0 > 0) return t0;
-  if (t1 > 0) return t1;
+  if (t0 > 0.001) return t0;
+  if (t1 > 0.001) return t1;
   return Infinity;
 }
 
