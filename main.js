@@ -18,7 +18,7 @@
 })();
 
 function main () {
-  let build = '243';
+  let build = '244';
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -38,7 +38,7 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.5,0.5,0.5],0.9,1.0,1000.0,0.9)),
+    createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.0,0.0,0.0],1.0,1.0,1000.0,0.8)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.5,50.0,0.1)),
     createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.5,50.0,0.1)),
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.5,50.0,0.1)),
@@ -185,10 +185,10 @@ function createSphere (o,r,m) {
   return {
     origin: o,
     radius: r,
-    r2: (r * r),
+    r2: r * r,
     mtl: m,
-    intersect: intersectSphere, // returns distance
-    intersectEx: intersectSphereEx // returns packet
+    intersect: intersectSphere,
+    intersectEx: intersectSphereEx
   };
 }
 
