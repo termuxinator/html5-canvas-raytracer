@@ -18,6 +18,7 @@
 })();
 
 function main () {
+  let build = '11:54';
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -79,8 +80,8 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,10.0, 0
       }
     }
     context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
-    let fps = 1000 / (Date.now() - timestamp);
-    let str = 'fps ' + (fps | 0);
+    let elapsed = Date.now() - timestamp;
+    let str = 'build [' + build + '] ' + elapsed + '(ms)';
     context.font = '16px monospace';
     context.textAlign = 'left';
     context.textBaseline = 'top';
@@ -142,9 +143,8 @@ function intersectWorld (rec,objs,org,dir) {
         //
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
         let specular_intensity = hit.m.si * Math.pow(specular_dot,hit.m.sf);
-        diffuse_intensity += (specular_intensity - diffuse_intensity);
+        diffuse_intensity += (diffuse_intensity - specular_intensity);
       }
-      //else diffuse_intensity *= hit.m.di;
     }
   }
   rgb[0] *= diffuse_intensity;
