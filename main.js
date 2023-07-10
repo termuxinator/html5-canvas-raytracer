@@ -162,7 +162,7 @@ function createMaterial (rgb,di,si,sf,rf) {
     si: si,
     sf: sf,
     rf: rf,
-    sampler: function (hit) {return hit.m.rgb;}
+    sampler: function (hit) {return hit.m.rgb.slice();}
   };
 }
 
