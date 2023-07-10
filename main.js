@@ -90,13 +90,9 @@ function intersectWorld (objs,org,dir) {
   let hit = intersectObject(objs,org,dir);
   if (hit.o == undefined) return rgb;
 
-  let intensity = lightPoint(objs,hit.p,hit.n);
-  intensity *= hit.o.mtl.di;
-  rgb[0] = hit.o.mtl.rgb[0] * intensity;
-  rgb[1] = hit.o.mtl.rgb[1] * intensity;
-  rgb[2] = hit.o.mtl.rgb[2] * intensity;
+  rgb = lightPoint(objs,hit);
 
-//if (hit.o.mtl.rf == 0) return rgb;
+  if (hit.o.mtl.rf == 0.0) return rgb;
 
   // reflect
 
@@ -112,12 +108,7 @@ function intersectWorld (objs,org,dir) {
   let ref = intersectObject(objs,hit.p,rv);
   if (ref.o == undefined) return rgb;
 
-  let rgb2 = [];
-  let intensity2 = lightPoint(objs,ref.p,ref.n);
-  intensity2 *= ref.o.mtl.di;
-  rgb2[0] = ref.o.mtl.rgb[0] * intensity2;
-  rgb2[1] = ref.o.mtl.rgb[1] * intensity2;
-  rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
+  let rgb2 = lightPoint(objs,ref);
 
   return [
     rgb[0] + (rgb2[0] - rgb[0]) * hit.o.mtl.rf,
@@ -125,8 +116,6 @@ function intersectWorld (objs,org,dir) {
     rgb[2] + (rgb2[2] - rgb[2]) * hit.o.mtl.rf
   ];
 }
-
-function mid (a,b) {return Math.abs(a-b)/2;}
 
 function intersectObject (objs,org,dir) {
   let out = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0]};
@@ -143,29 +132,35 @@ function intersectObject (objs,org,dir) {
   return out;
 }
 
-function lightPoint (objs,p,n) {
+function lightPoint (objs,hit) {
+  let out = [0.0,0.0,0.0];
+
   let light = [10.0,10.0,10.0];
 
   let lv = [
-    light[0] - p[0],
-    light[1] - p[1],
-    light[2] - p[2]
+    light[0] - hit.p[0],
+    light[1] - hit.p[1],
+    light[2] - hit.p[2]
   ];
   let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
 
-  let intensity = lv[0]*n[0] + lv[1]*n[1] + lv[2]*n[2];
-  if (intensity <= 0) return 0;
+  let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
+  if (intensity <= 0) return out;
   let i = 0;
   for ( ; i<objs.length; i++) {
     let o = objs[i];
-    let t = o.intersect(o,p,lv);
-    if (t < ll) {intensity*=0.5; break;}
+    let t = o.intersect(o,hit.p,lv);
+    if (t < ll) {intensity*=0.5; break;} // shadow
   }
+  intensity *= hit.o.mtl.di;
   if (i == objs.length) {
     // TODO specular
   }
-  return intensity;
+  out[0] = hit.o.mtl.rgb[0] * intensity;
+  out[1] = hit.o.mtl.rgb[1] * intensity;
+  out[2] = hit.o.mtl.rgb[2] * intensity;
+  return out;
 }
 
 function createMaterial (rgb,di,si,sf,rf) {
