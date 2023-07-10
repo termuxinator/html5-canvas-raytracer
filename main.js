@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '280';
+let build = '281';
 
 (function() {
 /*
@@ -40,7 +40,7 @@ function main () {
 
   let objects = [
     createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.5,0.5,0.5],0.8,1.0,50.0,0.8)),
-   createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],1.0,1.0,50.0,0.0)),
+    createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],1.0,1.0,50.0,0.0)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.3,50.0,0.1)),
     createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.3,50.0,0.1)),
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.3,50.0,0.1)),
@@ -49,7 +49,7 @@ function main () {
   //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0))
   ];
   // override material sampler with sphere checker mapper
-  objects[5].mtl.sampler = function (hit) {
+  objects[6].mtl.sampler = function (hit) {
     let u = Math.atan2(hit.n[0],hit.n[1]) / (Math.PI*2) + 1.0;
     let v = Math.acos(hit.n[2]) / Math.PI + 0.5;
     let c = [[1,1,0],[1,0,1]];
