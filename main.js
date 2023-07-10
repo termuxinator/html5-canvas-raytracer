@@ -18,7 +18,7 @@
 })();
 
 function main () {
-  let build = '12:50';
+  let build = '232';
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -81,7 +81,7 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,10.0, 0
     }
     context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
     let elapsed = Date.now() - timestamp;
-    let str = 'build [' + build + '] ' + elapsed + '(ms)';
+    let str = 'build #' + build + ' (' + elapsed + 'ms)';
     context.font = '16px monospace';
     context.textAlign = 'left';
     context.textBaseline = 'top';
