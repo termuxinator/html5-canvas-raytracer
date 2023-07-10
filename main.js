@@ -101,11 +101,7 @@ function createIntersect () {
 
 function intersectWorld (rec,objs,org,dir) {
   let rgb = [0.4,0.6,0.8];
-
-if (rec == 0) return rgb;
-
-let diffuse_color = [];
-let specular_color = [];
+  if (rec == 0) return rgb;
 
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
@@ -117,16 +113,15 @@ let specular_color = [];
 
   rgb = hit.m.sampler(hit);
 
-let diffuse_intensity = 0;
-let specular_intensity = 0;
-
-  if (hit.m.di > 0) {
-    let light = [5.0,5.0,5.0];
+  let diffuse_intensity = 0;
+  let specular_intensity = 0;
+  let lights = [[5.0,5.0,5.0],[0.0,5.0,0.0]];
+  for (let k=0; k<lights.length; k++) {
+    let light = lights[k];
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
     let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
     if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-    diffuse_intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
-    if (diffuse_intensity < 0) diffuse_intensity = 0;
+    diffuse_intensity += Math.max(0, lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]);
     if (diffuse_intensity > 0) {
       let j = 0;
       for ( ; j<objs.length; j++) {
@@ -136,34 +131,29 @@ let specular_intensity = 0;
       }
       if (j == objs.length) {
         let slv = [-lv[0],-lv[1],-lv[2]];
-        // reflect
         let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
         let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
-        // normalize
         let srl = Math.sqrt(srv[0]*srv[0] + srv[1]*srv[1] + srv[2]*srv[2]);
         if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
-        // invert
-        srv[0] *= -1;
-        srv[1] *= -1;
-        srv[2] *= -1;
-        //
+        srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
-        specular_intensity = Math.pow(specular_dot,hit.m.sf);
-      } else diffuse_intensity *= 0.5; // in shadow
+        specular_intensity += Math.pow(specular_dot,hit.m.sf);
+      }
     }
   }
-
   diffuse_intensity *= hit.m.di;
-  diffuse_color[0] = rgb[0] * diffuse_intensity;
-  diffuse_color[1] = rgb[1] * diffuse_intensity;
-  diffuse_color[2] = rgb[2] * diffuse_intensity;
+  let diffuse_color = [rgb[0]*diffuse_intensity, rgb[1]*diffuse_intensity, rgb[2]*diffuse_intensity];
 
   specular_intensity *= hit.m.si;
-  specular_color[0] = rgb[0] * specular_intensity;
-  specular_color[1] = rgb[1] * specular_intensity;
-  specular_color[2] = rgb[2] * specular_intensity;
+  let specular_color = [rgb[0]*specular_intensity, rgb[1]*specular_intensity, rgb[2]*specular_intensity];
 
-  //if (hit.m.rf == 0.0) return rgb;
+  if (hit.m.rf == 0.0) { // non reflective
+    return [
+      Math.min(1, diffuse_color[0] + specular_color[0]),
+      Math.min(1, diffuse_color[1] + specular_color[1]),
+      Math.min(1, diffuse_color[2] + specular_color[2])
+    ];
+  }
 
   // reflect
 
@@ -182,22 +172,6 @@ let specular_intensity = 0;
     Math.min(1, diffuse_color[1] + specular_color[1] + reflect_color[1]),
     Math.min(1, diffuse_color[2] + specular_color[2] + reflect_color[2])
   ];
-
-/*
-if(0){
-  return [
-    rgb[0] + (ref[0] - rgb[0]) * hit.m.rf,
-    rgb[1] + (ref[1] - rgb[1]) * hit.m.rf,
-    rgb[2] + (ref[2] - rgb[2]) * hit.m.rf
-  ];
-}elseif(0){
-  return [
-    Math.min(1, rgb[0] + ref[0] * hit.m.rf),
-    Math.min(1, rgb[1] + ref[1] * hit.m.rf),
-    Math.min(1, rgb[2] + ref[2] * hit.m.rf),
-  ];
-}
-*/
 }
 
 function createMaterial (rgb,di,si,sf,rf) {
