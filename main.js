@@ -80,7 +80,7 @@ function main () {
         let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
     
-        let rgb = intersectWorld(objects,origin,ray);
+        let rgb = intersectWorld(8,objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
         colorbuf.data[ipixel++] = 255 * rgb[1];
         colorbuf.data[ipixel++] = 255 * rgb[2];
@@ -109,12 +109,14 @@ function createIntersect () {
   };
 }
 
-function intersectWorld (objs,org,dir) {
+function intersectWorld (rec,objs,org,dir) {
 
   let hit = intersectObject(objs,org,dir);
   if (hit.o == undefined) return hit.c;
 
-  if (hit.o.mtl.rf == 0.0) return hit.c;
+//if (hit.o.mtl.rf == 0.0) return hit.c;
+
+  if (rec == 0) return hit.c;
 
   // reflect
 
@@ -127,13 +129,12 @@ function intersectWorld (objs,org,dir) {
   let rl = Math.sqrt(rv[0]*rv[0] + rv[1]*rv[1] + rv[2]*rv[2]);
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
-  let ref = intersectObject(objs,hit.p,rv);
-  if (ref.o == undefined) return hit.c;
+  let ref_c = intersectWorld(rec-1,objs,hit.p,rv);
 
   return [
-    hit.c[0] + (ref.c[0] - hit.c[0]) * hit.o.mtl.rf,
-    hit.c[1] + (ref.c[1] - hit.c[1]) * hit.o.mtl.rf,
-    hit.c[2] + (ref.c[2] - hit.c[2]) * hit.o.mtl.rf
+    hit.c[0] + (ref_c[0] - hit.c[0]) * hit.o.mtl.rf,
+    hit.c[1] + (ref_c[1] - hit.c[1]) * hit.o.mtl.rf,
+    hit.c[2] + (ref_c[2] - hit.c[2]) * hit.o.mtl.rf
   ];
 }
 
