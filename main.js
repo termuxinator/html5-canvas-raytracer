@@ -41,7 +41,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let mtl0 = createMaterial([0.1,0.1,0.1],1.0,0.0,0.0,1.0);
+  let mtl0 = createMaterial([0.5,0.5,0.5],1.0,0.0,0.0,1.0);
   let mtl1 = createMaterial([1.0,0.0,0.0],1.0,0.0,0.0,0.2);
   let mtl2 = createMaterial([0.0,1.0,0.0],1.0,0.0,0.0,0.2);
   let mtl3 = createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.2);
@@ -114,7 +114,7 @@ function intersectWorld (rec,objs,org,dir) {
   let hit = intersectObject(objs,org,dir);
   if (hit.o == undefined) return hit.c;
 
-  if (hit.o.mtl.rf == 0.0) return hit.c;
+//if (hit.o.mtl.rf == 0.0) return hit.c;
 
   if (rec == 0) return hit.c;
 
