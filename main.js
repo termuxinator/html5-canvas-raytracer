@@ -162,15 +162,14 @@ function createMaterial (rgb,di,si,sf,rf) {
     si: si,
     sf: sf,
     rf: rf,
-    sampler: sample_rgb
+    sampler: function (hit) {return hit.m.rgb;}
   };
-  function sample_rgb(hit) {return hit.m.rgb;}
 }
 
 function sampler_sphereCheckerMap (hit) {
   let u = Math.atan2(hit.n[0],hit.n[2]) / (Math.PI*2) + 1.0;
   let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
-  let c = ((u*1000)&1) ^ ((v*500)&1);
+  let c = ((u*500)&1) ^ ((v*250)&1);
   return [c,c,c];
 }
 
