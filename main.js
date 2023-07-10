@@ -169,7 +169,7 @@ function createMaterial (rgb,di,si,sf,rf) {
 function sampler_sphereCheckerMap (hit) {
   let u = Math.atan2(hit.n[0],hit.n[2]) / (Math.PI*2) + 1.0;
   let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
-  let c = ((u*2000) ^ (v*1000)) & 1;
+  let c = ((u*1000)&1) ^ ((v*500)&1));
   return [c,c,c];
 }
 
