@@ -119,9 +119,9 @@ function intersectWorld (objs,org,dir) {
   rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
 
   return [
-    Math.min(1, rgb[0] + rgb2[0]),
-    Math.min(1, rgb[1] + rgb2[1]),
-    Math.min(1, rgb[2] + rgb2[2])
+    Math.abs(rgb[0] - rgb2[0]) / 2,
+    Math.abs(rgb[1] - rgb2[1]) / 2,
+    Math.abs(rgb[2] - rgb2[2]) / 2
   ];
 }
 
