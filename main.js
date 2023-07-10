@@ -65,10 +65,10 @@ function main () {
         let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
     
-        let rgb = intersectWorld(objects,origin,ray);
-        colorbuf.data[ipixel++] = 255 * rgb[0];
-        colorbuf.data[ipixel++] = 255 * rgb[1];
-        colorbuf.data[ipixel++] = 255 * rgb[2];
+        let hit = intersectWorld(objects,origin,ray);
+        colorbuf.data[ipixel++] = 255 * hit.c[0];
+        colorbuf.data[ipixel++] = 255 * hit.c[1];
+        colorbuf.data[ipixel++] = 255 * hit.c[2];
         colorbuf.data[ipixel++] = 255;
       }
     }
@@ -84,15 +84,22 @@ function main () {
   }
 }
 
+function createInstance() {
+  return {
+    o: undefined,
+    t: Infinity,
+    p: [0,0,0],
+    n: [0,0,0],
+    c: [0.4,0.5,0.6] // background
+  };
+}
+
 function intersectWorld (objs,org,dir) {
-  let rgb = [0.4,0.5,0.6];
 
   let hit = intersectObject(objs,org,dir);
-  if (hit.o == undefined) return rgb;
+  if (hit.o == undefined) return hit;
 
-  rgb = lightPoint(objs,hit);
-
-  if (hit.o.mtl.rf == 0.0) return rgb;
+  if (hit.o.mtl.rf == 0.0) return hit;
 
   // reflect
 
@@ -106,19 +113,17 @@ function intersectWorld (objs,org,dir) {
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
   let ref = intersectObject(objs,hit.p,rv);
-  if (ref.o == undefined) return rgb;
+  if (ref.o == undefined) return hit;
 
-  let rgb2 = lightPoint(objs,ref);
+  hit.c[0] += (ref.c[0] - hit.c[0]) * hit.o.mtl.rf;
+  hit.c[1] += (ref.c[1] - hit.c[1]) * hit.o.mtl.rf,
+  hit.c[2] += (ref.c[2] - hit.c[2]) * hit.o.mtl.rf
 
-  return [
-    rgb[0] + (rgb2[0] - rgb[0]) * hit.o.mtl.rf,
-    rgb[1] + (rgb2[1] - rgb[1]) * hit.o.mtl.rf,
-    rgb[2] + (rgb2[2] - rgb[2]) * hit.o.mtl.rf
-  ];
+  return hit;
 }
 
 function intersectObject (objs,org,dir) {
-  let out = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0]};
+  let out = createInstance();
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let hit = o.intersectEx(o,org,dir);
@@ -127,8 +132,10 @@ function intersectObject (objs,org,dir) {
       out.t = hit.t;
       out.p = hit.p;
       out.n = hit.n;
+      out.c = [hit.c[0],hit.c[1],hit.c[2]]; // copy for shader
     }
   }
+  if (out.o != undefined) out.c = lightPoint(objs,out);
   return out;
 }
 
@@ -214,7 +221,7 @@ function intersectSphere (obj,org,dir) {
 }
 
 function intersectSphereEx (obj,org,dir) {
-  let hit = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0]};
+  let hit = createInstance();
 
   let t = intersectSphere(obj,org,dir);
   if (t == Infinity) return hit;
