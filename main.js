@@ -119,22 +119,10 @@ function intersectWorld (objs,org,dir) {
   rgb2[1] = ref.o.mtl.rgb[1] * intensity2;
   rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
 
-  let min = [
-    Math.min(rgb[0],rgb2[0]),
-    Math.min(rgb[1],rgb2[1]),
-    Math.min(rgb[2],rgb2[2]),
-  ];
-
-  let max = [
-    Math.max(rgb[0],rgb2[0]),
-    Math.max(rgb[1],rgb2[1]),
-    Math.max(rgb[2],rgb2[2]),
-  ];
-
   return [
-    min[0] + (max[0] - min[0]) * hit.o.mtl.rf,
-    min[1] + (max[1] - min[1]) * hit.o.mtl.rf,
-    min[2] + (max[2] - min[2]) * hit.o.mtl.rf
+    rgb[0] + (rgb[0] - rgb2[0]) * hit.o.mtl.rf,
+    rgb[1] + (rgb[1] - rgb2[1]) * hit.o.mtl.rf,
+    rgb[2] + (rgb[2] - rgb2[2]) * hit.o.mtl.rf
   ];
 }
 
