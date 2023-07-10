@@ -19,17 +19,11 @@
 
 function main () {
   let canvas = document.getElementById('canvasID');
-  canvas.width = 1024; //640;
-  canvas.height = 768; //480;
-  canvas.style.borderStyle = 'solid';
-  canvas.style.borderWidth = '1px';
-  canvas.style.borderColor = '#ff0000 #00ff00 #0000ff #ffffff';
-//canvas.style.color = '#ffffff';
-//canvas.style.backgroundColor = '#555555';
-
+  canvas.width = document.body.clientWidth;
+  canvas.height = document.body.clientHeight;
+  canvas.style.border = '1px solid #ffffff';
   let context = canvas.getContext('2d');
   context.imageSmoothingEnabled = false;
-
   let colorbuf = context.createImageData(canvas.width,canvas.height);
 
   let origin = [0,1.5,10];
