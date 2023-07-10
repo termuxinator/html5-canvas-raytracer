@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '286';
+let build = '287';
 
 (function() {
 /*
@@ -38,7 +38,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2));
 
   let objects = [
-    createSphere([1.5,2.5,0.0],0.5,createMaterial([0.1,0.1,0.1],0.8,1.0,50.0,0.8)),
+    createSphere([1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.1,1.0,50.0,0.8)),
     createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.5,0.5,0.5],0.8,1.0,50.0,0.8)),
     createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.8,1.0,50.0,0.2)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.3,50.0,0.1)),
