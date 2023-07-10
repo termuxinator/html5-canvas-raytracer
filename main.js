@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '246';
+let build = '247';
 
 (function() {
 /*
@@ -163,11 +163,17 @@ function intersectWorld (rec,objs,org,dir) {
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
   let ref = intersectWorld(rec-1,objs,hit.p,rv);
-
+/*
   return [
     rgb[0] + (ref[0] - rgb[0]) * hit.m.rf,
     rgb[1] + (ref[1] - rgb[1]) * hit.m.rf,
     rgb[2] + (ref[2] - rgb[2]) * hit.m.rf
+  ];
+*/
+  return [
+    Math.min(1, rgb[0] + ref[0]),
+    Math.min(1, rgb[1] + ref[1]),
+    Math.min(1, rgb[2] + ref[2]),
   ];
 }
 
