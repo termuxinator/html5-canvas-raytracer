@@ -18,7 +18,7 @@
 })();
 
 function main () {
-  let build = '236';
+  let build = '237';
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -50,8 +50,8 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,50.0, 0
   objects[5].mtl.sampler = function (hit) {
     let u = Math.atan2(hit.n[0],hit.n[1]) / (Math.PI*2) + 1.0;
     let v = Math.acos(hit.n[2]) / Math.PI + 0.5;
-    let c = ((u*5000*4)&1) ^ ((v*2500*4)&1);
-    return [c,c,c];
+    let c = [[1,1,0],[0,1,1]];
+    return c[((u*5000*4)&1) ^ ((v*2500*4)&1)];
   };
 
   redraw();
