@@ -142,7 +142,13 @@ function intersectObject (objs,org,dir) {
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let hit = o.intersectEx(o,org,dir);
-    if (hit.t < out.t) out = hit;
+    if (hit.t < out.t) {
+      out.o = hit.o;
+      out.t = hit.t;
+      out.p = hit.p;
+      out.n = hit.n;
+      out.c = hit.c;
+    }
   }
   if (out.o != undefined) lightPoint(objs,out);
   return out;
