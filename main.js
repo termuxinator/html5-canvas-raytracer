@@ -41,7 +41,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let mtl0 = createMaterial([0.5,0.5,0.5],1.0,0.0,0.0,1.0);
+  let mtl0 = createMaterial([0.5,0.5,0.5],1.0,0.0,0.0,0.9);
   let mtl1 = createMaterial([1.0,0.0,0.0],1.0,0.0,0.0,0.2);
   let mtl2 = createMaterial([0.0,1.0,0.0],1.0,0.0,0.0,0.2);
   let mtl3 = createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.2);
