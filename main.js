@@ -114,7 +114,7 @@ function intersectWorld (rec,objs,org,dir) {
   let hit = intersectObject(objs,org,dir);
   if (hit.o == undefined) return hit.c;
 
-//if (hit.o.mtl.rf == 0.0) return hit.c;
+  if (hit.o.mtl.rf == 0.0) return hit.c;
 
   if (rec == 0) return hit.c;
 
