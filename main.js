@@ -18,7 +18,7 @@
 })();
 
 function main () {
-  let build = '241';
+  let build = '242';
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -38,7 +38,7 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,1.0,1000.0,0.9)),
+    createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],0.9,1.0,1000.0,0.9)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.5,50.0,0.1)),
     createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.5,50.0,0.1)),
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.5,50.0,0.1)),
