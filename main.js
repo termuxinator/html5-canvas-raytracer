@@ -127,7 +127,7 @@ function intersectObject (objs,org,dir) {
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let hit = o.intersectEx(o,org,dir);
-    if (hit.t < out.t) {
+    if ((hit.o != undefined) && (hit.t < out.t)) {
       out.o = hit.o;
       out.t = hit.t;
       out.p = hit.p;
