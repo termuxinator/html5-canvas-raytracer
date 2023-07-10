@@ -118,11 +118,13 @@ function intersectWorld (objs,org,dir) {
   rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
 
   return [
-    rgb[0] * (Math.abs(rgb[0]-rgb2[0]) * hit.o.mtl.rf),
-    rgb[1] * (Math.abs(rgb[1]-rgb2[1]) * hit.o.mtl.rf),
-    rgb[2] * (Math.abs(rgb[2]-rgb2[2]) * hit.o.mtl.rf)
+    rgb[0] + (Math.abs(rgb[0]-rgb2[0]) * hit.o.mtl.rf) / 2,
+    rgb[1] + (Math.abs(rgb[1]-rgb2[1]) * hit.o.mtl.rf) / 2,
+    rgb[2] + (Math.abs(rgb[2]-rgb2[2]) * hit.o.mtl.rf) / 2
   ];
 }
+
+function mid (a,b) {return Math.abs(a-b)/2;}
 
 function intersectObject (objs,org,dir) {
   let out = {o:undefined, t:Infinity, p:[0,0,0], n:[0,0,0]};
