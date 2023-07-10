@@ -36,7 +36,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2));
 
   let objects = [
-    createSphere([1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.5,50.0,0.8)),   // bubble
+    createSphere([1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.3,50.0,0.8)),   // bubble
     createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.8,600.0,0.7)), // mirror
     createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.4,0.2,50.0,0.05)),  // metal
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],0.8,0.3,50.0,0.1)),  // orn
