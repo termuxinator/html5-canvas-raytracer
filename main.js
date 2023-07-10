@@ -19,8 +19,8 @@
 
 function main () {
   let canvas = document.getElementById('canvasID');
-  canvas.width = 640;
-  canvas.height = 480;
+  canvas.width = 1024; //640;
+  canvas.height = 768; //480;
   canvas.style.borderStyle = 'solid';
   canvas.style.borderWidth = '1px';
   canvas.style.borderColor = '#ff0000 #00ff00 #0000ff #ffffff';
