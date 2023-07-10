@@ -120,9 +120,9 @@ function intersectWorld (objs,org,dir) {
   rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
 
   return [
-    rgb[0] + (rgb[0] - rgb2[0]) * hit.o.mtl.rf,
-    rgb[1] + (rgb[1] - rgb2[1]) * hit.o.mtl.rf,
-    rgb[2] + (rgb[2] - rgb2[2]) * hit.o.mtl.rf
+    rgb[0] + (rgb2[0] - rgb[0]) * hit.o.mtl.rf,
+    rgb[1] + (rgb2[1] - rgb[1]) * hit.o.mtl.rf,
+    rgb[2] + (rgb2[2] - rgb[2]) * hit.o.mtl.rf
   ];
 }
 
