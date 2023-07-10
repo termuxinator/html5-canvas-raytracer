@@ -1,4 +1,17 @@
-(function(){document.body.onload=main;})();
+(function(){
+  var output = document.createElement('pre');
+  document.body.appendChild(output);
+  var oldLog = console.log;
+  console.log = function (...items) {
+    oldLog.apply(this,items);
+    items.forEach(function (item,i) {
+      items[i] = (typeof item === 'object') ? JSON.stringify(item,null,4) : item;
+    });
+    output.innerHTML += items.join(' ') + '<br />';
+  };
+  window.onerror = console.log;
+  document.body.onload = main;
+})();
 
 function main () {
   let canvas = document.getElementById('canvasID');
