@@ -18,7 +18,7 @@
 })();
 
 function main () {
-  let build = '235';
+  let build = '236';
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -40,10 +40,10 @@ function main () {
   let objects = [
     createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,1.0,1000.0, 0.9)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.5,50.0, 0.1)),
-    createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.5,100.0, 0.1)),
+    createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.5,50.0, 0.1)),
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.5,50.0, 0.1)),
     createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.5,2.0, 0.0)),
-createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,10.0, 0.3)),
+createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,50.0, 0.3)),
   //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0, 0.0))
   ];
   // override material sampler with sphere checker mapper
