@@ -41,18 +41,12 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let mtl0 = createMaterial([0.5,0.5,0.5],1.0,0.0,0.0,0.8);
-  let mtl1 = createMaterial([1.0,0.0,0.0],1.0,0.0,0.0,0.2);
-  let mtl2 = createMaterial([0.0,1.0,0.0],1.0,0.0,0.0,0.2);
-  let mtl3 = createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.2);
-  let mtl4 = createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.0);
-
   let objects = [
-    createSphere([0.0,2.5,-2.0],0.5,mtl0),
-    createSphere([-1.5,1.0,0.0],1.0,mtl1),
-    createSphere([ 1.5,1.0,0.0],1.0,mtl2),
-    createSphere([0.0,1.0,-2.0],1.0,mtl3),
-    createSphere([ 0.0,0.5,2.0],0.5,mtl4)
+    createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.8)),
+    createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.0,0.0,0.2)),
+    createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.0,0.0,0.2)),
+    createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.2)),
+    createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.0))
   ];
 
   redraw();
