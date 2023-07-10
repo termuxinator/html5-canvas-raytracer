@@ -111,12 +111,13 @@ function intersectWorld (rec,objs,org,dir) {
 
   rgb = hit.m.sampler(hit);
 
+  let diffuse_intensity = 0;
   if (hit.m.di > 0) {
     let light = [5.0,5.0,5.0];
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
     let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
     if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-    let diffuse_intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
+    diffuse_intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
     if (diffuse_intensity < 0) diffuse_intensity = 0;
     if (diffuse_intensity > 0) {
       let i = 0;
@@ -144,10 +145,10 @@ function intersectWorld (rec,objs,org,dir) {
       }
       else diffuse_intensity = diffuse_intensity * hit.m.di * 0.5;
     }
-    rgb[0] *= diffuse_intensity;
-    rgb[1] *= diffuse_intensity;
-    rgb[2] *= diffuse_intensity;
   }
+  rgb[0] *= diffuse_intensity;
+  rgb[1] *= diffuse_intensity;
+  rgb[2] *= diffuse_intensity;
 
   if (hit.m.rf == 0.0) return rgb;
 
