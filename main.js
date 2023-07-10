@@ -47,7 +47,13 @@ function main () {
   //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0))
   ];
 
-  objects[5].mtl.sampler = sampler_sphereCheckerMap;
+  // override material sampler with sphere checker mapper
+  objects[5].mtl.sampler = function (hit) {
+    let u = Math.atan2(hit.n[0],hit.n[1]) / (Math.PI*2) + 1.0;
+    let v = Math.acos(hit.n[2]) / Math.PI + 0.5;
+    let c = ((u*8)&1) ^ ((v*4)&1);
+    return [c,c,c];
+  };
 
   redraw();
 
@@ -164,13 +170,6 @@ function createMaterial (rgb,di,si,sf,rf) {
     rf: rf,
     sampler: function (hit) {return hit.m.rgb.slice();}
   };
-}
-
-function sampler_sphereCheckerMap (hit) {
-  let u = Math.atan2(hit.n[0],hit.n[2]) / (Math.PI*2) + 1.0;
-  let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
-  let c = ((u*8)&1) ^ ((v*4)&1);
-  return [c,c,c];
 }
 
 function createSphere (o,r,m) {
