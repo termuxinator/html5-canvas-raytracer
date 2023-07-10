@@ -162,8 +162,9 @@ function createMaterial (rgb,di,si,sf,rf) {
     si: si,
     sf: sf,
     rf: rf,
-    sampler: function (hit) {return hit.m.rgb;}
+    sampler: sample_rgb
   };
+  function sample_rgb(hit) {return hit.m.rgb;}
 }
 
 function sampler_sphereCheckerMap (hit) {
