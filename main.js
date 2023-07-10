@@ -183,29 +183,13 @@ function createSphere (o,r,m) {
 }
 
 function intersectSphere (obj,org,dir) {
-  let t = Infinity;
-
   let L = [obj.origin[0]-org[0], obj.origin[1]-org[1], obj.origin[2]-org[2]];
-
   let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
-//if (tca <= 0) return t;
-
   let d2 = (L[0]*L[0] + L[1]*L[1] + L[2]*L[2]) - tca*tca;
-  if (d2 > obj.r2) return t;
-
+  if (d2 > obj.r2) return Infinity;
   let thc = Math.sqrt(obj.r2 - d2);
   let t0 = tca - thc;
   let t1 = tca + thc;
-/*
-  if (t0 > t1) {
-    if (t1 < 0) t = t0;
-    else t = t1;
-  } else {
-    if (t0 < 0) t = t1;
-    else t = t0;
-  }
-  return t <= 0 ? Infinity : t;
-*/
   if (t0 > 0.001) return t0;
   if (t1 > 0.001) return t1;
   return Infinity;
@@ -215,19 +199,14 @@ function intersectSphereEx (obj,org,dir) {
   let hit = createIntersect();
   hit.t = intersectSphere(obj,org,dir);
   if (hit.t == Infinity) return hit;
-
   hit.p[0] = org[0] + dir[0] * hit.t;
   hit.p[1] = org[1] + dir[1] * hit.t;
   hit.p[2] = org[2] + dir[2] * hit.t;
-
   hit.n[0] = hit.p[0] - obj.origin[0];
   hit.n[1] = hit.p[1] - obj.origin[1];
   hit.n[2] = hit.p[2] - obj.origin[2];
-
   let nl = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
   if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
-
   hit.m = obj.mtl;
-
   return hit;
 }
