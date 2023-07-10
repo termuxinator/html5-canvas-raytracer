@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '248';
+let build = '249';
 
 (function() {
 /*
@@ -171,9 +171,9 @@ function intersectWorld (rec,objs,org,dir) {
   ];
 */
   return [
-    Math.min(1, (rgb[0] + ref[0]) / 2),
-    Math.min(1, (rgb[1] + ref[1]) / 2),
-    Math.min(1, (rgb[2] + ref[2]) / 2),
+    Math.min(1, rgb[0] + ref[0] * hit.m.rf),
+    Math.min(1, rgb[1] + ref[1] * hit.m.rf),
+    Math.min(1, rgb[2] + ref[2] * hit.m.rf),
   ];
 }
 
