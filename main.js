@@ -91,7 +91,7 @@ function intersectWorld (objs,org,dir) {
   if (hit.o == undefined) return rgb;
 
   let intensity = lightPoint(objs,hit.p,hit.n);
-  intensity *= hit.o.mtl.di;
+  intensity += hit.o.mtl.di;
   rgb[0] = hit.o.mtl.rgb[0] * intensity;
   rgb[1] = hit.o.mtl.rgb[1] * intensity;
   rgb[2] = hit.o.mtl.rgb[2] * intensity;
@@ -112,7 +112,7 @@ function intersectWorld (objs,org,dir) {
 
   let rgb2 = [];
   let intensity2 = lightPoint(objs,ref.p,ref.n);
-  intensity2 *= ref.o.mtl.di;
+  intensity2 += ref.o.mtl.di;
   rgb2[0] = ref.o.mtl.rgb[0] * intensity2;
   rgb2[1] = ref.o.mtl.rgb[1] * intensity2;
   rgb2[2] = ref.o.mtl.rgb[2] * intensity2;
