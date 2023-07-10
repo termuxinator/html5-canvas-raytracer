@@ -123,7 +123,7 @@ function intersectWorld (rec,objs,org,dir) {
       for ( ; i<objs.length; i++) {
         let o = objs[i];
         let t = o.intersect(o,hit.p,lv);
-        if (t < ll) {diffuse_intensity*=0.5; break;} // shadow
+        if (t < ll) break; // in shadow
       }
       if (i == objs.length) {
         let slv = [-lv[0],-lv[1],-lv[2]];
@@ -142,7 +142,7 @@ function intersectWorld (rec,objs,org,dir) {
         let specular_intensity = Math.pow(specular_dot,hit.m.sf);
         diffuse_intensity = diffuse_intensity * hit.m.di + (specular_intensity - diffuse_intensity) * hit.m.si;
       }
-      else diffuse_intensity *= hit.m.di;
+      else diffuse_intensity = 0.5 * hit.m.di;
     }
     rgb[0] *= diffuse_intensity;
     rgb[1] *= diffuse_intensity;
