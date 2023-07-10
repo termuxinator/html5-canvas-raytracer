@@ -169,7 +169,7 @@ if(1){
     rgb[0] + (ref[0] - rgb[0]) * hit.m.rf,
     rgb[1] + (ref[1] - rgb[1]) * hit.m.rf,
     rgb[2] + (ref[2] - rgb[2]) * hit.m.rf
-  ]
+  ];
 }else{
   return [
     Math.min(1, rgb[0] + ref[0] * hit.m.rf),
