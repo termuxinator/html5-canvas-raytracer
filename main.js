@@ -100,8 +100,8 @@ function createIntersect () {
     t: Infinity,
     p: [0,0,0],
     n: [0,0,0],
-    c: [0.4,0.5,0.6], // shader writes this
-    m: createMaterial([0.0,0.0,0.0],0.0,0.0,0.0,0.0)
+    c: [0.0,0.0,0.0], // shader writes this
+    m: createMaterial([0.4,0.5,0.6],1.0,0.0,0.0,0.0)
   };
 }
 
