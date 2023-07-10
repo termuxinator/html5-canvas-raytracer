@@ -37,7 +37,7 @@ function main () {
 
   let objects = [
     createSphere([1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.5,50.0,0.8)),
-    createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.5,0.5,0.5],0.8,0.1,500.0,0.8)),
+    createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.0,0.0,0.0],0.5,0.5,500.0,0.8)),
     createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.8,0.5,50.0,0.2)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.3,50.0,0.1)),
     createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.3,50.0,0.1)),
