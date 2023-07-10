@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '281';
+let build = '282';
 
 (function() {
 /*
@@ -40,7 +40,7 @@ function main () {
 
   let objects = [
     createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.5,0.5,0.5],0.8,1.0,50.0,0.8)),
-    createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],1.0,1.0,50.0,0.0)),
+    createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],1.0,1.0,50.0,0.1)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.3,50.0,0.1)),
     createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.3,50.0,0.1)),
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.3,50.0,0.1)),
