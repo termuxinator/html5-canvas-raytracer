@@ -18,7 +18,7 @@
 })();
 
 function main () {
-  let build = '232';
+  let build = '233';
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
   canvas.height = document.body.clientHeight;
@@ -143,7 +143,7 @@ function intersectWorld (rec,objs,org,dir) {
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
         let specular_intensity = Math.pow(specular_dot,hit.m.sf);
         diffuse_intensity = (specular_intensity*hit.m.si + diffuse_intensity*hit.m.di) / 2;
-      } else diffuse_intensity = 0; // in shadow
+      } else diffuse_intensity *= 0.5; // in shadow
     }
   }
   rgb[0] *= diffuse_intensity;
