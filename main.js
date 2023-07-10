@@ -81,9 +81,9 @@ function main () {
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
     
         let hit = intersectWorld(objects,origin,ray);
-        colorbuf.data[ipixel++] = 255 * hit.c[0];
-        colorbuf.data[ipixel++] = 255 * hit.c[1];
-        colorbuf.data[ipixel++] = 255 * hit.c[2];
+        colorbuf.data[ipixel++] = (255 * hit.c[0]) & 255;
+        colorbuf.data[ipixel++] = (255 * hit.c[1]) & 255;
+        colorbuf.data[ipixel++] = (255 * hit.c[2]) & 255;
         colorbuf.data[ipixel++] = 255;
       }
     }
