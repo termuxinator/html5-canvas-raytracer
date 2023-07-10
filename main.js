@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '275';
+let build = '276';
 
 (function() {
 /*
@@ -114,7 +114,7 @@ function intersectWorld (rec,objs,org,dir) {
   rgb = hit.m.sampler(hit);
 
   let diffuse_intensity = 0;
-//if (hit.m.di > 0) {
+  if (hit.m.di > 0) {
     let light = [5.0,5.0,5.0];
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
     let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
@@ -143,10 +143,10 @@ function intersectWorld (rec,objs,org,dir) {
         //
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
         let specular_intensity = Math.pow(specular_dot,hit.m.sf);
-        diffuse_intensity = (diffuse_intensity*hit.m.di + specular_intensity*hit.m.si) * 0.5;
+        diffuse_intensity = Math.max(1, diffuse_intensity*hit.m.di + specular_intensity*hit.m.si);
       } else diffuse_intensity *= /*hit.m.di **/ 0.1; // in shadow
     }
-//}
+  }
   rgb[0] *= diffuse_intensity;
   rgb[1] *= diffuse_intensity;
   rgb[2] *= diffuse_intensity;
