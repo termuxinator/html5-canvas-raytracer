@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '277';
+let build = '278';
 
 (function() {
 /*
@@ -143,7 +143,7 @@ function intersectWorld (rec,objs,org,dir) {
         //
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
         let specular_intensity = Math.pow(specular_dot,hit.m.sf);
-        diffuse_intensity = (diffuse_intensity*hit.m.di + specular_intensity*hit.m.si) * hit.m.si * hit.m.di;
+        diffuse_intensity = (diffuse_intensity*hit.m.di + specular_intensity*hit.m.si) / 2;
       } else diffuse_intensity *= /*hit.m.di **/ 0.1; // in shadow
     }
   }
@@ -163,19 +163,18 @@ function intersectWorld (rec,objs,org,dir) {
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
   let ref = intersectWorld(rec-1,objs,hit.p,rv);
-
+/*
   return [
     rgb[0] + (ref[0] - rgb[0]) * hit.m.rf,
     rgb[1] + (ref[1] - rgb[1]) * hit.m.rf,
     rgb[2] + (ref[2] - rgb[2]) * hit.m.rf
   ];
-/*
+*/
   return [
     Math.min(1, rgb[0] + ref[0] * hit.m.rf),
     Math.min(1, rgb[1] + ref[1] * hit.m.rf),
     Math.min(1, rgb[2] + ref[2] * hit.m.rf),
   ];
-*/
 }
 
 function createMaterial (rgb,di,si,sf,rf) {
