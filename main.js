@@ -80,10 +80,10 @@ function main () {
         let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
     
-        let rgb = intersectWorld(objects,origin,ray);
-        colorbuf.data[ipixel++] = (255 * rgb[0]) & 255;
-        colorbuf.data[ipixel++] = (255 * rgb[1]) & 255;
-        colorbuf.data[ipixel++] = (255 * rgb[2]) & 255;
+        let hit = intersectWorld(objects,origin,ray);
+        colorbuf.data[ipixel++] = (255 * hit.c[0]) & 255;
+        colorbuf.data[ipixel++] = (255 * hit.c[1]) & 255;
+        colorbuf.data[ipixel++] = (255 * hit.c[2]) & 255;
         colorbuf.data[ipixel++] = 255;
       }
     }
@@ -99,7 +99,7 @@ function main () {
   }
 }
 
-function createInstance() {
+function createIntersect () {
   return {
     o: undefined,
     t: Infinity,
@@ -112,9 +112,9 @@ function createInstance() {
 function intersectWorld (objs,org,dir) {
 
   let hit = intersectObject(objs,org,dir);
-  if (hit.o == undefined) return hit.c;
+  if (hit.o == undefined) return hit;
 
-  if (hit.o.mtl.rf == 0.0) return hit.c;
+  if (hit.o.mtl.rf == 0.0) return hit;
 
   // reflect
 
@@ -122,23 +122,23 @@ function intersectWorld (objs,org,dir) {
   let rv = [
     dir[0] + hit.n[0] * rt,
     dir[1] + hit.n[1] * rt,
-    dir[2] + hit.n[2] * rt,
+    dir[2] + hit.n[2] * rt
   ];
   let rl = Math.sqrt(rv[0]*rv[0] + rv[1]*rv[1] + rv[2]*rv[2]);
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
   let ref = intersectObject(objs,hit.p,rv);
-  if (ref.o == undefined) return hit.c;
+  if (ref.o == undefined) return hit;
 
   hit.c[0] += (ref.c[0] - hit.c[0]) * hit.o.mtl.rf;
   hit.c[1] += (ref.c[1] - hit.c[1]) * hit.o.mtl.rf;
   hit.c[2] += (ref.c[2] - hit.c[2]) * hit.o.mtl.rf;
 
-  return hit.c;
+  return hit;
 }
 
 function intersectObject (objs,org,dir) {
-  let out = createInstance();
+  let out = createIntersect();
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let hit = o.intersectEx(o,org,dir);
@@ -227,7 +227,7 @@ function intersectSphere (obj,org,dir) {
 }
 
 function intersectSphereEx (obj,org,dir) {
-  let hit = createInstance();
+  let hit = createIntersect();
 
   let t = intersectSphere(obj,org,dir);
   if (t == Infinity) return hit;
