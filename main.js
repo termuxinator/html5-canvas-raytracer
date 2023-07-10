@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '294';
+let build = '296';
 
 (function() {
   var output = document.createElement('pre');
@@ -173,9 +173,7 @@ let specular_intensity = 0;
   let rl = Math.sqrt(rv[0]*rv[0] + rv[1]*rv[1] + rv[2]*rv[2]);
   if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
 
-  let ref = intersectWorld(rec-1,objs,hit.p,rv);
-
-  reflect_color = ref.m.sampler(ref);
+  let reflect_color = intersectWorld(rec-1,objs,hit.p,rv);
   reflect_color[0] *= hit.m.rf;
   reflect_color[1] *= hit.m.rf;
   reflect_color[2] *= hit.m.rf;
