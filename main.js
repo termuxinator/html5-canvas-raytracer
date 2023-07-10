@@ -1,6 +1,7 @@
 'use strict';
 
-(function(){
+(function() {
+/*
   var output = document.createElement('pre');
   document.body.appendChild(output);
   var oldLog = console.log;
@@ -12,13 +13,14 @@
     output.innerHTML += items.join(' ') + '<br />';
   };
   window.onerror = console.log;
+*/
   document.body.onload = main;
 })();
 
 function main () {
   let canvas = document.getElementById('canvasID');
-  canvas.width = 512;
-  canvas.height = 512;
+  canvas.width = 640;
+  canvas.height = 480;
   canvas.style.borderStyle = 'solid';
   canvas.style.borderWidth = '1px';
   canvas.style.borderColor = '#ff0000 #00ff00 #0000ff #ffffff';
@@ -99,7 +101,7 @@ function createIntersect () {
     t: Infinity,
     p: [0,0,0],
     n: [0,0,0],
-    c: [0.5,0.5,0.5]
+    c: [0.4,0.5,0.6] // skybox color
   };
 }
 
@@ -108,7 +110,8 @@ function intersectWorld (rec,objs,org,dir) {
   let hit = intersectObject(objs,org,dir);
   if (hit.o == undefined) return hit.c;
 
-//if (hit.o.mtl.rf == 0.0) return hit.c;
+  if (hit.o.mtl == undefined) return hit.c;
+  if (hit.o.mtl.rf == 0.0) return hit.c;
 
   if (rec == 0) return hit.c;
 
