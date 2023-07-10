@@ -51,7 +51,7 @@ function main () {
   objects[5].mtl.sampler = function (hit) {
     let u = Math.atan2(hit.n[0],hit.n[1]) / (Math.PI*2) + 1.0;
     let v = Math.acos(hit.n[2]) / Math.PI + 0.5;
-    let c = ((u*5000*2)&1) ^ ((v*2500*2)&1);
+    let c = ((u*5000*4)&1) ^ ((v*2500*4)&1);
     return [c,c,c];
   };
 
