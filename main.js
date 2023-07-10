@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '296';
+let build = '298';
 
 (function() {
   var output = document.createElement('pre');
@@ -106,7 +106,6 @@ if (rec == 0) return rgb;
 
 let diffuse_color = [];
 let specular_color = [];
-let reflect_color = [];
 
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
