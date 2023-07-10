@@ -116,8 +116,8 @@ function intersectWorld (objs,org,dir) {
   if (ref.o == undefined) return hit;
 
   hit.c[0] += (ref.c[0] - hit.c[0]) * hit.o.mtl.rf;
-  hit.c[1] += (ref.c[1] - hit.c[1]) * hit.o.mtl.rf,
-  hit.c[2] += (ref.c[2] - hit.c[2]) * hit.o.mtl.rf
+  hit.c[1] += (ref.c[1] - hit.c[1]) * hit.o.mtl.rf;
+  hit.c[2] += (ref.c[2] - hit.c[2]) * hit.o.mtl.rf;
 
   return hit;
 }
