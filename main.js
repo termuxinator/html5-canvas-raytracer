@@ -118,7 +118,7 @@ function intersectWorld (rec,objs,org,dir) {
   rgb[2] = hit.m.rgb[2];
 
   if (hit.m.di > 0) {
-    let light = [10.0,10.0,10.0];
+    let light = [5.0,5.0,5.0];
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
     let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
     if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
