@@ -142,7 +142,7 @@ function intersectWorld (rec,objs,org,dir) {
         //
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
         let specular_intensity = Math.pow(specular_dot,hit.m.sf);
-        diffuse_intensity = diffuse_intensity * hit.m.di * (diffuse_intensity - specular_intensity) * hit.m.si;
+        diffuse_intensity = 1 - diffuse_intensity * hit.m.di * (diffuse_intensity - specular_intensity) * hit.m.si;
       } else diffuse_intensity *= hit.m.di;
     }
   }
