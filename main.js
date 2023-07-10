@@ -49,7 +49,8 @@ function main () {
     createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.0,0.0,0.5)),
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.5)),
     createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.0)),
-    createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.8))
+    createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.8)),
+    createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],1.0,0.0,0.0,0.0))
   ];
 
   redraw();
