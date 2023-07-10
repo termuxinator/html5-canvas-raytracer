@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '274';
+let build = '275';
 
 (function() {
 /*
@@ -39,7 +39,7 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.5,0.5,0.5],0.8,0.9,50.0,0.7)),
+    createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.5,0.5,0.5],0.8,1.0,50.0,0.7)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.8,50.0,0.1)),
     createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.8,50.0,0.1)),
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.8,50.0,0.1)),
