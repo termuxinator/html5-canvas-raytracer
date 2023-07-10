@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '298';
+let build = '300';
 
 (function() {
   var output = document.createElement('pre');
@@ -36,7 +36,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2));
 
   let objects = [
-    createSphere([1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.1,1.0,50.0,0.8)),
+    createSphere([1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.5,50.0,0.8)),
     createSphere([0.0,2.5,-2.0],0.5,createMaterial([0.5,0.5,0.5],0.8,1.0,50.0,0.8)),
     createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.8,1.0,50.0,0.2)),
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.3,50.0,0.1)),
@@ -149,7 +149,7 @@ let specular_intensity = 0;
         //
         let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
         specular_intensity = Math.pow(specular_dot,hit.m.sf);
-      } else diffuse_intensity *= 0.1; // in shadow
+      } else diffuse_intensity *= 0.5; // in shadow
     }
   }
 
