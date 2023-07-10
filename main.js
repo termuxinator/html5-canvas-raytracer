@@ -41,7 +41,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2)); // horizontal FOV
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
-  let mtl0 = createMaterial([0.0,0.0,0.0],1.0,0.0,0.0,1.0);
+  let mtl0 = createMaterial([0.1,0.1,0.1],1.0,0.0,0.0,1.0);
   let mtl1 = createMaterial([1.0,0.0,0.0],1.0,0.0,0.0,0.2);
   let mtl2 = createMaterial([0.0,1.0,0.0],1.0,0.0,0.0,0.2);
   let mtl3 = createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.2);
@@ -143,7 +143,7 @@ function intersectObject (objs,org,dir) {
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let hit = o.intersectEx(o,org,dir);
-    if (hit.t < out.t) for (const key in hit) out[key] = hit[key];
+    if (hit.t < out.t) out = hit;
   }
   if (out.o != undefined) lightPoint(objs,out);
   return out;
