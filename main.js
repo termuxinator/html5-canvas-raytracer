@@ -30,7 +30,6 @@ function main () {
   let axisX = [-1,0,0];
   let axisY = [0,1,0];
   let axisZ = [0,0,-1];
-
   let projA = 60 * Math.PI / 180;
   let projW = canvas.width / 2;
   let projH = canvas.height / 2;
@@ -38,15 +37,14 @@ function main () {
 //let projD = canvas.height / (2*Math.tan(projA/2)); // vertical FOV
 
   let objects = [
-    createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.9)),
-    createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.0,0.0,0.1)),
-    createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.0,0.0,0.1)),
-    createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.0,0.0,0.1)),
-    createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.0)),
-    createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.0,0.0,0.3)),
+    createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.5,0.5,0.9)),
+    createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],1.0,0.5,0.5,0.1)),
+    createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],1.0,0.5,1.0,0.1)),
+    createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],1.0,0.5,0.5,0.1)),
+    createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.5,0.5,0.0)),
+    createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,0.5,0.3)),
   //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0))
   ];
-
   // override material sampler with sphere checker mapper
   objects[5].mtl.sampler = function (hit) {
     let u = Math.atan2(hit.n[0],hit.n[1]) / (Math.PI*2) + 1.0;
@@ -65,17 +63,14 @@ function main () {
         let distX = x - projW + 0.5;
         let distY = projH - y - 0.5;
         let distZ = projD;
-    
         let target = [
           origin[0] + axisX[0]*distX + axisY[0]*distX + axisZ[0]*distX,
           origin[1] + axisX[1]*distY + axisY[1]*distY + axisZ[1]*distY,
           origin[2] + axisX[2]*distZ + axisY[2]*distZ + axisZ[2]*distZ
         ];
-
         let ray = [target[0]-origin[0], target[1]-origin[1], target[2]-origin[2]];
         let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
-    
         let rgb = intersectWorld(8,objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
         colorbuf.data[ipixel++] = 255 * rgb[1];
@@ -84,7 +79,6 @@ function main () {
       }
     }
     context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
-
     let fps = 1000 / (Date.now() - timestamp);
     let str = 'fps ' + (fps | 0);
     context.font = '16px monospace';
@@ -122,23 +116,37 @@ function intersectWorld (rec,objs,org,dir) {
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
     let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
     if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-    let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
-    if (intensity < 0) intensity = 0;
-    if (intensity > 0) {
+    let diffuse_intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
+    if (diffuse_intensity < 0) diffuse_intensity = 0;
+    if (diffuse_intensity > 0) {
       let i = 0;
       for ( ; i<objs.length; i++) {
         let o = objs[i];
         let t = o.intersect(o,hit.p,lv);
-        if (t < ll) {intensity*=0.5; break;} // shadow
+        if (t < ll) {diffuse_intensity*=0.5; break;} // shadow
       }
-      intensity *= hit.m.di;
+      diffuse_intensity *= hit.m.di;
       if (i == objs.length) {
-        // TODO specular
+        let slv = [-lv[0],-lv[1],-lv[2]];
+        // reflect
+        let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
+        let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
+        // normalize
+        let srl = Math.sqrt(srv[0]*srv[0] + srv[1]*srv[1] + srv[2]*srv[2]);
+        if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
+        // invert
+        srv[0] *= -1;
+        srv[1] *= -1;
+        srv[2] *= -1;
+        //
+        let specular_dot = Math.max(0, srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2]);
+        let specular_intensity = hit.m.si * Math.pow(specular_dot,hit.m.sf);
+        diffuse_intensity = Math.min(1,diffuse_intensity+specular_intensity);
       }
     }
-    rgb[0] *= intensity;
-    rgb[1] *= intensity;
-    rgb[2] *= intensity;
+    rgb[0] *= diffuse_intensity;
+    rgb[1] *= diffuse_intensity;
+    rgb[2] *= diffuse_intensity;
   }
 
   if (hit.m.rf == 0.0) return rgb;
