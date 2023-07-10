@@ -186,6 +186,7 @@ let specular_intensity = 0;
     Math.min(1, diffuse_color[2] + specular_color[2] + reflect_color[2])
   ];
 
+/*
 if(0){
   return [
     rgb[0] + (ref[0] - rgb[0]) * hit.m.rf,
@@ -199,6 +200,7 @@ if(0){
     Math.min(1, rgb[2] + ref[2] * hit.m.rf),
   ];
 }
+*/
 }
 
 function createMaterial (rgb,di,si,sf,rf) {
