@@ -107,7 +107,12 @@ function createIntersect () {
 function intersectWorld (rec,objs,org,dir) {
   let rgb = [0.4,0.5,0.6];
 
-  let hit = intersectObject(objs,org,dir);
+  let hit = createIntersect();
+  for (let i=0; i<objs.length; i++) {
+    let o = objs[i];
+    let check = o.intersectEx(o,org,dir);
+    if (check.t < hit.t) hit = check;
+  }
   if (hit.t == Infinity) return rgb;
 
   let intensity = hit.m.di * lightPoint(objs,hit.p,hit.n);
@@ -137,16 +142,6 @@ function intersectWorld (rec,objs,org,dir) {
     rgb[1] + (ref[1] - rgb[1]) * hit.m.rf,
     rgb[2] + (ref[2] - rgb[2]) * hit.m.rf
   ];
-}
-
-function intersectObject (objs,org,dir) {
-  let out = createIntersect();
-  for (let i=0; i<objs.length; i++) {
-    let o = objs[i];
-    let hit = o.intersectEx(o,org,dir);
-    if (hit.t < out.t) out = hit;
-  }
-  return out;
 }
 
 function lightPoint (objs,p,n) {
