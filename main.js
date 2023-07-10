@@ -129,13 +129,11 @@ function intersectObject (objs,org,dir) {
     let hit = o.intersectEx(o,org,dir);
     if (hit.t < out.t) out = hit;
   }
-  if (out.o != undefined) out.c = lightPoint(objs,out);
+  if (out.o != undefined) lightPoint(objs,out);
   return out;
 }
 
 function lightPoint (objs,hit) {
-  let out = [0.0,0.0,0.0];
-
   let light = [10.0,10.0,10.0];
 
   let lv = [
@@ -147,7 +145,7 @@ function lightPoint (objs,hit) {
   if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
 
   let intensity = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
-  if (intensity <= 0) return out;
+  if (intensity <= 0) {hit.c=[0,0,0]; return;}
   let i = 0;
   for ( ; i<objs.length; i++) {
     let o = objs[i];
@@ -158,10 +156,9 @@ function lightPoint (objs,hit) {
   if (i == objs.length) {
     // TODO specular
   }
-  out[0] = hit.o.mtl.rgb[0] * intensity;
-  out[1] = hit.o.mtl.rgb[1] * intensity;
-  out[2] = hit.o.mtl.rgb[2] * intensity;
-  return out;
+  hit.c[0] = hit.o.mtl.rgb[0] * intensity;
+  hit.c[1] = hit.o.mtl.rgb[1] * intensity;
+  hit.c[2] = hit.o.mtl.rgb[2] * intensity;
 }
 
 function createMaterial (rgb,di,si,sf,rf) {
