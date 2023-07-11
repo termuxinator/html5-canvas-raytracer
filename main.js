@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '345';
+let build = '346';
 
 (function() {
   let output = document.createElement('pre');
@@ -36,7 +36,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2));
 
   let objects = [
-createSphere([ 1.5,0.0,2.0],0.5,createMaterial([1.0,1.0,1.0],[0.5,0.3,0.2,0.8],50,1.5)),  // glass
+createSphere([ 1.5,0.0,2.0],0.5,createMaterial([1.0,1.0,1.0],[0.5,0.8,0.2,0.8],50,1.5)),  // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.3,0.8,0.0],50,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
@@ -94,12 +94,12 @@ function createIntersect () {
     t: Infinity,
     p: [0,0,0],
     n: [0,0,0],
-    m: createMaterial([0,0,0],0,0,0,0)
+    m: createMaterial([0,0,0],[0,0,0,0],0,1)
   };
 }
 
 function intersectWorld (rec,objs,org,dir) {
-  let rgb = [0.4,0.6,0.8];
+  let rgb = [0,0,0]; //[0.4,0.6,0.8];
   if (rec == 0) return rgb;
 
   let hit = createIntersect();
@@ -139,10 +139,8 @@ function intersectWorld (rec,objs,org,dir) {
     let specular_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
     if (specular_dot > 0) specular_intensity += Math.pow(specular_dot,hit.m.specular_exponent);
   }
-
   diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
   let diffuse_color = [rgb[0]*diffuse_intensity, rgb[1]*diffuse_intensity, rgb[2]*diffuse_intensity];
-
   specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[1];
   let specular_color = [rgb[0]*specular_intensity, rgb[1]*specular_intensity, rgb[2]*specular_intensity];
 
@@ -160,21 +158,16 @@ function intersectWorld (rec,objs,org,dir) {
 
   let refract_color = [0,0,0];
   if (hit.m.albedo[3] > 1) { // refractive
-    let eta_t, eta_i; // snells law
-    let dot_vn = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
-    let cosi = -Math.max(-1, Math.min(1, dot_vn));
+    let eta; // snells law
+    let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
+    let cosi = -Math.max(-1, Math.min(1, dot));
     if (cosi < 0) { // from inside toward outside
       hit.n[0] *= -1;
       hit.n[1] *= -1;
       hit.n[2] *= -1;
       cosi *= -1;
-      eta_t = 1;
-      eta_i = hit.m.refract_index;
-    } else {
-      eta_t = hit.m.refract_index;
-      eta_i = 1;
-    }
-    let eta = eta_i / eta_t;
+      eta = hit.m.refract_index;
+    } else eta = 1 / hit.m.refract_index;
     let k = 1 - eta*eta * (1 - cosi*cosi);
     if (k > 0) { // validate vector
       let q = eta*cosi - Math.sqrt(k);
@@ -193,9 +186,9 @@ function intersectWorld (rec,objs,org,dir) {
   }
 
   return [
-    Math.min(1.0, diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
-    Math.min(1.0, diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1]),
-    Math.min(1.0, diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2])
+    Math.min(1, diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
+    Math.min(1, diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1]),
+    Math.min(1, diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2])
   ];
 }
 
