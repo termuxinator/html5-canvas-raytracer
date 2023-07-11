@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '341';
+let build = '342';
 
 (function() {
   let output = document.createElement('pre');
@@ -36,15 +36,15 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2));
 
   let objects = [
-    createSphere([1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.3,50.0,0.8)),   // bubble
-    createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.8,500.0,0.6)), // mirror
-    createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.8,0.2,50.0,0.1)),  // metal
-    createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],0.8,0.3,50.0,0.5)),  // orn
-    createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],0.8,0.3,50.0,0.5)),   // orn
-    createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],0.8,0.3,50.0,0.5)),  // orn
-    createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.1,10.0,0.0)),   // matte
-    createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,50.0,0.4)), // world
-  //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0)) // skybox
+createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.3,0.8,0.0],50,1.0)),  // bubble
+createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
+createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
+createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // orn
+createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // orn
+createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],50,1.0)),  // orn
+createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
+createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.4,0.0],50,1.0)), // world
+//createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],[0.0,0.0,0.0,0.0],0,1.0)) // skybox
   ];
   // override material sampler with sphere checker mapper
   objects[objects.length-1].mtl.sampler = function (hit) {
@@ -158,7 +158,37 @@ function intersectWorld (rec,objs,org,dir) {
   }
 
   let refract_color = [0,0,0];
-  if (hit.m.albedo[3] > 1.0) { // refractive
+  if (hit.m.albedo[3] > 1) { // refractive
+    let eta_t, eta_i; // snells law
+    let dot_vn = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
+    let cosi = -Math.max(-1, Math.min(1, dot_vn));
+    if (cosi < 0) { // from inside toward outside
+      hit.n[0] *= -1;
+      hit.n[1] *= -1;
+      hit.n[2] *= -1;
+      cosi *= -1;
+      eta_t = 1;
+      eta_i = hit.m.refract_index;
+    } else {
+      eta_t = hit.m.refract_index;
+      eta_i = 1;
+    }
+    let eta = eta_i / eta_t;
+    let k = 1 - eta*eta * (1 - cosi*cosi);
+    if (k > 0) { // validate vector
+      let q = eta*cosi - Math.sqrt(k);
+      let v = [
+        dir[0] * eta + hit.n[0] * q,
+        dir[1] * eta + hit.n[1] * q,
+        dir[2] * eta + hit.n[2] * q
+      ];
+      let l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+      if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
+      refract_color = intersectWorld(rec-1,objs,hit.p,v); // recurse
+      refract_color[0] *= hit.m.albedo[3];
+      refract_color[1] *= hit.m.albedo[3];
+      refract_color[2] *= hit.m.albedo[3];
+    }
   }
 
   return [
@@ -168,13 +198,17 @@ function intersectWorld (rec,objs,org,dir) {
   ];
 }
 
-function createMaterial (c,di,si,se,rf,xf=1) {
+function createMaterial (color,albedo,se,ri) {
   return {
-    diffuse_color: c,
-    albedo: [di,si,rf,xf],
+    diffuse_color: color,
+    albedo: albedo,
     specular_exponent: se,
-    sampler: function (hit) {return hit.m.diffuse_color.slice();}
+    refract_index: ri,
+    sampler: defaultSampler
   };
+  function defaultSampler (hit) {
+    return hit.m.diffuse_color.slice();
+  }
 }
 
 function createSphere (o,r,m) {
