@@ -1,11 +1,11 @@
 'use strict';
 
-let build = '338';
+let build = '339';
 
 (function() {
-  var output = document.createElement('pre');
+  let output = document.createElement('pre');
   document.body.appendChild(output);
-  var oldLog = console.log;
+  let oldLog = console.log;
   console.log = function (...items) {
     oldLog.apply(this,items);
     items.forEach(function (item,i) {
@@ -61,13 +61,11 @@ function main () {
     let ipixel = 0;
     for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
-        let distX = x - projW + 0.5;
-        let distY = projH - y - 0.5;
-        let distZ = projD;
+        let dist = [x-projW+0.5, projH-y-0.5, projD];
         let target = [
-          origin[0] + axisX[0]*distX + axisY[0]*distX + axisZ[0]*distX,
-          origin[1] + axisX[1]*distY + axisY[1]*distY + axisZ[1]*distY,
-          origin[2] + axisX[2]*distZ + axisY[2]*distZ + axisZ[2]*distZ
+          origin[0] + axisX[0]*dist[0] + axisY[0]*dist[0] + axisZ[0]*dist[0],
+          origin[1] + axisX[1]*dist[1] + axisY[1]*dist[1] + axisZ[1]*dist[1],
+          origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
         ];
         let ray = [target[0]-origin[0], target[1]-origin[1], target[2]-origin[2]];
         let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
