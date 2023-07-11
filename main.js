@@ -115,7 +115,7 @@ function intersectWorld (rec,objs,org,dir) {
 
   let diffuse_intensity = 0;
   let specular_intensity = 0;
-  let lights = [[5.0,5.0,5.0],[0.0,5.0,0.0],[-5.0,5.0,0.0]];
+  let lights = [[5.0,5.0,5.0],[0.0,1.0,0.0],[-5.0,5.0,0.0]];
   for (let k=0; k<lights.length; k++) {
     let light = lights[k];
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
