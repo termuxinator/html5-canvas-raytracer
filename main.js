@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '379';
+let build = '380';
 
 (function() {
   let output = document.createElement('pre');
@@ -37,7 +37,7 @@ function main () {
 
   let objects = [
 createSphere([0.0,0.75,3.0],0.25,createMaterial([0.0,0.0,0.0],[0.0,0.8,0.2,0.8],10,1.5)), // glass
-createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.3,0.4],50,1.1)),  // bubble
+createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.8,0.0],50,1.1)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
 createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornament
