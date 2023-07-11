@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '347';
+let build = '348';
 
 (function() {
   let output = document.createElement('pre');
@@ -36,7 +36,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2));
 
   let objects = [
-createSphere([ 1.5,0.0,2.0],0.5,createMaterial([1.0,1.0,1.0],[0.5,0.8,0.2,0.8],50,1.5)),  // glass
+createSphere([ 1.5,0.0,2.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.2,0.8],50,1.5)),  // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.3,0.8,0.0],50,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
@@ -99,7 +99,7 @@ function createIntersect () {
 }
 
 function intersectWorld (rec,objs,org,dir) {
-  let rgb = [0,0,0]; //[0.4,0.6,0.8];
+  let rgb = [0.4,0.6,0.8]; // [0,0,0]
   if (rec == 0) return rgb;
 
   let hit = createIntersect();
