@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '350';
+let build = '352';
 
 (function() {
   let output = document.createElement('pre');
@@ -124,7 +124,7 @@ function intersectWorld (rec,objs,org,dir) {
   let refract_dir = [0,0,0];
   let refract_len = 0;
   if (hit.m.albedo[3] > 1) { // refractive
-    let eta = 1 / hir.m.refract_index; // snells law
+    let eta = 1 / hit.m.refract_index; // snells law
     let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
     let cosi = -Math.max(-1, Math.min(1, dot));
     if (cosi < 0) { // from inside toward outside
