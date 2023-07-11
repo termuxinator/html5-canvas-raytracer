@@ -29,7 +29,7 @@ function main () {
 
   let objects = [
 createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // world
-createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[1.0,0.0,0.0,0.0],0,1.0)), // skybox
+createSphere([0.0,0.0,0.0],5000,createMaterial([0.2,0.4,0.6],[1.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.1,0.8],10,1.5)), // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.1,0.3,0.1,0.1],50,1.25)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
@@ -47,12 +47,6 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     let t = (v * 2500 * 4) & 1;
     let c = [[1,1,0],[1,0,1]];
     return c[s^t];
-  };
-  // override skybox material sampler with night stars
-  objects[1].mtl.sampler = function (hit) {
-    let c = Math.random();
-    if (c >= 0.001) return [0,0,0];
-    c *= 1000; return [c,c,c];
   };
   // sort objects where most surface area come first
   objects.sort(function(a,b) {return(a.surface_area-b.surface_area);});
