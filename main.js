@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '363';
+let build = '364';
 
 (function() {
   let output = document.createElement('pre');
@@ -94,21 +94,19 @@ function createIntersect () {
     t: Infinity,
     p: [0,0,0],
     n: [0,0,0],
-    m: createMaterial([0,0,0],[0,0,0,0],0,1)
+    m: createMaterial([0.4,0.6,0.8],[0,0,0,0],0,1)
   };
 }
 
 function intersectWorld (rec,objs,org,dir) {
-  let rgb = [0.4,0.6,0.8]; // [0,0,0]
-  if (rec == 0) return rgb;
-
   let hit = createIntersect();
+  if (rec == 0) return hit.m.sampler(hit);
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let check = o.intersectEx(o,org,dir);
     if (check.t < hit.t) hit = check;
   }
-  if (hit.t == Infinity) return rgb;
+  if (hit.t == Infinity) return hit.m.sampler(hit);
 
   let reflect_dir = [0,0,0];
   let reflect_len = 0;
@@ -116,13 +114,12 @@ function intersectWorld (rec,objs,org,dir) {
   {
     let t = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
     let v = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
-    let l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-    if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
+    reflect_len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+    if (reflect_len != 0) {v[0]/=reflect_len; v[1]/=reflect_len; v[2]/=reflect_len;}
     reflect_dir = v;
-    reflect_len = l;
   }
 
-  let refract_dir = [1,0,0];
+  let refract_dir = [0,0,0];
   let refract_len = 0;
   //if (hit.m.albedo[3] > 1)
   {
@@ -145,22 +142,17 @@ function intersectWorld (rec,objs,org,dir) {
         dir[1] * eta + norm[1] * q,
         dir[2] * eta + norm[2] * q
       ];
-      let l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-      if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
+      refract_len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+      if (refract_len != 0) {v[0]/=refract_len; v[1]/=refract_len; v[2]/=refract_len;}
       refract_dir = v;
-      refract_len = l;
     }
   }
 
   let reflect_color = [0,0,0];
-  //if (reflect_len > 0)
-  reflect_color = intersectWorld(rec-1,objs,hit.p,reflect_dir);
+  if (reflect_len != 0) reflect_color = intersectWorld(rec-1,objs,hit.p,reflect_dir);
 
   let refract_color = [0,0,0];
-  //if (refract_len > 0)
-  refract_color = intersectWorld(rec-1,objs,hit.p,refract_dir);
-
-  rgb = hit.m.sampler(hit);
+  if (refract_len != 0) refract_color = intersectWorld(rec-1,objs,hit.p,refract_dir);
 
   let diffuse_intensity = 0;
   let specular_intensity = 0;
@@ -189,6 +181,8 @@ function intersectWorld (rec,objs,org,dir) {
     let specular_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
     if (specular_dot > 0) specular_intensity += Math.pow(specular_dot,hit.m.specular_exponent);
   }
+
+  let rgb = hit.m.sampler(hit);
 
   diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
   let diffuse_color = [rgb[0]*diffuse_intensity, rgb[1]*diffuse_intensity, rgb[2]*diffuse_intensity];
