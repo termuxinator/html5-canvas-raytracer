@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '387';
+let build = '388';
 
 (function() {
 /*
@@ -28,7 +28,7 @@ function main () {
   let colorbuf = context.createImageData(canvas.width,canvas.height);
 
   let objects = [
-createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.2,0.8],10,1.5)), // glass
+createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.2,0.8,0.1,0.8],10,1.5)), // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,0.3,0.8,0.0],50,1.1)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
