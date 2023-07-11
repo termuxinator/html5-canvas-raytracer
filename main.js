@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '340';
+let build = '341';
 
 (function() {
   let output = document.createElement('pre');
@@ -146,7 +146,7 @@ function intersectWorld (rec,objs,org,dir) {
   let specular_color = [rgb[0]*specular_intensity, rgb[1]*specular_intensity, rgb[2]*specular_intensity];
 
   let reflect_color = [0,0,0];
-  if (hi.m.albedo[2] > 0.0) { // reflective
+  if (hit.m.albedo[2] > 0.0) { // reflective
     let rt = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
     let rv = [dir[0]+hit.n[0]*rt, dir[1]+hit.n[1]*rt, dir[2]+hit.n[2]*rt];
     let rl = Math.sqrt(rv[0]*rv[0] + rv[1]*rv[1] + rv[2]*rv[2]);
