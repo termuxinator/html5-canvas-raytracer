@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '352';
+let build = '353';
 
 (function() {
   let output = document.createElement('pre');
@@ -133,7 +133,7 @@ function intersectWorld (rec,objs,org,dir) {
       n[1] *= -1;
       n[2] *= -1;
       cosi *= -1;
-      eta = 1 / eta;
+      eta = hit.m.refract_index;
     }
     let k = 1 - eta*eta * (1 - cosi*cosi);
     if (k > 0) { // validate vector
