@@ -38,11 +38,11 @@ function main () {
   let objects = [
     createSphere([1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.3,50.0,0.8)),   // bubble
     createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],0.1,0.8,500.0,0.6)), // mirror
-    createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.5,0.4,50.0,0.1)),  // metal
+    createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],0.6,0.3,50.0,0.1)),  // metal
     createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],0.8,0.3,50.0,0.5)),  // orn
     createSphere([1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],0.8,0.3,50.0,0.5)),   // orn
     createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],0.8,0.3,50.0,0.5)),  // orn
-    createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],0.8,0.1,5.0,0.0)),   // matte
+    createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],1.0,0.2,5.0,0.0)),   // matte
     createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],1.0,0.5,50.0,0.4)), // world
   //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],0.0,0.0,0.0,0.0)) // skybox
   ];
