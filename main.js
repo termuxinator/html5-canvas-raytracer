@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '349';
+let build = '350';
 
 (function() {
   let output = document.createElement('pre');
@@ -110,6 +110,53 @@ function intersectWorld (rec,objs,org,dir) {
   }
   if (hit.t == Infinity) return rgb;
 
+  let reflect_dir = [0,0,0];
+  let reflect_len = 0;
+  if (hit.m.albedo[2] > 0.0) { // reflective
+    let rt = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
+    let rv = [dir[0]+hit.n[0]*rt, dir[1]+hit.n[1]*rt, dir[2]+hit.n[2]*rt];
+    let rl = Math.sqrt(rv[0]*rv[0] + rv[1]*rv[1] + rv[2]*rv[2]);
+    if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
+    reflect_dir = rv;
+    reflect_len = rl;
+  }
+
+  let refract_dir = [0,0,0];
+  let refract_len = 0;
+  if (hit.m.albedo[3] > 1) { // refractive
+    let eta = 1 / hir.m.refract_index; // snells law
+    let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
+    let cosi = -Math.max(-1, Math.min(1, dot));
+    if (cosi < 0) { // from inside toward outside
+      hit.n[0] *= -1;
+      hit.n[1] *= -1;
+      hit.n[2] *= -1;
+      cosi *= -1;
+      eta = 1 / eta;
+    }
+    let k = 1 - eta*eta * (1 - cosi*cosi);
+    if (k > 0) { // validate vector
+      let q = eta*cosi - Math.sqrt(k);
+      let v = [
+        dir[0] * eta + hit.n[0] * q,
+        dir[1] * eta + hit.n[1] * q,
+        dir[2] * eta + hit.n[2] * q
+      ];
+      let l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+      if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
+      refract_dir = v;
+      refract_len = l;
+    }
+    if (cosi < 0) {
+      hit.n[0] *= -1;
+      hit.n[1] *= -1;
+      hit.n[2] *= -1;
+    }
+  }
+
+  let reflect_color = (reflect_len > 0) ? intersectWorld(rec-1,objs,hit.p,reflect_dir) : [0,0,0];
+  let refract_color = (refract_len > 0) ? intersectWorld(rec-1,objs,hit.p,refract_dir) : [0,0,0];
+
   rgb = hit.m.sampler(hit);
 
   let diffuse_intensity = 0;
@@ -139,51 +186,20 @@ function intersectWorld (rec,objs,org,dir) {
     let specular_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
     if (specular_dot > 0) specular_intensity += Math.pow(specular_dot,hit.m.specular_exponent);
   }
+
   diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
   let diffuse_color = [rgb[0]*diffuse_intensity, rgb[1]*diffuse_intensity, rgb[2]*diffuse_intensity];
+
   specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[1];
   let specular_color = [rgb[0]*specular_intensity, rgb[1]*specular_intensity, rgb[2]*specular_intensity];
 
-  let reflect_color = [0,0,0];
-  if (hit.m.albedo[2] > 0.0) { // reflective
-    let rt = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
-    let rv = [dir[0]+hit.n[0]*rt, dir[1]+hit.n[1]*rt, dir[2]+hit.n[2]*rt];
-    let rl = Math.sqrt(rv[0]*rv[0] + rv[1]*rv[1] + rv[2]*rv[2]);
-    if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
-    reflect_color = intersectWorld(rec-1,objs,hit.p,rv); // recurse
-    reflect_color[0] *= hit.m.albedo[2];
-    reflect_color[1] *= hit.m.albedo[2];
-    reflect_color[2] *= hit.m.albedo[2];
-  }
+  reflect_color[0] *= hit.m.albedo[2];
+  reflect_color[1] *= hit.m.albedo[2];
+  reflect_color[2] *= hit.m.albedo[2];
 
-  let refract_color = [0,0,0];
-  if (hit.m.albedo[3] > 1) { // refractive
-    let eta; // snells law
-    let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
-    let cosi = -Math.max(-1, Math.min(1, dot));
-    if (cosi < 0) { // from inside toward outside
-      hit.n[0] *= -1;
-      hit.n[1] *= -1;
-      hit.n[2] *= -1;
-      cosi *= -1;
-      eta = hit.m.refract_index;
-    } else eta = 1 / hit.m.refract_index;
-    let k = 1 - eta*eta * (1 - cosi*cosi);
-    if (k >= 0) { // validate vector
-      let q = eta*cosi - Math.sqrt(k);
-      let v = [
-        dir[0] * eta + hit.n[0] * q,
-        dir[1] * eta + hit.n[1] * q,
-        dir[2] * eta + hit.n[2] * q
-      ];
-      let l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-      if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
-      refract_color = intersectWorld(rec-1,objs,hit.p,v); // recurse
-      refract_color[0] *= hit.m.albedo[3];
-      refract_color[1] *= hit.m.albedo[3];
-      refract_color[2] *= hit.m.albedo[3];
-    }
-  }
+  refract_color[0] *= hit.m.albedo[3];
+  refract_color[1] *= hit.m.albedo[3];
+  refract_color[2] *= hit.m.albedo[3];
 
   return [
     Math.min(1, diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
