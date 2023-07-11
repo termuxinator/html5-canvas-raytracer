@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '400';
+let build = '408';
 
 (function() {
 /*
@@ -29,9 +29,9 @@ function main () {
 
   let objects = [
 createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // world
-createSphere([0.0,0.0,0.0],5000,createMaterial([0.2,0.4,0.6],[1.0,0.0,0.0,0.0],0,1.0)), // skybox
+createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.1,0.8],10,1.5)), // glass
-createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.1,0.3,0.1,0.1],50,1.25)),  // bubble
+createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,0.3,0.1,0.0],50,1.25)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
 createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornament
@@ -47,6 +47,12 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     let t = (v * 2500 * 4) & 1;
     let c = [[1,1,0],[1,0,1]];
     return c[s^t];
+  };
+  // override skybox material sampler with night skies
+  objects[1].mtl.sampler = function (hit) {
+    let c = Math.random();
+    if (c >= 0.001) return [0,0,0];
+    c *= 1000; return [c,c,c];
   };
   // sort objects where most surface area come first
   objects.sort(function(a,b) {return(a.surface_area-b.surface_area);});
@@ -180,13 +186,15 @@ function intersectWorld (segs,objs,org,dir) {
     refract_color[2] *= hit.m.albedo[3];
   }
 
-  let lights = [
-    [5.0,10.0,5.0],
-    //[0.0,7.5,0.0],
-    //[-5.0,10.0,0.0]
-  ];
   let diffuse_intensity = 0;
   let specular_intensity = 0;
+
+// zero intensity to bypass shader (full bright hack)
+if ((hit.m.albedo[0] == 0) && (hit.m.albedo[1] == 0)) {
+  diffuse_intensity = 1;
+  specular_intensity = 0;
+} else {
+  let lights = [[5.0,10.0,5.0],/*[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
   for (let k=0; k<lights.length; k++) {
     let light = lights[k];
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
@@ -213,6 +221,7 @@ function intersectWorld (segs,objs,org,dir) {
   }
   diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
   specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[1];
+}
 
   let rgb = hit.m.sampler(hit);
 
