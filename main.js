@@ -124,13 +124,14 @@ function intersectWorld (rec,objs,org,dir) {
   let refract_dir = [0,0,0];
   let refract_len = 0;
   if (hit.m.albedo[3] > 1) { // refractive
+    let n = [hit.n[0], hit.n[1], hit.n[2]];
     let eta = 1 / hit.m.refract_index; // snells law
-    let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
+    let dot = dir[0]*n[0] + dir[1]*n[1] + dir[2]*n[2];
     let cosi = -Math.max(-1, Math.min(1, dot));
     if (cosi < 0) { // from inside toward outside
-      hit.n[0] *= -1;
-      hit.n[1] *= -1;
-      hit.n[2] *= -1;
+      n[0] *= -1;
+      n[1] *= -1;
+      n[2] *= -1;
       cosi *= -1;
       eta = 1 / eta;
     }
@@ -138,19 +139,14 @@ function intersectWorld (rec,objs,org,dir) {
     if (k > 0) { // validate vector
       let q = eta*cosi - Math.sqrt(k);
       let v = [
-        dir[0] * eta + hit.n[0] * q,
-        dir[1] * eta + hit.n[1] * q,
-        dir[2] * eta + hit.n[2] * q
+        dir[0] * eta + n[0] * q,
+        dir[1] * eta + n[1] * q,
+        dir[2] * eta + n[2] * q
       ];
       let l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
       if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
       refract_dir = v;
       refract_len = l;
-    }
-    if (cosi < 0) {
-      hit.n[0] *= -1;
-      hit.n[1] *= -1;
-      hit.n[2] *= -1;
     }
   }
 
