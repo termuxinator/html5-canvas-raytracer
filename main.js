@@ -1,8 +1,9 @@
 'use strict';
 
-let build = '383';
+let build = '384';
 
 (function() {
+/*
   let output = document.createElement('pre');
   document.body.appendChild(output);
   let oldLog = console.log;
@@ -14,27 +15,17 @@ let build = '383';
     output.innerHTML += items.join(' ') + '<br />';
   };
   window.onerror = console.log;
+*/
   document.body.onload = main;
 })();
 
 function main () {
   let canvas = document.getElementById('canvasID');
-  let border = 2;
-  canvas.width = document.body.clientWidth - border*2;
-  canvas.height = document.body.clientHeight - border*2;
-  canvas.style.border = border + 'px solid #ffffff';
+  canvas.width = document.body.clientWidth;
+  canvas.height = document.body.clientHeight;
   let context = canvas.getContext('2d');
   context.imageSmoothingEnabled = false;
   let colorbuf = context.createImageData(canvas.width,canvas.height);
-
-  let origin = [0,1.5,10];
-  let axisX = [-1,0,0];
-  let axisY = [0,1,0];
-  let axisZ = [0,0,-1];
-  let projA = 60 * Math.PI / 180;
-  let projW = canvas.width / 2;
-  let projH = canvas.height / 2;
-  let projD = projW / Math.tan(projA/2);
 
   let objects = [
 createSphere([0.0,0.75,3.0],0.25,createMaterial([0.0,0.0,0.0],[0.0,0.8,0.2,0.8],10,1.5)), // glass
@@ -57,6 +48,16 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.
     let c = [[1,1,0],[1,0,1]];
     return c[s^t];
   };
+
+  let origin = [0,1.5,10];
+  let axisX = [-1,0,0];
+  let axisY = [0,1,0];
+  let axisZ = [0,0,-1];
+
+  let projA = 60 * Math.PI / 180;
+  let projW = canvas.width / 2;
+  let projH = canvas.height / 2;
+  let projD = projW / Math.tan(projA/2);
 
   let dist = [-projW+0.5, projH-0.5, projD];
 
@@ -108,6 +109,12 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.
   }
 }
 
+function skyboxColor () {
+  if (Math.random() > 0.001) return [0,0,0];
+  let c = (Math.random() * 10) % 2;
+  return [c,c,c];
+}
+
 function createIntersect () {
   return {t:Infinity, p:[], n:[], m:{}};
 }
@@ -121,7 +128,7 @@ function intersectWorld (rec,objs,org,dir) {
     let check = o.intersectEx(o,org,dir);
     if (check.t < hit.t) hit = check;
   }
-  if (hit.t == Infinity) return [0.4,0.6,0.8];
+  if (hit.t == Infinity) return skyboxColor();
 
   let reflect_dir = [0,0,0];
   let reflect_len = 0;
@@ -246,7 +253,7 @@ function createSphere (o,r,m) {
 function intersectSphere (obj,org,dir) {
   let L = [obj.origin[0]-org[0], obj.origin[1]-org[1], obj.origin[2]-org[2]];
   let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
-  let d2 = (L[0]*L[0] + L[1]*L[1] + L[2]*L[2]) - tca*tca;
+  let d2 = L[0]*L[0] + L[1]*L[1] + L[2]*L[2] - tca*tca;
   if (d2 > obj.r2) return Infinity;
   let thc = Math.sqrt(obj.r2 - d2);
   let t0 = tca - thc;
@@ -266,8 +273,8 @@ function intersectSphereEx (obj,org,dir) {
   hit.n[0] = hit.p[0] - obj.origin[0];
   hit.n[1] = hit.p[1] - obj.origin[1];
   hit.n[2] = hit.p[2] - obj.origin[2];
-  let nl = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
-  if (nl != 0) {hit.n[0]/=nl; hit.n[1]/=nl; hit.n[2]/=nl;}
+  let l = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
+  if (l != 0) {let r=1/l; hit.n[0]*=r; hit.n[1]*=r; hit.n[2]*=r;}
   hit.m = obj.mtl;
   return hit;
 }
