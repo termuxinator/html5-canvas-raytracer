@@ -3,7 +3,6 @@
 let build = '408';
 
 (function() {
-/*
   let output = document.createElement('pre');
   document.body.appendChild(output);
   let oldLog = console.log;
@@ -15,7 +14,6 @@ let build = '408';
     output.innerHTML += items.join(' ') + '<br />';
   };
   window.onerror = console.log;
-*/
   document.body.onload = main;
 })();
 
