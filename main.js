@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '375';
+let build = '376';
 
 (function() {
   let output = document.createElement('pre');
@@ -121,7 +121,7 @@ function intersectWorld (rec,objs,org,dir) {
 
   let refract_dir = [0,0,0];
   let refract_len = 0;
-  if (hit.m.albedo[3] > 1)
+  if (hit.m.albedo[3] > 0)
   {
     let norm, eta;
     let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
