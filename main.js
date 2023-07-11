@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '394';
+let build = '396';
 
 (function() {
 /*
@@ -205,8 +205,7 @@ function intersectWorld (segs,objs,org,dir) {
       if (t < ll) break; // in shadow
     }
     if (j < objs.length) continue; // in shadow
-    //diffuse_intensity += ld / (ll * ll);
-    diffuse_intensity += ld / 2; // glorification hack
+    diffuse_intensity += ld;
     let slv = [-lv[0],-lv[1],-lv[2]];
     let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
     let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
