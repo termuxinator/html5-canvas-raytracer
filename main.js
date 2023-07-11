@@ -115,7 +115,7 @@ function intersectWorld (rec,objs,org,dir) {
 
   let diffuse_intensity = 0;
   let specular_intensity = 0;
-  let lights = [[5.0,5.0,5.0],[0.0,2.5,0.0],[-5.0,5.0,0.0]];
+  let lights = [[5.0,5.0,5.0],[0.0,2.5,0.0],[-5.0,10.0,0.0]];
   for (let k=0; k<lights.length; k++) {
     let light = lights[k];
     let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
@@ -123,7 +123,7 @@ function intersectWorld (rec,objs,org,dir) {
     if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
     let ld = Math.max(0, lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]);
     if (ld > 0) {
-ld /= ll;
+ld /= ll*ll;
       let j = 0;
       for ( ; j<objs.length; j++) {
         let o = objs[j];
