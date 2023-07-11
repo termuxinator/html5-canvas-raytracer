@@ -1,5 +1,5 @@
 # html5-canvas-raytracer
-experimental HTML5 <canvas> raytracer
+experimental HTML5 canvas raytracer
 
 [wiki](https://github.com/termuxinator/html5-canvas-raytracer/wiki)
 
