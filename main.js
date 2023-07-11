@@ -184,7 +184,11 @@ function intersectWorld (segs,objs,org,dir) {
     refract_color[2] *= hit.m.albedo[3];
   }
 
-  let lights = [[5.0,5.0,5.0],[0.0,7.5,0.0],[-5.0,10.0,0.0]];
+  let lights = [
+    [5.0,5.0,5.0],
+    //[0.0,7.5,0.0],
+    //[-5.0,10.0,0.0]
+  ];
   let diffuse_intensity = 0;
   let specular_intensity = 0;
   for (let k=0; k<lights.length; k++) {
