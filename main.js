@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '382';
+let build = '383';
 
 (function() {
   let output = document.createElement('pre');
@@ -52,9 +52,27 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.
   objects[objects.length-1].mtl.sampler = function (hit) {
     let u = Math.atan2(hit.n[0],hit.n[1]) / (Math.PI*2) + 1.0;
     let v = Math.acos(hit.n[2]) / Math.PI + 0.5;
+    let s = (u * 5000 * 8) & 1;
+    let t = (v * 2500 * 8) & 1;
     let c = [[1,1,0],[1,0,1]];
-    return c[((u*5000*4)&1) ^ ((v*2500*4)&1)];
+    return c[s^t];
   };
+
+  let dist = [-projW+0.5, projH-0.5, projD];
+
+  let target = [
+    origin[0] + axisX[0]*dist[0] + axisY[0]*dist[0] + axisZ[0]*dist[0],
+    origin[1] + axisX[1]*dist[1] + axisY[1]*dist[1] + axisZ[1]*dist[1],
+    origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
+  ];
+
+  let stepX = axisX[0];
+  let stepY = axisX[1];
+  let stepZ = axisX[2];
+
+  let nextX = -(axisX[0] * canvas.width + axisY[0]);
+  let nextY = -(axisX[1] * canvas.width + axisY[1]);
+  let nextZ = -(axisX[2] * canvas.width + axisY[2]);
 
   redraw();
 
@@ -63,12 +81,6 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.
     let ipixel = 0;
     for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
-        let dist = [x-projW+0.5, projH-y-0.5, projD];
-        let target = [
-          origin[0] + axisX[0]*dist[0] + axisY[0]*dist[0] + axisZ[0]*dist[0],
-          origin[1] + axisX[1]*dist[1] + axisY[1]*dist[1] + axisZ[1]*dist[1],
-          origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
-        ];
         let ray = [target[0]-origin[0], target[1]-origin[1], target[2]-origin[2]];
         let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
         if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
@@ -77,7 +89,13 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.
         colorbuf.data[ipixel++] = 255 * rgb[1];
         colorbuf.data[ipixel++] = 255 * rgb[2];
         colorbuf.data[ipixel++] = 255;
+        target[0] += stepX;
+        target[1] += stepY;
+        target[2] += stepZ;
       }
+      target[0] += nextX;
+      target[1] += nextY;
+      target[2] += nextZ;
     }
     context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
     let elapsed = Date.now() - timestamp;
