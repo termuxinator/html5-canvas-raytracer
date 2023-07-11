@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '356';
+let build = '357';
 
 (function() {
   let output = document.createElement('pre');
@@ -112,38 +112,38 @@ function intersectWorld (rec,objs,org,dir) {
 
   let reflect_dir = [0,0,0];
   let reflect_len = 0;
-  //if (hit.m.albedo[2] > 0.0)
+  if (hit.m.albedo[2] > 0.0)
   {
-    let rt = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
-    let rv = [dir[0]+hit.n[0]*rt, dir[1]+hit.n[1]*rt, dir[2]+hit.n[2]*rt];
-    let rl = Math.sqrt(rv[0]*rv[0] + rv[1]*rv[1] + rv[2]*rv[2]);
-    if (rl != 0) {rv[0]/=rl; rv[1]/=rl; rv[2]/=rl;}
-    reflect_dir = rv;
-    reflect_len = rl;
+    let t = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
+    let v = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
+    let l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+    if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
+    reflect_dir = v;
+    reflect_len = l;
   }
 
-  let refract_dir = [1,0,0];
+  let refract_dir = [0,0,0];
   let refract_len = 0;
-  //if (hit.m.albedo[3] > 1)
+  if (hit.m.albedo[3] > 1)
   {
-    let n = [hit.n[0], hit.n[1], hit.n[2]];
-    let eta = 1 / hit.m.refract_index; // snells law
-    let dot = dir[0]*n[0] + dir[1]*n[1] + dir[2]*n[2];
+    let norm, eta;
+    let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
     let cosi = -Math.max(-1, Math.min(1, dot));
     if (cosi < 0) { // from inside toward outside
-      n[0] *= -1;
-      n[1] *= -1;
-      n[2] *= -1;
-      cosi *= -1;
+      cosi = -cosi;
+      norm = [-hit.n[0],-hit.n[1],-hit.n[2]];
       eta = hit.m.refract_index;
+    } else {
+      norm = [hit.n[0],hit.n[1],hit.n[2]];
+      eta = 1 / hi.m.refract_index;
     }
     let k = 1 - eta*eta * (1 - cosi*cosi);
     if (k > 0) { // validate vector
       let q = eta*cosi - Math.sqrt(k);
       let v = [
-        dir[0] * eta + n[0] * q,
-        dir[1] * eta + n[1] * q,
-        dir[2] * eta + n[2] * q
+        dir[0] * eta + norm[0] * q,
+        dir[1] * eta + norm[1] * q,
+        dir[2] * eta + norm[2] * q
       ];
       let l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
       if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
@@ -153,10 +153,10 @@ function intersectWorld (rec,objs,org,dir) {
   }
 
   let reflect_color = [0,0,0];
-  if (reflect_len != 0) reflect_color = intersectWorld(rec-1,objs,hit.p,reflect_dir);
+  if (reflect_len > 0) reflect_color = intersectWorld(rec-1,objs,hit.p,reflect_dir);
 
   let refract_color = [0,0,0];
-  if (refract_len != 0) refract_color = intersectWorld(rec-1,objs,hit.p,refract_dir);
+  if (refract_len > 0) refract_color = intersectWorld(rec-1,objs,hit.p,refract_dir);
 
   rgb = hit.m.sampler(hit);
 
