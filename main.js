@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '384';
+let build = '385';
 
 (function() {
 /*
@@ -109,12 +109,6 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.
   }
 }
 
-function skyboxColor () {
-  if (Math.random() > 0.001) return [0,0,0];
-  let c = (Math.random() * 10) % 2;
-  return [c,c,c];
-}
-
 function createIntersect () {
   return {t:Infinity, p:[], n:[], m:{}};
 }
@@ -128,7 +122,11 @@ function intersectWorld (rec,objs,org,dir) {
     let check = o.intersectEx(o,org,dir);
     if (check.t < hit.t) hit = check;
   }
-  if (hit.t == Infinity) return skyboxColor();
+  if (hit.t == Infinity) {
+    let c = Math.random();
+    if (c > 0.002) return [0,0,0];
+    c *= 2000; return [c,c,c];
+  }
 
   let reflect_dir = [0,0,0];
   let reflect_len = 0;
@@ -201,7 +199,8 @@ function intersectWorld (rec,objs,org,dir) {
       if (t < ll) break; // in shadow
     }
     if (j < objs.length) continue; // in shadow
-    diffuse_intensity += ld / ll; // using ll, ll*ll is too dark for me
+    //diffuse_intensity += ld / ll;
+    diffuse_intensity += ld;
     let slv = [-lv[0],-lv[1],-lv[2]];
     let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
     let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
