@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '367';
+let build = '368';
 
 (function() {
   let output = document.createElement('pre');
@@ -36,14 +36,14 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2));
 
   let objects = [
-createSphere([0.0,0.25,4.0],0.25,createMaterial([0.0,0.0,0.0],[0.1,0.8,0.2,0.8],50,1.5)), // glass
+createSphere([0.0,1.25,4.0],0.25,createMaterial([0.0,0.0,0.0],[0.1,0.8,0.2,0.8],50,1.5)), // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.3,0.8,0.0],50,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
 createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // orn
 createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // orn
 createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],50,1.0)),  // orn
-createSphere([ 0.0,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
+createSphere([ 0.0,0.5,4.0],0.5,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
 createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.4,0.0],50,1.0)), // world
 //createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],[0.0,0.0,0.0,0.0],0,1.0)) // skybox
   ];
