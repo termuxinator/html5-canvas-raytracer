@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '362';
+let build = '363';
 
 (function() {
   let output = document.createElement('pre');
@@ -36,7 +36,7 @@ function main () {
   let projD = canvas.width / (2*Math.tan(projA/2));
 
   let objects = [
-createSphere([ 1.5,0.0,2.0],0.5,createMaterial([0.1,0.1,0.1],[0.1,0.8,0.1,0.8],100,1.5)),  // glass
+createSphere([ 1.5,0.0,2.0],0.5,createMaterial([0.0,0.0,0.0],[0.0,0.8,0.2,0.8],100,1.5)),  // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.3,0.8,0.0],50,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
@@ -122,7 +122,7 @@ function intersectWorld (rec,objs,org,dir) {
     reflect_len = l;
   }
 
-  let refract_dir = [0,0,0];
+  let refract_dir = [1,0,0];
   let refract_len = 0;
   //if (hit.m.albedo[3] > 1)
   {
@@ -153,10 +153,12 @@ function intersectWorld (rec,objs,org,dir) {
   }
 
   let reflect_color = [0,0,0];
-  if (reflect_len > 0) reflect_color = intersectWorld(rec-1,objs,hit.p,reflect_dir);
+  //if (reflect_len > 0)
+  reflect_color = intersectWorld(rec-1,objs,hit.p,reflect_dir);
 
   let refract_color = [0,0,0];
-  if (refract_len > 0) refract_color = intersectWorld(rec-1,objs,hit.p,refract_dir);
+  //if (refract_len > 0)
+  refract_color = intersectWorld(rec-1,objs,hit.p,refract_dir);
 
   rgb = hit.m.sampler(hit);
 
