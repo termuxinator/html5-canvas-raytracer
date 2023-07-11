@@ -123,6 +123,7 @@ function intersectWorld (rec,objs,org,dir) {
     if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
     let ld = Math.max(0, lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2]);
     if (ld > 0) {
+ld *= ll;
       let j = 0;
       for ( ; j<objs.length; j++) {
         let o = objs[j];
