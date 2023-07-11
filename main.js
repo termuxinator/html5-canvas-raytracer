@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '374';
+let build = '375';
 
 (function() {
   let output = document.createElement('pre');
@@ -92,26 +92,25 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.
 function createIntersect () {
   return {
     t: Infinity,
-    p: [0,0,0],
-    n: [0,0,0],
-    m: createMaterial([0.4,0.6,0.8],[0,0,0,0],0,1)
+    p: [],
+    n: [],
+    m: undefined
   };
 }
 
 function intersectWorld (rec,objs,org,dir) {
+  if (rec < 0) return [0,0,0];
   let hit = createIntersect();
-  let bkgnd = hit.m.sampler(hit);
-  if (rec == 0) return bkgnd;
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
     let check = o.intersectEx(o,org,dir);
     if (check.t < hit.t) hit = check;
   }
-  if (hit.t == Infinity) return bkgnd;
+  if (hit.t == Infinity) return [0.4,0.6,0.8];
 
   let reflect_dir = [0,0,0];
   let reflect_len = 0;
-  //if (hit.m.albedo[2] > 0.0)
+  if (hit.m.albedo[2] > 0.0)
   {
     let t = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
     let v = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
@@ -122,7 +121,7 @@ function intersectWorld (rec,objs,org,dir) {
 
   let refract_dir = [0,0,0];
   let refract_len = 0;
-  //if (hit.m.albedo[3] > 1)
+  if (hit.m.albedo[3] > 1)
   {
     let norm, eta;
     let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
