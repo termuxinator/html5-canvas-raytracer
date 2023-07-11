@@ -31,7 +31,7 @@ function main () {
 createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // world
 createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.1,0.8],10,1.5)), // glass
-createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,0.3,0.1,0.0],50,1.25)),  // bubble
+createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.2,0.0],50,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
 createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornament
@@ -48,7 +48,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     let c = [[1,1,0],[1,0,1]];
     return c[s^t];
   };
-  // override skybox material sampler with night skies
+  // override skybox material sampler with night stars
   objects[1].mtl.sampler = function (hit) {
     let c = Math.random();
     if (c >= 0.001) return [0,0,0];
@@ -136,10 +136,9 @@ function intersectWorld (segs,objs,org,dir) {
   let reflect_len = 0;
   if (hit.m.albedo[2] > 0.0) { // has reflective properties
     let t = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
-    let v = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
-    reflect_len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-    if (reflect_len != 0) {v[0]/=reflect_len; v[1]/=reflect_len; v[2]/=reflect_len;}
-    reflect_dir = v;
+    reflect_dir = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
+    reflect_len = Math.sqrt(reflect_dir[0]*reflect_dir[0] + reflect_dir[1]*reflect_dir[1] + reflect_dir[2]*reflect_dir[2]);
+    if (reflect_len != 0) {let r=1/reflect_len; reflect_dir[0]*=r; reflect_dir[1]*=r; reflect_dir[2]*=r;}
   }
 
   let refract_dir = [0,0,0];
@@ -160,13 +159,11 @@ function intersectWorld (segs,objs,org,dir) {
     if (k > 0) {
       let q = eta*cosi - Math.sqrt(k);
       let v = [
-        dir[0] * eta + norm[0] * q,
-        dir[1] * eta + norm[1] * q,
-        dir[2] * eta + norm[2] * q
-      ];
-      refract_len = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-      if (refract_len != 0) {v[0]/=refract_len; v[1]/=refract_len; v[2]/=refract_len;}
-      refract_dir = v;
+      refract_dir[0] = dir[0] * eta + norm[0] * q;
+      refract_dir[1] = dir[1] * eta + norm[1] * q;
+      refract_dir[2] = dir[2] * eta + norm[2] * q;
+      refract_len = Math.sqrt(refract_dir[0]*refract_dir[0] + refract_dir[1]*refract_dir[1] + refract_dir[2]*refract_dir[2]);
+      if (refract_len != 0) {let r=1/refract_len; refract_dir[0]*=r; refract_dir[1]*=r; refract_dir[2]*=r;}
     }
   }
 
@@ -189,39 +186,39 @@ function intersectWorld (segs,objs,org,dir) {
   let diffuse_intensity = 0;
   let specular_intensity = 0;
 
-// zero intensity to bypass shader (full bright hack)
-if ((hit.m.albedo[0] == 0) && (hit.m.albedo[1] == 0)) {
-  diffuse_intensity = 1;
-  specular_intensity = 0;
-} else {
-  let lights = [[5.0,10.0,5.0],/*[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
-  for (let k=0; k<lights.length; k++) {
-    let light = lights[k];
-    let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
-    let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
-    if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-    let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
-    if (ld <= 0) continue; // not facing light source
-    let j = 0;
-    for ( ; j<objs.length; j++) {
-      let o = objs[j];
-      let t = o.intersect(o,hit.p,lv);
-      if (t < ll) break; // in shadow
+  // zero intensity will bypass shader (full bright hack)
+  if ((hit.m.albedo[0] == 0) && (hit.m.albedo[1] == 0)) {
+    diffuse_intensity = 1;
+    specular_intensity = 0;
+  } else {
+    let lights = [[5.0,10.0,5.0],/*[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
+    for (let k=0; k<lights.length; k++) {
+      let light = lights[k];
+      let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
+      let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
+      if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
+      let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
+      if (ld <= 0) continue; // not facing light source
+      let j = 0;
+      for ( ; j<objs.length; j++) {
+        let o = objs[j];
+        let t = o.intersect(o,hit.p,lv);
+        if (t < ll) break; // in shadow
+      }
+      if (j < objs.length) continue; // in shadow
+      diffuse_intensity += ld;
+      let slv = [-lv[0],-lv[1],-lv[2]];
+      let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
+      let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
+      let srl = Math.sqrt(srv[0]*srv[0] + srv[1]*srv[1] + srv[2]*srv[2]);
+      if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
+      srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
+      let specular_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
+      if (specular_dot > 0) specular_intensity += Math.pow(specular_dot,hit.m.specular_exponent);
     }
-    if (j < objs.length) continue; // in shadow
-    diffuse_intensity += ld;
-    let slv = [-lv[0],-lv[1],-lv[2]];
-    let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
-    let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
-    let srl = Math.sqrt(srv[0]*srv[0] + srv[1]*srv[1] + srv[2]*srv[2]);
-    if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
-    srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
-    let specular_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
-    if (specular_dot > 0) specular_intensity += Math.pow(specular_dot,hit.m.specular_exponent);
+    diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
+    specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[1];
   }
-  diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
-  specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[1];
-}
 
   let rgb = hit.m.sampler(hit);
 
@@ -241,11 +238,9 @@ function createMaterial (color,albedo,se,ri) {
     albedo: albedo,
     specular_exponent: se,
     refract_index: ri,
-    sampler: defaultSampler
+    // default sampler, can be overidden later
+    sampler: function (hit) {return hit.m.diffuse_color;}
   };
-  function defaultSampler (hit) {
-    return hit.m.diffuse_color;
-  }
 }
 
 function createSphere (o,r,m) {
