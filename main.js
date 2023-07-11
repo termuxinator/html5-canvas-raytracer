@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '390';
+let build = '394';
 
 (function() {
 /*
@@ -37,7 +37,7 @@ createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],[0.8,0.3,0.5,0.0],5
 createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornamemt
 createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
 createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // world
-//createSphere([0.0,0.0,0.0],5000,createMaterial([0.4,0.6,0.8],[0.0,0.0,0.0,0.0],0,1.0)) // skybox
+//createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)) // skybox
   ];
   // override material sampler with sphere checker mapper
   objects[objects.length-1].mtl.sampler = function (hit) {
@@ -48,6 +48,8 @@ createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.
     let c = [[1,1,0],[1,0,1]];
     return c[s^t];
   };
+  // sort objects where most surface area come first
+  objects.sort(function(a,b) {return(a.surface_area-b.surface_area);});
 
   let origin = [0,1.5,10];
   let axisX = [-1,0,0];
@@ -113,8 +115,8 @@ function createIntersect () {
   return {t:Infinity, p:[], n:[], m:{}};
 }
 
-function intersectWorld (rec,objs,org,dir) {
-  if (rec < 0) return [0,0,0];
+function intersectWorld (segs,objs,org,dir) {
+  if (segs == 0) return [0,0,0];
 
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
@@ -124,7 +126,7 @@ function intersectWorld (rec,objs,org,dir) {
   }
   if (hit.t == Infinity) {
     let c = Math.random();
-    if (c > 0.001) return [0,0,0];
+    if (c >= 0.001) return [0,0,0];
     c *= 1000; return [c,c,c];
   }
 
@@ -168,7 +170,7 @@ function intersectWorld (rec,objs,org,dir) {
 
   let reflect_color = [0,0,0];
   if (reflect_len != 0) {
-    reflect_color = intersectWorld(rec-1,objs,hit.p,reflect_dir);
+    reflect_color = intersectWorld(segs-1,objs,hit.p,reflect_dir);
     reflect_color[0] *= hit.m.albedo[2];
     reflect_color[1] *= hit.m.albedo[2];
     reflect_color[2] *= hit.m.albedo[2];
@@ -176,7 +178,7 @@ function intersectWorld (rec,objs,org,dir) {
 
   let refract_color = [0,0,0];
   if (refract_len != 0) {
-    refract_color = intersectWorld(rec-1,objs,hit.p,refract_dir);
+    refract_color = intersectWorld(segs-1,objs,hit.p,refract_dir);
     refract_color[0] *= hit.m.albedo[3];
     refract_color[1] *= hit.m.albedo[3];
     refract_color[2] *= hit.m.albedo[3];
@@ -199,8 +201,8 @@ function intersectWorld (rec,objs,org,dir) {
       if (t < ll) break; // in shadow
     }
     if (j < objs.length) continue; // in shadow
-    //diffuse_intensity += ld / ll;
-    diffuse_intensity += ld;
+    //diffuse_intensity += ld / (ll * ll);
+    diffuse_intensity += ld / 2; // glorification hack
     let slv = [-lv[0],-lv[1],-lv[2]];
     let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
     let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
@@ -234,16 +236,19 @@ function createMaterial (color,albedo,se,ri) {
     sampler: defaultSampler
   };
   function defaultSampler (hit) {
-    return hit.m.diffuse_color.slice();
+    return hit.m.diffuse_color;
   }
 }
 
 function createSphere (o,r,m) {
+  let r2 = r * r;
+  let surface_area = 4 * Math.PI * r2;
   return {
     origin: o,
   //radius: r,
-    r2: r * r,
+    r2: r2,
     mtl: m,
+    surface_area: surface_area,
     intersect: intersectSphere,
     intersectEx: intersectSphereEx
   };
