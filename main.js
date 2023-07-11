@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '381';
+let build = '382';
 
 (function() {
   let output = document.createElement('pre');
@@ -19,9 +19,10 @@ let build = '381';
 
 function main () {
   let canvas = document.getElementById('canvasID');
-  canvas.width = document.body.clientWidth;
-  canvas.height = document.body.clientHeight;
-  canvas.style.border = '1px solid #ffffff';
+  let border = 2;
+  canvas.width = document.body.clientWidth - border*2;
+  canvas.height = document.body.clientHeight - border*2;
+  canvas.style.border = border + 'px solid #ffffff';
   let context = canvas.getContext('2d');
   context.imageSmoothingEnabled = false;
   let colorbuf = context.createImageData(canvas.width,canvas.height);
