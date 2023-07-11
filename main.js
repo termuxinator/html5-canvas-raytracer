@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '354';
+let build = '355';
 
 (function() {
   let output = document.createElement('pre');
@@ -150,8 +150,11 @@ function intersectWorld (rec,objs,org,dir) {
     }
   }
 
-  let reflect_color = (reflect_len != 0) ? intersectWorld(rec-1,objs,hit.p,reflect_dir) : [0,0,0];
-  let refract_color = (refract_len != 0) ? intersectWorld(rec-1,objs,hit.p,refract_dir) : [0,0,0];
+  let reflect_color = [0,0,0];
+  if (reflect_len != 0) reflect_color = intersectWorld(rec-1,objs,hit.p,reflect_dir);
+
+  let refract_color = [0,0,0];
+  if (refract_len != 0) refract_color = intersectWorld(rec-1,objs,hit.p,refract_dir);
 
   rgb = hit.m.sampler(hit);
 
