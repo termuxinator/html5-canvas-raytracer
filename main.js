@@ -194,23 +194,22 @@ function intersectWorld (segs,objs,org,dir) {
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
       let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
       if (ld <= 0) continue; // not facing light source
-      let j = 0;
-      for ( ; j<objs.length; j++) {
+      let shadow_scaler = 1;
+      for (let j=0; j<objs.length; j++) {
         let o = objs[j];
         let t = o.intersect(o,hit.p,lv);
-        if (t < ll) break; // in shadow
+        if (t < ll) {shadow_scaler=0.5; break;}
       }
-    //if (j < objs.length) continue; // in shadow
-      if (j < objs.length) {diffuse_intensity += ld * 0.5; continue;}
-      diffuse_intensity += ld;
+      diffuse_intensity += ld * shadow_scaler;
+      if (shadow_scaler < 1) continue;
       let slv = [-lv[0],-lv[1],-lv[2]];
       let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
       let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
       let srl = Math.sqrt(srv[0]*srv[0] + srv[1]*srv[1] + srv[2]*srv[2]);
       if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
       srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
-      let specular_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
-      if (specular_dot > 0) specular_intensity += Math.pow(specular_dot,hit.m.specular_exponent);
+      let spec_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
+      if (spec_dot > 0) specular_intensity += Math.pow(spec_dot,hit.m.specular_exponent);
     }
     diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
     specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[1];
