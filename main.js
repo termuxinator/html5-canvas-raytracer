@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '410';
+let build = '413';
 
 (function() {
   let output = document.createElement('pre');
@@ -120,11 +120,11 @@ function createIntersect () {
 function intersectWorld (segs,objs,org,dir) {
   if (segs == 0) return [0,0,0];
 
-  let len = Math.sqrt(dir[0]*dir[0] + dir[1]*dir[1] + dir[2]*dir[2]);
-  if (len == 0) return [0,0,0];
-  dir[0]/=len;
-  dir[1]/=len;
-  dir[2]/=len;
+  { // code block
+    let l = Math.sqrt(dir[0]*dir[0] + dir[1]*dir[1] + dir[2]*dir[2]);
+    if (l == 0) return [0,0,0];
+    dir[0]/=l; dir[1]/=l; dir[2]/=l;
+  }
 
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
