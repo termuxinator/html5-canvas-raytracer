@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '408';
+let build = '410';
 
 (function() {
   let output = document.createElement('pre');
@@ -156,7 +156,6 @@ function intersectWorld (segs,objs,org,dir) {
     let k = 1 - eta*eta * (1 - cosi*cosi);
     if (k > 0) {
       let q = eta*cosi - Math.sqrt(k);
-      let v = [
       refract_dir[0] = dir[0] * eta + norm[0] * q;
       refract_dir[1] = dir[1] * eta + norm[1] * q;
       refract_dir[2] = dir[2] * eta + norm[2] * q;
