@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '418';
+let build = '420';
 
 (function() {
   let output = document.createElement('pre');
@@ -59,8 +59,8 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     let u = Math.atan2(hit.n[0],hit.n[2]) / (Math.PI*2) + 1.0;
     let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
 
-u = u*hit.n[0] + u*hit.n[1] + u*hit.n[2];
-v = v*hit.n[0] + v*hit.n[1] + v*hit.n[2];
+u = u*-hit.n[0] + u*-hit.n[1] + u*-hit.n[2];
+v = v*-hit.n[0] + v*-hit.n[1] + v*-hit.n[2];
 
     u = Math.max(0, Math.ceil(u * globe_texture.width) - 1);
     v = Math.max(0, Math.ceil(v * globe_texture.height) - 1);
