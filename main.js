@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '420';
+let build = '425';
 
 (function() {
   let output = document.createElement('pre');
@@ -58,10 +58,8 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   objects[2].mtl.sampler = function (hit) {
     let u = Math.atan2(hit.n[0],hit.n[2]) / (Math.PI*2) + 1.0;
     let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
-u = Math.abs(u);
-v = Math.abs(v);
-    u = Math.max(0, Math.ceil(u * globe_texture.width) - 1);
-    v = Math.max(0, Math.ceil(v * globe_texture.height) - 1);
+    u = Math.min(1, Math.max(0, Math.ceil(u * globe_texture.width) - 1));
+    v = Math.min(1, Math.max(0, Math.ceil(v * globe_texture.height) - 1));
     let texelIndex = (v * globe_texture.width + u) * 4;
     let r = globe_texture.texels[texelIndex+0] / 255;
     let g = globe_texture.texels[texelIndex+1] / 255;
