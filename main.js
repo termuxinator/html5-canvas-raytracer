@@ -200,7 +200,8 @@ function intersectWorld (segs,objs,org,dir) {
         let t = o.intersect(o,hit.p,lv);
         if (t < ll) break; // in shadow
       }
-      if (j < objs.length) continue; // in shadow
+    //if (j < objs.length) continue; // in shadow
+      if (j < objs.length) ld *= 0.5;
       diffuse_intensity += ld;
       let slv = [-lv[0],-lv[1],-lv[2]];
       let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
