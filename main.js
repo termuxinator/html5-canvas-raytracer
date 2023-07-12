@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '413';
+let build = '414';
 
 (function() {
   let output = document.createElement('pre');
@@ -28,6 +28,7 @@ function main () {
   let objects = [
 createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // world
 createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
+createSphere([-1.5,0.5,2.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // globe
 createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.1,0.8],10,1.5)), // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.8,0.0],20,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
@@ -51,6 +52,19 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     let c = Math.random();
     if (c >= 0.001) return [0,0,0];
     c *= 1000; return [c,c,c];
+  };
+  // override globe material sampler to use texture mapper
+  let globe_texture = loadTexture(redraw,'./globe.png');
+  objects[2].mtl.sampler = function (hit) {
+    let u = Math.atan2(hit.n[0],hit.n[2]) / (Math.PI*2) + 1.0;
+    let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
+    u = Math.max(0, u * globe_texture.width - 1);
+    v = Math.max(0, v * globe_texture.height - 1);
+    let texelIndex = (v * globe_texture.width + u) * 4;
+    let r = globe_texture.texels[texelIndex+0] / 255;
+    let g = globe_texture.texels[texelIndex+1] / 255;
+    let b = globe_texture.texels[texelIndex+2] / 255;
+    return [r,g,b];
   };
   // sort objects where most surface area come first
   objects.sort(function(a,b) {return(a.surface_area-b.surface_area);});
@@ -225,6 +239,31 @@ function intersectWorld (segs,objs,org,dir) {
     Math.min(1, diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1]),
     Math.min(1, diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2])
   ];
+}
+
+function loadTexture (cb,src) {
+  var texture = {};
+  texture.width = 2;
+  texture.height = 2;
+  texture.texels = [255,0,0,255, 0,255,0,255, 0,0,255,255, 255,255,255,255];
+  texture.loaded = false;
+  var image = new Image();
+  image.onload = function(e) {
+    var canvas = document.createElement('canvas');
+    canvas.width = e.target.width;
+    canvas.height = e.target.height;
+    var context = canvas.getContext('2d');
+    context.imageSmoothingEnabled = false;
+    context.drawImage(e.target,0,0,canvas.width,canvas.height);
+    var data = context.getImageData(0,0,canvas.width,canvas.height);
+    texture.width = canvas.width;
+    texture.height = canvas.height;
+    texture.texels = data.data;
+    texture.loaded = true;
+    cb();
+  };
+  image.src = src;
+  return texture;
 }
 
 function createMaterial (color,albedo,se,ri) {
