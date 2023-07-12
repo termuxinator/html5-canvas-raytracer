@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '426';
+let build = '430';
 
 (function() {
   let output = document.createElement('pre');
@@ -56,11 +56,9 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   // override globe material sampler to use texture mapper
   let globe_texture = loadTexture(redraw,'./globe.png');
   objects[2].mtl.sampler = function (hit) {
-    let u = Math.atan2(hit.n[1],hit.n[2]) / (Math.PI*2) + 1.0;
-    let v = Math.acos(hit.n[0]) / Math.PI + 0.5;
-    let l = u*u + v*v;
-    u /= l;
-    v /= l;
+    let u = Math.atan2(hit.n[0],hit.n[2]) / (Math.PI*2) + 1.0;
+    let v = Math.acos(hit.n[1]) / Math.PI + 0.5;
+    let l = u*u + v*v; u /= l; v /= l;
     u = Math.max(0, Math.ceil(u * globe_texture.width) - 1);
     v = Math.max(0, Math.ceil(v * globe_texture.height) - 1);
     let texelIndex = (v * globe_texture.width + u) * 4;
