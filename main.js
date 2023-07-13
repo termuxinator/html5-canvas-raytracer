@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '486';
+let build = '487';
 
 (function() {
   let output = document.createElement('pre');
@@ -58,7 +58,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   objects[0].mtl.sampler = function (hit) {
     let u = Math.atan2(-hit.n[1],-hit.n[0]) / Math.PI / 2 + 0.5;
     let v = Math.asin(-hit.n[2]) / (Math.PI/2) / 2 + 0.5;
-    let f = 0.5;
+    let f = 1 / Math.PI; // lol
     let s = (u * 5000 * f) & 1;
     let t = (v * 2500 * f) & 1;
     let c = [[1,1,0],[1,0,1]];
