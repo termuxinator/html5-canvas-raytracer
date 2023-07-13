@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '496';
+let build = '497';
 
 (function() {
   let output = document.createElement('pre');
@@ -41,7 +41,7 @@ function main () {
   let projD = projW / Math.tan(projA/2);
 
   let objects = [
-createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // home
+createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[0.5,0.5,0.0,0.0],50,1.0)), // home
 createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([50.0,20.0,-100.0],2.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // earth
 createSphere([-50.0,20.0,-100.0],3.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // mars
@@ -212,7 +212,6 @@ function intersectWorld (segs,objs,org,dir) {
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
       let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
       if (ld <= 0) continue; // not facing light source
-ld *= 0.5; // darken scene
       let shadow_scaler = 1;
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
