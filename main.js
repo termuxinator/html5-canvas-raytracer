@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '484';
+let build = '485';
 
 (function() {
   let output = document.createElement('pre');
@@ -58,9 +58,10 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   objects[0].mtl.sampler = function (hit) {
     let u = Math.atan2(-hit.n[1],-hit.n[0]) / Math.PI / 2 + 0.5;
     let v = Math.asin(-hit.n[2]) / (Math.PI/2) / 2 + 0.5;
-    let s = (u * 5000) & 1;
-    let t = (v * 2500) & 1;
-    let c = [[0,0,0],[1,1,1]];
+    let f = Math.sqrt(Math.PI) / Math.PI; // lol
+    let s = (u * 5000 * f) & 1;
+    let t = (v * 2500 * f) & 1;
+    let c = [[1,1,0],[1,0,1]];
     return c[s^t];
   };
   // override skybox material sampler with night stars
