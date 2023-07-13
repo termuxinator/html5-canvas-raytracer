@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '488';
+let build = '490';
 
 (function() {
   let output = document.createElement('pre');
@@ -44,7 +44,7 @@ function main () {
 createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // home
 createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([50.0,20.0,-100.0],2.0,createMaterial([0.5,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // earth
-createSphere([-50.0,20.0,-100.0],2.0,createMaterial([0.5,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // mars
+createSphere([-50.0,20.0,-100.0],2.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // mars
 createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.1,0.8],10,1.5)), // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.8,0.0],20,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
@@ -58,9 +58,8 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   objects[0].mtl.sampler = function (hit) {
     let u = Math.atan2(-hit.n[1],-hit.n[0]) / Math.PI / 2 + 0.5;
     let v = Math.asin(-hit.n[2]) / (Math.PI/2) / 2 + 0.5;
-    let f = 1;
-    let s = (u * 5000 * f) & 1;
-    let t = (v * 2500 * f) & 1;
+    let s = (u * 5000) & 1;
+    let t = (v * 2500) & 1;
     let c = [[1,1,0],[1,0,1]];
     return c[s^t];
   };
