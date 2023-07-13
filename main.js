@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '461';
+let build = '462';
 
 (function() {
   let output = document.createElement('pre');
@@ -42,7 +42,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   objects[0].mtl.sampler = function (hit) {
     let u = Math.atan2(hit.n[0],hit.n[1]) / Math.PI / 2 + 0.5;
     let v = Math.acos(hit.n[2]) / Math.PI / 2 + 0.5;
-    let f = Math.PI * Math.PI;
+    let f = 10;
     let s = (u * 5000 * f) & 1;
     let t = (v * 2500 * f) & 1;
     let c = [[1,1,0],[1,0,1]];
@@ -55,17 +55,12 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     c *= 1000; return [c,c,c];
   };
   // override globe material sampler to use texture mapper
-  let globe_texture = loadTexture(loading,'./globe.png');
+  let globe_texture = loadTexture('./globe.png');
   objects[2].mtl.sampler = function (hit) {
+    let ydir = -1;
     let u = Math.atan2(hit.n[0],hit.n[2]) / Math.PI / 2 + 0.5;
-    let v = Math.asin(-hit.n[1]) / (Math.PI/2) / 2 + 0.5;
-    u = Math.max(0, Math.ceil(u * globe_texture.width) - 1);
-    v = Math.max(0, Math.ceil(v * globe_texture.height) - 1);
-    let texelIndex = (v * globe_texture.width + u) * 4;
-    let r = globe_texture.texels[texelIndex+0] / 255;
-    let g = globe_texture.texels[texelIndex+1] / 255;
-    let b = globe_texture.texels[texelIndex+2] / 255;
-    return [r,g,b];
+    let v = Math.asin(hit.n[1]*ydir) / (Math.PI/2) / 2 + 0.5;
+    return sampleTexture(globe_texture,u,v);
   };
   // sort objects where most surface area come first
   objects.sort(function(a,b) {return(a.surface_area-b.surface_area);});
@@ -96,13 +91,20 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   let nextY = -(axisX[1] * canvas.width + axisY[1]);
   let nextZ = -(axisX[2] * canvas.width + axisY[2]);
 
+  let resource_list = [globe_texture]; // register resources
+  setTimeout(loading,0);
   function loading () {
-    let list = [globe_texture]; // register resources
-    for (let i=0; i<list.length; i++)
-      if (!list[i].loaded) {setTimeout(loading,500); return;}
-    setTimeout(redraw,0);
+    let callback = redraw;
+    let timeout = 0;
+    for (let i=0; i<resource_list.length; i++) {
+      if (!resource_list[i].loaded) {
+        callback = loading;
+        timeout = 500;
+        break;
+      }
+    }
+    setTimeout(callback,timeout);
   }
-  //setTimeout(loading,0); // texture loader triggers loading now
 
   function redraw () {
     let timestamp = Date.now();
@@ -248,26 +250,36 @@ function intersectWorld (segs,objs,org,dir) {
   ];
 }
 
-function loadTexture (cb,src) {
-  var texture = {};
-  texture.width = 2;
-  texture.height = 2;
-  texture.texels = [255,0,0,255, 0,255,0,255, 0,0,255,255, 255,255,255,255];
-  texture.loaded = false;
+function sampleTexture (texture,u,v) {
+  let x = Math.max(0, Math.ceil(u * texture.width) - 1);
+  let y  = Math.max(0, Math.ceil(v * texture.height) - 1);
+  let i = (y * texture.width + x) * 4;
+  let r = texture.texels[i+0] / 255;
+  let g = texture.texels[i+1] / 255;
+  let b = texture.texels[i+2] / 255;
+  return [r,g,b];
+}
+
+function loadTexture (src) {
+  let texture = {
+    width: 2,
+    height: 2,
+    texels: [255,0,0,255, 0,255,0,255, 0,0,255,255, 255,255,255,255],
+    loaded: false // all loadable resources must have this property
+  };
   var image = new Image();
   image.onload = function(e) {
-    var canvas = document.createElement('canvas');
+    let canvas = document.createElement('canvas');
     canvas.width = e.target.width;
     canvas.height = e.target.height;
-    var context = canvas.getContext('2d');
+    let context = canvas.getContext('2d');
     context.imageSmoothingEnabled = false;
     context.drawImage(e.target,0,0,canvas.width,canvas.height);
-    var data = context.getImageData(0,0,canvas.width,canvas.height);
+    let data = context.getImageData(0,0,canvas.width,canvas.height);
     texture.width = canvas.width;
     texture.height = canvas.height;
     texture.texels = data.data;
     texture.loaded = true;
-    cb();
   };
   image.src = src;
   return texture;
