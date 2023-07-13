@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '476';
+let build = '477';
 
 (function() {
   let output = document.createElement('pre');
@@ -53,15 +53,10 @@ createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],[0.8,0.3,0.5,0.0],5
 createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornamemt
 createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
   ];
-  // override world material sampler with sphere checker mapper
-  //let world_texture = createTexture();
+  // override mars material sampler with sphere checker mapper
+  let mars_texture = loadTexture('./mars.png');
   objects[0].mtl.sampler = function (hit) {
-    let f = 0.1;
-    let s = (hit.u * 5000 * f) & 1;
-    let t = (hit.v * 2500 * f) & 1;
-    let c = [[0,0,0],[1,1,1]]; // [[1,1,0],[1,0,1]];
-    return c[s^t];
-    //return sampleTexture(world_texture,hit.u,hit.v/2);
+    return sampleTexture(mars_texture,hit.u,hit.v);
   };
   // override skybox material sampler with night stars
   objects[1].mtl.sampler = function (hit) {
@@ -69,10 +64,10 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     if (c >= 0.001) return [0,0,0];
     c *= 1000; return [c,c,c];
   };
-  // override globe material sampler to use texture mapper
-  let globe_texture = loadTexture('./globe.png');
+  // override earth material sampler to use texture mapper
+  let earth_texture = loadTexture('./earth.png');
   objects[2].mtl.sampler = function (hit) {
-    return sampleTexture(globe_texture,hit.u,hit.v);
+    return sampleTexture(earth_texture,hit.u,hit.v);
   };
   // sort objects based on surface area and distance from camera
   objects.sort(function (a,b) {
@@ -81,7 +76,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     return(aa - bb);
   });
 
-  let resource_list = [globe_texture]; // register resources
+  let resource_list = [earth_texture, mars_texture]; // register resources
   setTimeout(loading,0);
   function loading () {
     let callback = redraw;
