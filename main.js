@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '506';
+let build = '507';
 
 (function() {
   let output = document.createElement('pre');
@@ -204,7 +204,7 @@ function intersectWorld (segs,objs,org,dir) {
     diffuse_intensity = 1;
     specular_intensity = 0;
   } else {
-    let lights = [[5.0,10.0,5.0],[0.0,7.5,0.0],[-5.0,10.0,0.0]];
+    let lights = [[5.0,10.0,5.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
 let light_intensity = 50;
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
