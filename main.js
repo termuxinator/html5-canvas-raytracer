@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '470';
+let build = '471';
 
 (function() {
   let output = document.createElement('pre');
@@ -55,7 +55,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   ];
   // override world material sampler with sphere checker mapper
   objects[0].mtl.sampler = function (hit) {
-    let f = 1;
+    let f = 0.1;
     let s = (hit.u * 5000 * f) & 1;
     let t = (hit.v * 2500 * f) & 1;
     let c = [[0,0,0],[1,1,1]]; // [[1,1,0],[1,0,1]];
