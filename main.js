@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '475';
+let build = '476';
 
 (function() {
   let output = document.createElement('pre');
@@ -54,14 +54,14 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
 createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
   ];
   // override world material sampler with sphere checker mapper
-  let world_texture = createTexture();
+  //let world_texture = createTexture();
   objects[0].mtl.sampler = function (hit) {
-    //let f = 0.001;
-    //let s = (hit.u * 5000 * f) & 1;
-    //let t = (hit.v * 2500 * f) & 1;
-    //let c = [[0,0,0],[1,1,1]]; // [[1,1,0],[1,0,1]];
-    //return c[s^t];
-    return sampleTexture(world_texture,hit.u,hit.v/2);
+    let f = 0.1;
+    let s = (hit.u * 5000 * f) & 1;
+    let t = (hit.v * 2500 * f) & 1;
+    let c = [[0,0,0],[1,1,1]]; // [[1,1,0],[1,0,1]];
+    return c[s^t];
+    //return sampleTexture(world_texture,hit.u,hit.v/2);
   };
   // override skybox material sampler with night stars
   objects[1].mtl.sampler = function (hit) {
