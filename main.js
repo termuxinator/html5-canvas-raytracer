@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '503';
+let build = '504';
 
 (function() {
   let output = document.createElement('pre');
@@ -219,7 +219,8 @@ let light_intensity = 10;
         if (t < ll) {ld=0; break;} // occluded
       }
       if (ld == 0) continue;
-      diffuse_intensity += light_intensity * ld / ll;
+      //diffuse_intensity += ld;
+diffuse_intensity += light_intensity * ld / (ll * ll);
       let slv = [-lv[0],-lv[1],-lv[2]];
       let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
       let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
