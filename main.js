@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '478';
+let build = '483';
 
 (function() {
   let output = document.createElement('pre');
@@ -41,7 +41,7 @@ function main () {
   let projD = projW / Math.tan(projA/2);
 
   let objects = [
-createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // mars
+createSphere([0.0,-100.0,0.0],100,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // mars
 createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([50.0,20.0,-100.0],2.0,createMaterial([0.5,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // earth
 createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.1,0.8],10,1.5)), // glass
