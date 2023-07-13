@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '483';
+let build = '484';
 
 (function() {
   let output = document.createElement('pre');
@@ -41,9 +41,10 @@ function main () {
   let projD = projW / Math.tan(projA/2);
 
   let objects = [
-createSphere([0.0,-100.0,0.0],100,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // mars
+createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // home
 createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([50.0,20.0,-100.0],2.0,createMaterial([0.5,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // earth
+createSphere([-50.0,20.0,-100.0],2.0,createMaterial([0.5,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // mars
 createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,0.8,0.1,0.8],10,1.5)), // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.8,0.0],20,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.6,0.0],500,1.0)), // mirror
@@ -53,10 +54,14 @@ createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],[0.8,0.3,0.5,0.0],5
 createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornamemt
 createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
   ];
-  // override mars material sampler with sphere checker mapper
-  let mars_texture = loadTexture('./mars.png');
+  // override home material sampler with sphere checker mapper
   objects[0].mtl.sampler = function (hit) {
-    return sampleTexture(mars_texture,hit.u,hit.v);
+    let u = Math.atan2(-hit.n[1],-hit.n[0]) / Math.PI / 2 + 0.5;
+    let v = Math.asin(-hit.n[2]) / (Math.PI/2) / 2 + 0.5;
+    let s = (u * 5000) & 1;
+    let t = (v * 2500) & 1;
+    let c = [[0,0,0],[1,1,1]];
+    return c[s^t];
   };
   // override skybox material sampler with night stars
   objects[1].mtl.sampler = function (hit) {
@@ -68,6 +73,11 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   let earth_texture = loadTexture('./earth.png');
   objects[2].mtl.sampler = function (hit) {
     return sampleTexture(earth_texture,hit.u,hit.v);
+  };
+  // override mars material sampler to use texture mapper
+  let mars_texture = loadTexture('./mars.png');
+  objects[3].mtl.sampler = function (hit) {
+    return sampleTexture(mars_texture,hit.u,hit.v);
   };
   // sort objects based on surface area and distance from camera
   objects.sort(function (a,b) {
