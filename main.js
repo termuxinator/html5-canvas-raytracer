@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '460';
+let build = '461';
 
 (function() {
   let output = document.createElement('pre');
@@ -55,7 +55,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     c *= 1000; return [c,c,c];
   };
   // override globe material sampler to use texture mapper
-  let globe_texture = loadTexture(redraw,'./globe.png');
+  let globe_texture = loadTexture(loading,'./globe.png');
   objects[2].mtl.sampler = function (hit) {
     let u = Math.atan2(hit.n[0],hit.n[2]) / Math.PI / 2 + 0.5;
     let v = Math.asin(-hit.n[1]) / (Math.PI/2) / 2 + 0.5;
@@ -96,7 +96,13 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   let nextY = -(axisX[1] * canvas.width + axisY[1]);
   let nextZ = -(axisX[2] * canvas.width + axisY[2]);
 
-  //redraw();
+  function loading () {
+    let list = [globe_texture]; // register resources
+    for (let i=0; i<list.length; i++)
+      if (!list[i].loaded) {setTimeout(loading,500); return;}
+    setTimeout(redraw,0);
+  }
+  //setTimeout(loading,0); // texture loader triggers loading now
 
   function redraw () {
     let timestamp = Date.now();
