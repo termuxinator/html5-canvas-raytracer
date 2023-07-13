@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '473';
+let build = '474';
 
 (function() {
   let output = document.createElement('pre');
@@ -61,7 +61,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     //let t = (hit.v * 2500 * f) & 1;
     //let c = [[0,0,0],[1,1,1]]; // [[1,1,0],[1,0,1]];
     //return c[s^t];
-    return sampleTexture(texture,hit.u,hit.v/2);
+    return sampleTexture(world_texture,hit.u,hit.v/2);
   };
   // override skybox material sampler with night stars
   objects[1].mtl.sampler = function (hit) {
