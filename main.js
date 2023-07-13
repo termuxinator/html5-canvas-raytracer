@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '494';
+let build = '495';
 
 (function() {
   let output = document.createElement('pre');
@@ -212,7 +212,7 @@ function intersectWorld (segs,objs,org,dir) {
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
       let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
       if (ld <= 0) continue; // not facing light source
-ld /= ll;
+ld /= ll*2; // darken scene
       let shadow_scaler = 1;
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
