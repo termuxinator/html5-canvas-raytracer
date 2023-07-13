@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '491';
+let build = '492';
 
 (function() {
   let output = document.createElement('pre');
@@ -205,6 +205,7 @@ function intersectWorld (segs,objs,org,dir) {
     specular_intensity = 0;
   } else {
     let lights = [[5.0,10.0,5.0],/*[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
+let spot_limit = 0.71; // in dot space
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
       let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
@@ -212,6 +213,7 @@ function intersectWorld (segs,objs,org,dir) {
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
       let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
       if (ld <= 0) continue; // not facing light source
+if (ld < spot_limit) continue; // not inside spotlight cone
       let shadow_scaler = 1;
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
