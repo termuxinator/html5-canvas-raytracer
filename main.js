@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '468';
+let build = '469';
 
 (function() {
   let output = document.createElement('pre');
@@ -55,12 +55,10 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   ];
   // override world material sampler with sphere checker mapper
   objects[0].mtl.sampler = function (hit) {
-    let u = Math.atan2(hit.n[0],hit.n[1]) / Math.PI / 2 + 0.5;
-    let v = Math.acos(hit.n[2]) / Math.PI / 2 + 0.5;
-    let f = 10;
-    let s = (u * 5000 * f) & 1;
-    let t = (v * 2500 * f) & 1;
-    let c = [[1,1,0],[1,0,1]];
+    let f = 10/2;
+    let s = (hit.u * 5000 * f) & 1;
+    let t = (hit.v * 2500 * f) & 1;
+    let c = [[0,0,0],[1,1,1]]; // [[1,1,0],[1,0,1]];
     return c[s^t];
   };
   // override skybox material sampler with night stars
@@ -72,12 +70,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   // override globe material sampler to use texture mapper
   let globe_texture = loadTexture('./globe.png');
   objects[2].mtl.sampler = function (hit) {
-    let x = -hit.n[0];
-    let y = -hit.n[1];
-    let z = -hit.n[2];
-    let u = Math.atan2(z,x) / Math.PI / 2 + 0.5;
-    let v = Math.asin(y) / (Math.PI/2) / 2 + 0.5;
-    return sampleTexture(globe_texture,u,v);
+    return sampleTexture(globe_texture,hit.u,hit.v);
   };
   // sort objects based on surface area and distance from camera
   objects.sort(function (a,b) {
@@ -132,7 +125,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
 }
 
 function createIntersect () {
-  return {t:Infinity, p:[], n:[], m:{}};
+  return {t:Infinity, p:[], n:[], u:0, v:0, m:{}};
 }
 
 function intersectWorld (segs,objs,org,dir) {
@@ -329,6 +322,8 @@ function intersectSphereM (obj,org,dir) {
   hit.n[2] = hit.p[2] - obj.origin[2];
   let l = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
   if (l != 0) {let r=1/l; hit.n[0]*=r; hit.n[1]*=r; hit.n[2]*=r;}
+  hit.u = Math.atan2(-hit.n[2],-hit.n[0]) / Math.PI / 2 + 0.5;
+  hit.v = Math.asin(-hit.n[1]) / (Math.PI/2) / 2 + 0.5;
   hit.m = obj.mtl;
   return hit;
 }
