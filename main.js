@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '467';
+let build = '468';
 
 (function() {
   let output = document.createElement('pre');
@@ -147,7 +147,7 @@ function intersectWorld (segs,objs,org,dir) {
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
-    let check = o.intersectEx(o,org,dir);
+    let check = o.intersectM(o,org,dir);
     if (check.t < hit.t) hit = check;
   }
   if (hit.t == Infinity) return [1,0,0]; // wtf no skybox bro?
@@ -215,7 +215,7 @@ function intersectWorld (segs,objs,org,dir) {
       let shadow_scaler = 1;
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
-        let t = o.intersect(o,hit.p,lv);
+        let t = o.intersectT(o,hit.p,lv);
         if (t < ll) {shadow_scaler=0.5; break;}
       }
       diffuse_intensity += ld * shadow_scaler;
@@ -247,7 +247,7 @@ function intersectWorld (segs,objs,org,dir) {
 
 function sampleTexture (texture,u,v) {
   let x = Math.max(0, Math.ceil(u * texture.width) - 1);
-  let y  = Math.max(0, Math.ceil(v * texture.height) - 1);
+  let y = Math.max(0, Math.ceil(v * texture.height) - 1);
   let i = (y * texture.width + x) * 4;
   let r = texture.texels[i+0] / 255;
   let g = texture.texels[i+1] / 255;
@@ -293,19 +293,18 @@ function createMaterial (color,albedo,se,ri) {
 
 function createSphere (o,r,m) {
   let r2 = r * r;
-  let surface_area = 4 * Math.PI * r2;
   return {
     origin: o,
   //radius: r,
     r2: r2,
     mtl: m,
-    surface_area: surface_area,
-    intersect: intersectSphere,
-    intersectEx: intersectSphereEx
+    surface_area: 4 * Math.PI * r2,
+    intersectT: intersectSphereT,
+    intersectM: intersectSphereM
   };
 }
 
-function intersectSphere (obj,org,dir) {
+function intersectSphereT (obj,org,dir) {
   let L = [obj.origin[0]-org[0], obj.origin[1]-org[1], obj.origin[2]-org[2]];
   let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
   let d2 = L[0]*L[0] + L[1]*L[1] + L[2]*L[2] - tca*tca;
@@ -318,9 +317,9 @@ function intersectSphere (obj,org,dir) {
   return Infinity;
 }
 
-function intersectSphereEx (obj,org,dir) {
+function intersectSphereM (obj,org,dir) {
   let hit = createIntersect();
-  hit.t = intersectSphere(obj,org,dir);
+  hit.t = intersectSphereT(obj,org,dir);
   if (hit.t == Infinity) return hit;
   hit.p[0] = org[0] + dir[0] * hit.t;
   hit.p[1] = org[1] + dir[1] * hit.t;
