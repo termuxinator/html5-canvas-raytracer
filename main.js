@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '474';
+let build = '475';
 
 (function() {
   let output = document.createElement('pre');
@@ -252,9 +252,14 @@ function sampleTexture (texture,u,v) {
 
 function createTexture () {
   return {
-    width: 2,
-    height: 2,
-    texels: [255,0,0,255, 0,255,0,255, 0,0,255,255, 255,255,255,255],
+    width: 4,
+    height: 4,
+    texels: [
+      0,0,0,255, 255,255,255,255, 0,0,0,255, 255,255,255,255,
+      255,255,255,255, 0,0,0,255, 255,255,255,255, 0,0,0,255,
+      0,0,0,255, 255,255,255,255, 0,0,0,255, 255,255,255,255,
+      255,255,255,255, 0,0,0,255, 255,255,255,255, 0,0,0,255,
+    ],
     loaded: false // all loadable resources must have this property
   };
 }
