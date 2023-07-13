@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '466';
+let build = '467';
 
 (function() {
   let output = document.createElement('pre');
@@ -75,7 +75,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     let x = -hit.n[0];
     let y = -hit.n[1];
     let z = -hit.n[2];
-    let u = Math.atan2(x,z) / Math.PI / 2 + 0.5;
+    let u = Math.atan2(z,x) / Math.PI / 2 + 0.5;
     let v = Math.asin(y) / (Math.PI/2) / 2 + 0.5;
     return sampleTexture(globe_texture,u,v);
   };
