@@ -177,7 +177,7 @@ function intersectWorld (segs,objs,org,dir) {
       refract_dir[0] = dir[0] * eta + norm[0] * q;
       refract_dir[1] = dir[1] * eta + norm[1] * q;
       refract_dir[2] = dir[2] * eta + norm[2] * q;
-    }
+    } // else recurse with zero vector having no effect
   }
 
   let reflect_color = [0,0,0];
@@ -205,21 +205,21 @@ function intersectWorld (segs,objs,org,dir) {
     specular_intensity = 0;
   } else {
     let lights = [[5.0,10.0,5.0],[0.0,7.5,0.0],[-5.0,10.0,0.0]];
+let light_intensity = 10;
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
       let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
       let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
       let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
-      if (ld <= 0) continue; // not facing light source
-      let shadow_scaler = 1;
+      if (ld <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
         let t = o.intersectT(o,hit.p,lv);
-        if (t < ll) {shadow_scaler=0; break;}
+        if (t < ll) {ld=0; break;} // occluded
       }
-      diffuse_intensity += ld * shadow_scaler;
-      if (shadow_scaler < 1) continue;
+      if (ld == 0) continue;
+      diffuse_intensity += light_intensity * ld / ll;
       let slv = [-lv[0],-lv[1],-lv[2]];
       let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
       let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
@@ -257,14 +257,9 @@ function sampleTexture (texture,u,v) {
 
 function createTexture () {
   return {
-    width: 4,
-    height: 4,
-    texels: [
-      0,0,0,255, 255,255,255,255, 0,0,0,255, 255,255,255,255,
-      255,255,255,255, 0,0,0,255, 255,255,255,255, 0,0,0,255,
-      0,0,0,255, 255,255,255,255, 0,0,0,255, 255,255,255,255,
-      255,255,255,255, 0,0,0,255, 255,255,255,255, 0,0,0,255,
-    ],
+    width: 0,
+    height: 0,
+    texels: [],
     loaded: false // all loadable resources must have this property
   };
 }
@@ -272,7 +267,7 @@ function createTexture () {
 function loadTexture (src) {
   let texture = createTexture();
   var image = new Image();
-  image.onload = function(e) {
+  image.onload = function (e) {
     let canvas = document.createElement('canvas');
     canvas.width = e.target.width;
     canvas.height = e.target.height;
