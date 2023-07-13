@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '498';
+let build = '499';
 
 (function() {
   let output = document.createElement('pre');
@@ -216,7 +216,7 @@ function intersectWorld (segs,objs,org,dir) {
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
         let t = o.intersectT(o,hit.p,lv);
-        if (t < ll) {shadow_scaler=0.5; break;}
+        if (t < ll) {shadow_scaler=0.1; break;}
       }
       diffuse_intensity += ld * shadow_scaler;
       if (shadow_scaler < 1) continue;
