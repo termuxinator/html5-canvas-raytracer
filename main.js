@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '462';
+let build = '463';
 
 (function() {
   let output = document.createElement('pre');
@@ -17,6 +17,11 @@ let build = '462';
   document.body.onload = main;
 })();
 
+function distance (a,b) {
+  let v = [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+  return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+}
+
 function main () {
   let canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
@@ -24,6 +29,16 @@ function main () {
   let context = canvas.getContext('2d');
   context.imageSmoothingEnabled = false;
   let colorbuf = context.createImageData(canvas.width,canvas.height);
+
+  let origin = [0,1.5,10];
+  let axisX = [-1,0,0];
+  let axisY = [0,1,0];
+  let axisZ = [0,0,-1];
+
+  let projA = 60 * Math.PI / 180;
+  let projW = canvas.width / 2;
+  let projH = canvas.height / 2;
+  let projD = projW / Math.tan(projA/2);
 
   let objects = [
 createSphere([0.0,-5000.0,0.0],5000,createMaterial([1.0,1.0,1.0],[1.0,0.5,0.0,0.0],50,1.0)), // world
@@ -62,34 +77,12 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     let v = Math.asin(hit.n[1]*ydir) / (Math.PI/2) / 2 + 0.5;
     return sampleTexture(globe_texture,u,v);
   };
-  // sort objects where most surface area come first
-  objects.sort(function(a,b) {return(a.surface_area-b.surface_area);});
-
-  let origin = [0,1.5,10];
-  let axisX = [-1,0,0];
-  let axisY = [0,1,0];
-  let axisZ = [0,0,-1];
-
-  let projA = 60 * Math.PI / 180;
-  let projW = canvas.width / 2;
-  let projH = canvas.height / 2;
-  let projD = projW / Math.tan(projA/2);
-
-  let dist = [-projW+0.5, projH-0.5, projD];
-
-  let target = [
-    origin[0] + axisX[0]*dist[0] + axisY[0]*dist[0] + axisZ[0]*dist[0],
-    origin[1] + axisX[1]*dist[1] + axisY[1]*dist[1] + axisZ[1]*dist[1],
-    origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
-  ];
-
-  let stepX = axisX[0];
-  let stepY = axisX[1];
-  let stepZ = axisX[2];
-
-  let nextX = -(axisX[0] * canvas.width + axisY[0]);
-  let nextY = -(axisX[1] * canvas.width + axisY[1]);
-  let nextZ = -(axisX[2] * canvas.width + axisY[2]);
+  // sort objects based on surface area and distance from camera
+  objects.sort(function (a,b) {
+    let aa = a.surface_area / distance(origin,a.origin);
+    let bb = b.surface_area / distance(origin,b.origin);
+    return(aa - bb);
+  });
 
   let resource_list = [globe_texture]; // register resources
   setTimeout(loading,0);
@@ -111,19 +104,19 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     let ipixel = 0;
     for (let y=0; y<canvas.height; y++) {
       for (let x=0; x<canvas.width; x++) {
+        let dist = [x-projW+0.5, projH-y-0.5, projD];
+        let target = [
+          origin[0] + axisX[0]*dist[0] + axisY[0]*dist[0] + axisZ[0]*dist[0],
+          origin[1] + axisX[1]*dist[1] + axisY[1]*dist[1] + axisZ[1]*dist[1],
+          origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
+        ];
         let ray = [target[0]-origin[0], target[1]-origin[1], target[2]-origin[2]];
         let rgb = intersectWorld(8,objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
         colorbuf.data[ipixel++] = 255 * rgb[1];
         colorbuf.data[ipixel++] = 255 * rgb[2];
         colorbuf.data[ipixel++] = 255;
-        target[0] += stepX;
-        target[1] += stepY;
-        target[2] += stepZ;
       }
-      target[0] += nextX;
-      target[1] += nextY;
-      target[2] += nextZ;
     }
     context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
     let elapsed = Date.now() - timestamp;
