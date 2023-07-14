@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '525';
+let build = '526';
 
 (function() {
   let output = document.createElement('pre');
@@ -14,7 +14,6 @@ let build = '525';
     output.innerHTML += items.join(' ') + '<br />';
   };
   window.onerror = console.log;
-  console.warn = console.log;
   document.body.onload = main;
 })();
 
@@ -25,8 +24,12 @@ function vec (a,b) {
 function uvec (a,b) {
   let v = vec(a,b);
   let l = length(v);
-  if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
-  return v;
+  if (l == 0) l = 1;
+  return scale(v,1/l);
+}
+
+function scale (v,t) {
+  return [v[0]*t, v[1]*t, v[2]*t];
 }
 
 function length (v) {
@@ -170,7 +173,7 @@ function intersectWorld (segs,objs,org,dir) {
   { // code block
     let l = length(dir);
     if (l == 0) return [0,0,0];
-    dir[0]/=l; dir[1]/=l; dir[2]/=l;
+    dir = scale(dir,1/l);
   }
 
   let hit = createIntersect();
@@ -240,7 +243,7 @@ let light_intensity = 150;
       let light = lights[k];
       let lv = vec(hit.p,light);
       let ll = length(lv);
-      if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
+      if (ll != 0) scale(lv,1/ll);
       let ld = dot(lv,hit.n);
       if (ld <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
@@ -256,7 +259,7 @@ diffuse_intensity += light_intensity * ld / (ll * ll);
 //let srv = project(slv,hit.n,srt);
 let srv = reflect(slv,hit.n);
       let srl = length(srv);
-      if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
+      if (srl != 0) scale(srv,1/srl);
       srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
       let spec_dot = dot(dir,srv);
       if (spec_dot > 0) specular_intensity += Math.pow(spec_dot,hit.m.specular_exponent);
