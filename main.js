@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '517';
+let build = '516';
 
 (function() {
   let output = document.createElement('pre');
@@ -17,13 +17,9 @@ let build = '517';
   document.body.onload = main;
 })();
 
-function dot (a,b) {
-  return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
-}
-
 function distance (a,b) {
   let v = [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
-  return Math.hypot(v[0],v[1],v[2]);
+  return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
 
 function main () {
@@ -143,7 +139,7 @@ function intersectWorld (segs,objs,org,dir) {
   if (segs == 0) return [0,0,0];
 
   { // code block
-    let l = Math.hypot(dir[0],dir[1],dir[2]);
+    let l = Math.sqrt(dir[0]*dir[0] + dir[1]*dir[1] + dir[2]*dir[2]);
     if (l == 0) return [0,0,0];
     dir[0]/=l; dir[1]/=l; dir[2]/=l;
   }
@@ -158,15 +154,15 @@ function intersectWorld (segs,objs,org,dir) {
 
   let reflect_dir = [0,0,0];
   if (hit.m.albedo[2] > 0) { // has reflective properties
-    let t = -(2 * dot(dir,hit.n));
+    let t = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
     reflect_dir = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
   }
 
   let refract_dir = [0,0,0];
   if (hit.m.albedo[3] > 0) { // has refractive properties
     let norm, eta;
-    let t = dot(dir,hit.n);
-    let cosi = -Math.max(-1, Math.min(1, t));
+    let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
+    let cosi = -Math.max(-1, Math.min(1, dot));
     if (cosi < 0) { // from inside toward outside
       cosi = -cosi;
       norm = [-hit.n[0],-hit.n[1],-hit.n[2]];
@@ -213,9 +209,9 @@ let light_intensity = 100;
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
       let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
-      let ll = Math.hypot(lv[0],lv[1],lv[2]);
+      let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-      let ld = dot(lv,hit.n);
+      let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
       if (ld <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
@@ -226,9 +222,9 @@ let light_intensity = 100;
       //diffuse_intensity += ld;
 diffuse_intensity += light_intensity * ld / (ll * ll);
       let slv = [-lv[0],-lv[1],-lv[2]];
-      let srt = -(2 * dot(slv,hit.n));
+      let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
       let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
-      let srl = Math.hypot(srv[0],srv[1]*,srv[2]);
+      let srl = Math.sqrt(srv[0]*srv[0] + srv[1]*srv[1] + srv[2]*srv[2]);
       if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
       srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
       let spec_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
@@ -315,7 +311,7 @@ function createSphere (o,r,m) {
 
 function intersectSphereT (obj,org,dir) {
   let L = [obj.origin[0]-org[0], obj.origin[1]-org[1], obj.origin[2]-org[2]];
-  let tca = dot(dir,L);
+  let tca = L[0]*dir[0] + L[1]*dir[1] + L[2]*dir[2];
   let d2 = L[0]*L[0] + L[1]*L[1] + L[2]*L[2] - tca*tca;
   if (d2 > obj.r2) return Infinity;
   let thc = Math.sqrt(obj.r2 - d2);
@@ -336,7 +332,7 @@ function intersectSphereM (obj,org,dir) {
   hit.n[0] = hit.p[0] - obj.origin[0];
   hit.n[1] = hit.p[1] - obj.origin[1];
   hit.n[2] = hit.p[2] - obj.origin[2];
-  let l = Math.hypot(hit.n[0],hit.n[1],hit.n[2]);
+  let l = Math.sqrt(hit.n[0]*hit.n[0] + hit.n[1]*hit.n[1] + hit.n[2]*hit.n[2]);
   if (l != 0) {let r=1/l; hit.n[0]*=r; hit.n[1]*=r; hit.n[2]*=r;}
   hit.u = Math.atan2(-hit.n[2],-hit.n[0]) / Math.PI / 2 + 0.5;
   hit.v = Math.asin(-hit.n[1]) / (Math.PI/2) / 2 + 0.5;
