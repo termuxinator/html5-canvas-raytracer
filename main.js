@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '526';
+let build = '527';
 
 (function() {
   let output = document.createElement('pre');
@@ -344,7 +344,7 @@ function createSphere (o,r,m) {
 }
 
 function intersectSphereT (obj,org,dir) {
-  let L = vec(org,obj.origin);
+  let L = uvec(org,obj.origin);
   let tca = dot(dir,L);
   let d2 = L[0]*L[0] + L[1]*L[1] + L[2]*L[2] - tca*tca;
   if (d2 > obj.r2) return Infinity;
