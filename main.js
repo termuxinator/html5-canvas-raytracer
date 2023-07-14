@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '522';
+let build = '523';
 
 (function() {
   let output = document.createElement('pre');
@@ -14,6 +14,7 @@ let build = '522';
     output.innerHTML += items.join(' ') + '<br />';
   };
   window.onerror = console.log;
+  console.warn = console.log;
   document.body.onload = main;
 })();
 
