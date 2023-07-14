@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '524';
+let build = '525';
 
 (function() {
   let output = document.createElement('pre');
@@ -23,10 +23,14 @@ function vec (a,b) {
 }
 
 function uvec (a,b) {
-  let v = [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
-  let l = Math.hypot(v[0],v[1],v[2]);
+  let v = vec(a,b);
+  let l = length(v);
   if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
   return v;
+}
+
+function length (v) {
+  return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 }
 
 function dot (a,b) {
@@ -34,8 +38,8 @@ function dot (a,b) {
 }
 
 function distance (a,b) {
-  let v = [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
-  return Math.hypot(v[0],v[1],v[2]);
+  let v = vec(a,b);
+  return length(v);
 }
 
 function project (o,v,t) {
@@ -164,7 +168,7 @@ function intersectWorld (segs,objs,org,dir) {
   if (segs == 0) return [0,0,0];
 
   { // code block
-    let l = Math.hypot(dir[0],dir[1],dir[2]);
+    let l = length(dir);
     if (l == 0) return [0,0,0];
     dir[0]/=l; dir[1]/=l; dir[2]/=l;
   }
@@ -235,7 +239,7 @@ let light_intensity = 150;
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
       let lv = vec(hit.p,light);
-      let ll = Math.hypot(lv[0],lv[1],lv[2]);
+      let ll = length(lv);
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
       let ld = dot(lv,hit.n);
       if (ld <= 0) continue; // surface not facing light source
@@ -251,7 +255,7 @@ diffuse_intensity += light_intensity * ld / (ll * ll);
 //let srt = -(2 * dot(slv,hit.n));
 //let srv = project(slv,hit.n,srt);
 let srv = reflect(slv,hit.n);
-      let srl = Math.hypot(srv[0],srv[1],srv[2]);
+      let srl = length(srv);
       if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
       srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
       let spec_dot = dot(dir,srv);
