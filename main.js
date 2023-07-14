@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '519';
+let build = '520';
 
 (function() {
   let output = document.createElement('pre');
@@ -17,6 +17,17 @@ let build = '519';
   document.body.onload = main;
 })();
 
+function vec (a,b) {
+  return [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+}
+
+function uvec (a,b) {
+  let v = [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+  let l = Math.hypot(v[0],v[1],v[2]);
+  if (l != 0) {v[0]/=l; v[1]/=l; v[2]/=l;}
+  return v;
+}
+
 function dot (a,b) {
   return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
 }
@@ -28,6 +39,11 @@ function distance (a,b) {
 
 function project (o,v,t) {
   return [o[0]+v[0]*t, o[1]+v[1]*t, o[2]+v[2]*t];
+}
+
+function reflect (v,n) {
+  let t = -(2 * dot(v,n));
+  return project(v,n,t);
 }
 
 function main () {
@@ -120,7 +136,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
           origin[1] + axisX[1]*dist[1] + axisY[1]*dist[1] + axisZ[1]*dist[1],
           origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
         ];
-        let ray = [target[0]-origin[0], target[1]-origin[1], target[2]-origin[2]];
+        let ray = vec(origin,target);
         let rgb = intersectWorld(8,objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
         colorbuf.data[ipixel++] = 255 * rgb[1];
@@ -162,8 +178,9 @@ function intersectWorld (segs,objs,org,dir) {
 
   let reflect_dir = [0,0,0];
   if (hit.m.albedo[2] > 0) { // has reflective properties
-    let t = -(2 * dot(dir,hit.n));
-    reflect_dir = project(dir,hit.n,t);
+//let t = -(2 * dot(dir,hit.n));
+//reflect_dir = project(dir,hit.n,t);
+reflect_dir = reflect(dir,hit.n);
   }
 
   let refract_dir = [0,0,0];
@@ -216,7 +233,7 @@ function intersectWorld (segs,objs,org,dir) {
 let light_intensity = 150;
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
-      let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
+      let lv = vec(hit.p,light);
       let ll = Math.hypot(lv[0],lv[1],lv[2]);
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
       let ld = dot(lv,hit.n);
@@ -230,8 +247,9 @@ let light_intensity = 150;
       //diffuse_intensity += ld;
 diffuse_intensity += light_intensity * ld / (ll * ll);
       let slv = [-lv[0],-lv[1],-lv[2]];
-      let srt = -(2 * dot(slv,hit.n));
-      let srv = project(slv,hit.n,srt);
+//let srt = -(2 * dot(slv,hit.n));
+//let srv = project(slv,hit.n,srt);
+let srv = reflect(slv,hit.n);
       let srl = Math.hypot(srv[0],srv[1],srv[2]);
       if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
       srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
@@ -318,7 +336,7 @@ function createSphere (o,r,m) {
 }
 
 function intersectSphereT (obj,org,dir) {
-  let L = [obj.origin[0]-org[0], obj.origin[1]-org[1], obj.origin[2]-org[2]];
+  let L = vec(org,obj.origin);
   let tca = dot(dir,L);
   let d2 = L[0]*L[0] + L[1]*L[1] + L[2]*L[2] - tca*tca;
   if (d2 > obj.r2) return Infinity;
@@ -335,11 +353,7 @@ function intersectSphereM (obj,org,dir) {
   hit.t = intersectSphereT(obj,org,dir);
   if (hit.t == Infinity) return hit;
   hit.p = project(org,dir,hit.t);
-  hit.n[0] = hit.p[0] - obj.origin[0];
-  hit.n[1] = hit.p[1] - obj.origin[1];
-  hit.n[2] = hit.p[2] - obj.origin[2];
-  let l = Math.hypot(hit.n[0],hit.n[1],hit.n[2]);
-  if (l != 0) {let r=1/l; hit.n[0]*=r; hit.n[1]*=r; hit.n[2]*=r;}
+  hir.n = uvec(obj.origin,hit.p);
   hit.u = Math.atan2(-hit.n[2],-hit.n[0]) / Math.PI / 2 + 0.5;
   hit.v = Math.asin(-hit.n[1]) / (Math.PI/2) / 2 + 0.5;
   hit.m = obj.mtl;
