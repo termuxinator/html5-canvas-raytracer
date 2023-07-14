@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '517';
+let build = '518';
 
 (function() {
   let output = document.createElement('pre');
@@ -228,7 +228,7 @@ diffuse_intensity += light_intensity * ld / (ll * ll);
       let slv = [-lv[0],-lv[1],-lv[2]];
       let srt = -(2 * dot(slv,hit.n));
       let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
-      let srl = Math.hypot(srv[0],srv[1]*,srv[2]);
+      let srl = Math.hypot(srv[0],srv[1],srv[2]);
       if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
       srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
       let spec_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
