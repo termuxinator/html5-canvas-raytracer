@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '516';
+let build = '532';
 
 (function() {
   let output = document.createElement('pre');
@@ -113,6 +113,8 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
           origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
         ];
         let ray = [target[0]-origin[0], target[1]-origin[1], target[2]-origin[2]];
+        let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
+        if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
         let rgb = intersectWorld(8,objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
         colorbuf.data[ipixel++] = 255 * rgb[1];
@@ -138,12 +140,6 @@ function createIntersect () {
 function intersectWorld (segs,objs,org,dir) {
   if (segs == 0) return [0,0,0];
 
-  { // code block
-    let l = Math.sqrt(dir[0]*dir[0] + dir[1]*dir[1] + dir[2]*dir[2]);
-    if (l == 0) return [0,0,0];
-    dir[0]/=l; dir[1]/=l; dir[2]/=l;
-  }
-
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
     let o = objs[i];
@@ -153,12 +149,16 @@ function intersectWorld (segs,objs,org,dir) {
   if (hit.t == Infinity) return [1,0,0]; // wtf no skybox bro?
 
   let reflect_dir = [0,0,0];
+  let reflect_len = 0;
   if (hit.m.albedo[2] > 0) { // has reflective properties
     let t = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
     reflect_dir = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
+    reflect_len = Math.sqrt(reflect_dir[0]*reflect_dir[0] + reflect_dir[1]*reflect_dir[1] + reflect_dir[2]*reflect_dir[2]);
+    if (reflect_len != 0) {reflect_dir[2]/=reflect_len; reflect_dir[1]/=reflect_len; reflect_dir[2]/=reflect_len;}
   }
 
   let refract_dir = [0,0,0];
+  let refract_len = 0;
   if (hit.m.albedo[3] > 0) { // has refractive properties
     let norm, eta;
     let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
@@ -177,11 +177,13 @@ function intersectWorld (segs,objs,org,dir) {
       refract_dir[0] = dir[0] * eta + norm[0] * q;
       refract_dir[1] = dir[1] * eta + norm[1] * q;
       refract_dir[2] = dir[2] * eta + norm[2] * q;
-    } // else recurse with zero vector having no effect
+      refract_len = Math.sqrt(refract_dir[0]*refract_dir[0] + refract_dir[1]*refract_dir[1] + refract_dir[2]*refract_dir[2]);
+      if (refract_len != 0) {refract_dir[0]/=refract_len; refract_dir[1]/=refract_len; refract_dir[2]/=refract_len;}
+    }
   }
 
   let reflect_color = [0,0,0];
-  if (hit.m.albedo[2] > 0) {
+  if (reflect_len != 0) {
     reflect_color = intersectWorld(segs-1,objs,hit.p,reflect_dir);
     reflect_color[0] *= hit.m.albedo[2];
     reflect_color[1] *= hit.m.albedo[2];
@@ -189,7 +191,7 @@ function intersectWorld (segs,objs,org,dir) {
   }
 
   let refract_color = [0,0,0];
-  if (hit.m.albedo[3] > 0) {
+  if (refract_len != 0) {
     refract_color = intersectWorld(segs-1,objs,hit.p,refract_dir);
     refract_color[0] *= hit.m.albedo[3];
     refract_color[1] *= hit.m.albedo[3];
