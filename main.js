@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '518';
+let build = '519';
 
 (function() {
   let output = document.createElement('pre');
@@ -24,6 +24,10 @@ function dot (a,b) {
 function distance (a,b) {
   let v = [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
   return Math.hypot(v[0],v[1],v[2]);
+}
+
+function project (o,v,t) {
+  return [o[0]+v[0]*t, o[1]+v[1]*t, o[2]+v[2]*t];
 }
 
 function main () {
@@ -159,7 +163,7 @@ function intersectWorld (segs,objs,org,dir) {
   let reflect_dir = [0,0,0];
   if (hit.m.albedo[2] > 0) { // has reflective properties
     let t = -(2 * dot(dir,hit.n));
-    reflect_dir = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
+    reflect_dir = project(dir,hit.n,t);
   }
 
   let refract_dir = [0,0,0];
@@ -209,7 +213,7 @@ function intersectWorld (segs,objs,org,dir) {
     specular_intensity = 0;
   } else {
     let lights = [[5.0,10.0,5.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
-let light_intensity = 100;
+let light_intensity = 150;
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
       let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
@@ -227,11 +231,11 @@ let light_intensity = 100;
 diffuse_intensity += light_intensity * ld / (ll * ll);
       let slv = [-lv[0],-lv[1],-lv[2]];
       let srt = -(2 * dot(slv,hit.n));
-      let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
+      let srv = project(slv,hit.n,srt);
       let srl = Math.hypot(srv[0],srv[1],srv[2]);
       if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
       srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
-      let spec_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
+      let spec_dot = dot(dir,srv);
       if (spec_dot > 0) specular_intensity += Math.pow(spec_dot,hit.m.specular_exponent);
     }
     diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
@@ -330,9 +334,7 @@ function intersectSphereM (obj,org,dir) {
   let hit = createIntersect();
   hit.t = intersectSphereT(obj,org,dir);
   if (hit.t == Infinity) return hit;
-  hit.p[0] = org[0] + dir[0] * hit.t;
-  hit.p[1] = org[1] + dir[1] * hit.t;
-  hit.p[2] = org[2] + dir[2] * hit.t;
+  hit.p = project(org,dir,hit.t);
   hit.n[0] = hit.p[0] - obj.origin[0];
   hit.n[1] = hit.p[1] - obj.origin[1];
   hit.n[2] = hit.p[2] - obj.origin[2];
