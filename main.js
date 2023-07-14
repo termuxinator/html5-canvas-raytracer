@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '520';
+let build = '522';
 
 (function() {
   let output = document.createElement('pre');
@@ -353,7 +353,7 @@ function intersectSphereM (obj,org,dir) {
   hit.t = intersectSphereT(obj,org,dir);
   if (hit.t == Infinity) return hit;
   hit.p = project(org,dir,hit.t);
-  hir.n = uvec(obj.origin,hit.p);
+  hit.n = uvec(obj.origin,hit.p);
   hit.u = Math.atan2(-hit.n[2],-hit.n[0]) / Math.PI / 2 + 0.5;
   hit.v = Math.asin(-hit.n[1]) / (Math.PI/2) / 2 + 0.5;
   hit.m = obj.mtl;
