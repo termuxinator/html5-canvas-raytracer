@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '527';
+let build = '528';
 
 (function() {
   let output = document.createElement('pre');
@@ -186,9 +186,9 @@ function intersectWorld (segs,objs,org,dir) {
 
   let reflect_dir = [0,0,0];
   if (hit.m.albedo[2] > 0) { // has reflective properties
-//let t = -(2 * dot(dir,hit.n));
-//reflect_dir = project(dir,hit.n,t);
-reflect_dir = reflect(dir,hit.n);
+let t = -(2 * dot(dir,hit.n));
+reflect_dir = project(dir,hit.n,t);
+//reflect_dir = reflect(dir,hit.n);
   }
 
   let refract_dir = [0,0,0];
@@ -255,9 +255,9 @@ let light_intensity = 150;
       //diffuse_intensity += ld;
 diffuse_intensity += light_intensity * ld / (ll * ll);
       let slv = [-lv[0],-lv[1],-lv[2]];
-//let srt = -(2 * dot(slv,hit.n));
-//let srv = project(slv,hit.n,srt);
-let srv = reflect(slv,hit.n);
+let srt = -(2 * dot(slv,hit.n));
+let srv = project(slv,hit.n,srt);
+//let srv = reflect(slv,hit.n);
       let srl = length(srv);
       if (srl != 0) scale(srv,1/srl);
       srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
@@ -344,7 +344,7 @@ function createSphere (o,r,m) {
 }
 
 function intersectSphereT (obj,org,dir) {
-  let L = uvec(org,obj.origin);
+  let L = vec(org,obj.origin);
   let tca = dot(dir,L);
   let d2 = L[0]*L[0] + L[1]*L[1] + L[2]*L[2] - tca*tca;
   if (d2 > obj.r2) return Infinity;
