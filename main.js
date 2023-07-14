@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '523';
+let build = '524';
 
 (function() {
   let output = document.createElement('pre');
