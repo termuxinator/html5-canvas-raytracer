@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '551';
+let build = '552';
 
 (function() {
   let output = document.createElement('pre');
@@ -109,6 +109,7 @@ createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[0.5,0.8,0.0,0.0]
 createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([50.0,20.0,-100.0],4.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // earth
 createSphere([-50.0,20.0,-100.0],2.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // mars
+createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
 createSphere([0.0,0.75,4.0],0.25,createMaterial([0.5,0.5,0.5],[1.0,0.2,0.0,0.8],10,1.5)), // glass
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.8,0.0],20,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.5,0.6,0.0],500,1.0)), // mirror
@@ -116,7 +117,6 @@ createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],5
 createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornament
 createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornament
 createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornamemt
-createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
   ];
   // override home material sampler with sphere checker mapper
   objects[0].mtl.sampler = function (hit) {
@@ -134,8 +134,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     c *= 1000; return [c,c,c];
   };
   // override earth material sampler to use texture mapper
-  //let earth_texture = loadTexture('./earth.png');
-  let earth_texture = checkerTexture(4,2,[1,1,0],[1,0,1]);
+  let earth_texture = loadTexture('./earth.png');
   objects[2].mtl.sampler = function (hit) {
     return sampleTexture(earth_texture,hit.u,hit.v);
   };
@@ -143,6 +142,11 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   let mars_texture = loadTexture('./mars.png');
   objects[3].mtl.sampler = function (hit) {
     return sampleTexture(mars_texture,hit.u,hit.v);
+  };
+  // override matte sphere material sampler to use checker texture map
+  let matte_texture = checkerTexture(8,4,[0,0,0],[1,1,1]);
+  objects[4].mtl.sampler = function (hit) {
+    return sampleTexture(matte_texture,hit.u,hit.v);
   };
   // sort objects based on surface area and distance from camera
   objects.sort(function (a,b) {
