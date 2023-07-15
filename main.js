@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '569';
+const build = '570';
 
 (function() {
   const output = document.createElement('pre');
@@ -190,7 +190,7 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
         colorbuf.data[idx+2] = 255 * rgb[2];
         colorbuf.data[idx+3] = 255;
       }
-      context.putImageData(colorbuf,0,y-1,0,y-1,canvas.width,1);
+      context.putImageData(colorbuf,0,0,0,y,canvas.width,1);
       if (y < canvas.height-1) setTimeout(spanish,0,y+1);
       else {
       //context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
