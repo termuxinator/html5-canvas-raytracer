@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '542';
+let build = '543';
 
 (function() {
   let output = document.createElement('pre');
@@ -16,6 +16,10 @@ let build = '542';
   window.onerror = console.log;
   document.body.onload = main;
 })();
+
+function new3D (x,y,z) {
+  return [x,y,z];
+}
 
 function copy3D (v) {
   return [v[0], v[1], v[2]];
@@ -38,12 +42,16 @@ function reflect3D (v,n) {
   return project3D(v,n,t);
 }
 
+function mag3D (v) {
+  return dot3D(v,v);
+}
+
 function dot3D (a,b) {
   return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
 }
 
-function mag3D (v) {
-  return dot3D(v,v);
+function cross3D (a,b) {
+  return [a[1]*b[2]-b[1]*a[2], a[2]*b[0]-b[2]*a[0], a[0]*b[1]-b[0]*a[1]];
 }
 
 function length3D (v) {
@@ -74,10 +82,22 @@ function main () {
   context.imageSmoothingEnabled = false;
   let colorbuf = context.createImageData(canvas.width,canvas.height);
 
-  let origin = [0,1.5,10];
-  let axisX = [-1,0,0];
-  let axisY = [0,1,0];
-  let axisZ = [0,0,-1];
+  let origin = new3D(0,1.5,10);
+  let axisX = new3D(-1,0,0);
+  let axisY = new3D(0,1,0);
+  let axisZ = new3D(0,0,-1);
+
+  lookAt([0,1.5,10],[0,1.5,0],[0,1,0]);
+
+  function lookAt (org,tgt,up) {
+    origin = org;
+    axisZ = between3D(org,tgt);
+    axisX = cross3D(axisZ,up);
+    axisY = cross3D(axisX,axisZ);
+    axisX = normal3D(axisX);
+    axisY = normal3D(axisY);
+    axisZ = normal3D(axisZ);
+  }
 
   let projA = 60 * Math.PI / 180;
   let projW = canvas.width / 2;
