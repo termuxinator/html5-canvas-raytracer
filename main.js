@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '552';
+let build = '553';
 
 (function() {
   let output = document.createElement('pre');
@@ -144,7 +144,7 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
     return sampleTexture(mars_texture,hit.u,hit.v);
   };
   // override matte sphere material sampler to use checker texture map
-  let matte_texture = checkerTexture(8,4,[0,0,0],[1,1,1]);
+  let matte_texture = checkerTexture(16,8,[0,0,0],[1,1,1]);
   objects[4].mtl.sampler = function (hit) {
     return sampleTexture(matte_texture,hit.u,hit.v);
   };
