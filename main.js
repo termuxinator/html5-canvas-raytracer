@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '548';
+let build = '549';
 
 (function() {
   let output = document.createElement('pre');
@@ -134,7 +134,8 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
     c *= 1000; return [c,c,c];
   };
   // override earth material sampler to use texture mapper
-  let earth_texture = loadTexture('./earth.png');
+  //let earth_texture = loadTexture('./earth.png');
+  let earth_texture = checkerTexture(64,32,[1,1,0],[1,0,1]);
   objects[2].mtl.sampler = function (hit) {
     return sampleTexture(earth_texture,hit.u,hit.v);
   };
@@ -312,6 +313,27 @@ function sampleTexture (t,u,v) {
   const g = t.texels[i+1] / 255;
   const b = t.texels[i+2] / 255;
   return [r,g,b];
+}
+
+function checkerTexture (w,h,c1,c2) {
+  let texture = {width:w, height:h, texels:[], loaded:true};
+  for (let y=0; y<h; y++) {
+    for (let x=0; x<w; x++) {
+      let i = (y * w + x) * 4;
+      if ((x&1) ^ (y&1)) {
+        texture.texels[i+0] = 255 * c2[0];
+        texture.texels[i+1] = 255 * c2[1];
+        texture.texels[i+2] = 255 * c2[2];
+        texture.texels[i+3] = 255;
+      } else {
+        texture.texels[i+0] = 255 * c1[0];
+        texture.texels[i+1] = 255 * c1[1];
+        texture.texels[i+2] = 255 * c1[2];
+        texture.texels[i+3] = 255;
+      }
+    }
+  }
+  return texture;
 }
 
 function loadTexture (src) {
