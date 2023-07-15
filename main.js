@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '550';
+let build = '551';
 
 (function() {
   let output = document.createElement('pre');
@@ -135,7 +135,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   };
   // override earth material sampler to use texture mapper
   //let earth_texture = loadTexture('./earth.png');
-  let earth_texture = checkerTexture(32,16,[1,1,0],[1,0,1]);
+  let earth_texture = checkerTexture(4,2,[1,1,0],[1,0,1]);
   objects[2].mtl.sampler = function (hit) {
     return sampleTexture(earth_texture,hit.u,hit.v);
   };
