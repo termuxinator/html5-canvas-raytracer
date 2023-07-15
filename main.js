@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '565';
+const build = '566';
 
 (function() {
   const output = document.createElement('pre');
@@ -172,8 +172,8 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
 
   function redraw () {
     const timestamp = Date.now();
-    let ipixel = 0;
-    for (let y=0; y<canvas.height; y++) {
+    setTimeout(spanish,0,0);
+    function spanish (y) {
       for (let x=0; x<canvas.width; x++) {
         const dist = [x-projW+0.5, projH-y-0.5, projD];
         const target = [
@@ -184,10 +184,11 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
         let ray = between3D(origin,target);
             ray = normal3D(ray);
         const rgb = intersectWorld(8,objects,origin,ray);
-        colorbuf.data[ipixel++] = 255 * rgb[0];
-        colorbuf.data[ipixel++] = 255 * rgb[1];
-        colorbuf.data[ipixel++] = 255 * rgb[2];
-        colorbuf.data[ipixel++] = 255;
+        const idx = (y * canvas.width + x) * 4;
+        colorbuf.data[idx+0] = 255 * rgb[0];
+        colorbuf.data[idx+1] = 255 * rgb[1];
+        colorbuf.data[idx+2] = 255 * rgb[2];
+        colorbuf.data[idx+3] = 255;
       }
     }
     context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
@@ -198,6 +199,7 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
     context.textBaseline = 'top';
     context.fillStyle = '#ffffff';
     context.fillText(message,0,0);
+    if (y < canvas.height-1) setTimeout(spanish,0,y+1);
   }
 }
 
