@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '545';
+let build = '546';
 
 (function() {
   let output = document.createElement('pre');
@@ -246,23 +246,19 @@ function intersectWorld (segs,objs,org,dir) {
   let reflect_color = [0,0,0];
   if (reflect_len != 0) {
     reflect_color = intersectWorld(segs-1,objs,hit.p,reflect_dir);
-    reflect_color[0] *= hit.m.albedo[2];
-    reflect_color[1] *= hit.m.albedo[2];
-    reflect_color[2] *= hit.m.albedo[2];
+    reflect_color = scale3D(reflect_color,hit.m.albedo[2]);
   }
 
   let refract_color = [0,0,0];
   if (refract_len != 0) {
     refract_color = intersectWorld(segs-1,objs,hit.p,refract_dir);
-    refract_color[0] *= hit.m.albedo[3];
-    refract_color[1] *= hit.m.albedo[3];
-    refract_color[2] *= hit.m.albedo[3];
+    refract_color = scale3D(refract_color,hit.m.albedo[3]);
   }
 
   let diffuse_intensity = 0;
   let specular_intensity = 0;
 
-  // zero intensity will bypass shader (full bright hack)
+  // zero albedo will bypass shader (full bright hack)
   if ((hit.m.albedo[0] == 0) && (hit.m.albedo[1] == 0)) {
     diffuse_intensity = 1;
     specular_intensity = 0;
@@ -271,22 +267,23 @@ function intersectWorld (segs,objs,org,dir) {
     let light_intensity = 150; // common (for now)
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
-      let lv = between3D(hit.p,light); // shadow vec
-      let lm = mag3D(lv);
+      let shadow_vec = between3D(hit.p,light);
+      let lm = mag3D(shadow_vec);
       let ll = Math.sqrt(lm);
-      if (ll != 0) lv = scale3D(lv,1/ll);
-      let ld = dot3D(lv,hit.n);
-      if (ld <= 0) continue; // surface not facing light source
+      if (ll != 0) shadow_vec = scale3D(shadow_vec,1/ll);
+      let shadow_dot = dot3D(shadow_vec,hit.n);
+      if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
-        let t = o.intersectT(o,hit.p,lv);
-        if (t < ll) {ld=0; break;} // occluded
+        let t = o.intersectT(o,hit.p,shadow_vec);
+        if (t < ll) {shadow_dot=0; break;} // occluded
       }
-      if (ld == 0) continue;
-    //diffuse_intensity += ld;
-      diffuse_intensity += light_intensity * ld / lm;
-      let spec_ref = reflect3D(oppose3D(lv),hit.n);
-      let spec_dir = oppose3D(normal3D(spec_ref));
+      if (shadow_dot == 0) continue;
+      diffuse_intensity += light_intensity * shadow_dot / lm;
+      let light_dir = oppose3D(shadow_vec);
+      let light_ref = reflect3D(light_dir,hit.n);
+          light_ref = normal3D(light_ref);
+      let spec_dir = oppose3D(light_ref);
       let spec_dot = dot3D(dir,spec_dir);
       if (spec_dot > 0) specular_intensity += Math.pow(spec_dot,hit.m.specular_exponent);
     }
@@ -296,8 +293,8 @@ function intersectWorld (segs,objs,org,dir) {
 
   let rgb = hit.m.sampler(hit);
 
-  let diffuse_color = [rgb[0]*diffuse_intensity, rgb[1]*diffuse_intensity, rgb[2]*diffuse_intensity];
-  let specular_color = [rgb[0]*specular_intensity, rgb[1]*specular_intensity, rgb[2]*specular_intensity];
+  let diffuse_color = scale3D(rgb,diffuse_intensity);
+  let specular_color = scale3D(rgb,specular_intensity);
 
   return [
     Math.min(1, diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
