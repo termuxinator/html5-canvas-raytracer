@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '540';
+let build = '541';
 
 (function() {
   let output = document.createElement('pre');
@@ -248,14 +248,14 @@ function intersectWorld (segs,objs,org,dir) {
     specular_intensity = 0;
   } else {
     let lights = [[5.0,10.0,5.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
-let light_intensity = 150;
+    let light_intensity = 150; // common (for now)
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
-      let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
-      let lm = lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2];
+      let lv = between3D(hit.p,light); // shadow vec
+      let lm = mag3D(lv);
       let ll = Math.sqrt(lm);
-      if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
-      let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
+      if (ll != 0) lv = scale3D(lv,1/ll);
+      let ld = dot3D(lv,hit.n);
       if (ld <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
@@ -263,15 +263,11 @@ let light_intensity = 150;
         if (t < ll) {ld=0; break;} // occluded
       }
       if (ld == 0) continue;
-      //diffuse_intensity += ld;
-diffuse_intensity += light_intensity * ld / lm;
-      let slv = [-lv[0],-lv[1],-lv[2]];
-      let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
-      let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
-      let srl = Math.sqrt(srv[0]*srv[0] + srv[1]*srv[1] + srv[2]*srv[2]);
-      if (srl != 0) {srv[0]/=srl; srv[1]/=srl; srv[2]/=srl;}
-      srv[0] *= -1; srv[1] *= -1; srv[2] *= -1;
-      let spec_dot = srv[0]*dir[0] + srv[1]*dir[1] + srv[2]*dir[2];
+    //diffuse_intensity += ld;
+      diffuse_intensity += light_intensity * ld / lm;
+      let spec_ref = reflect3D(oppose3D(lv),hit.n);
+      let spec_dir = oppose3D(normal3D(spec_ref));
+      let spec_dot = dot3D(dir,spec_dir);
       if (spec_dot > 0) specular_intensity += Math.pow(spec_dot,hit.m.specular_exponent);
     }
     diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
