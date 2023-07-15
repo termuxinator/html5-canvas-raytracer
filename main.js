@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '567';
+const build = '568';
 
 (function() {
   const output = document.createElement('pre');
@@ -190,15 +190,18 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
         colorbuf.data[idx+2] = 255 * rgb[2];
         colorbuf.data[idx+3] = 255;
       }
-      context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
-      const elapsed = Date.now() - timestamp;
-      const message = 'build #' + build + ' (' + elapsed + 'ms)';
-      context.font = '16px monospace';
-      context.textAlign = 'left';
-      context.textBaseline = 'top';
-      context.fillStyle = '#ffffff';
-      context.fillText(message,0,0);
+      context.putImageData(colorbuf,0,y,0,y,canvas.width,1);
       if (y < canvas.height-1) setTimeout(spanish,0,y+1);
+      else {
+      //context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
+        const elapsed = Date.now() - timestamp;
+        const message = 'build #' + build + ' (' + elapsed + 'ms)';
+        context.font = '16px monospace';
+        context.textAlign = 'left';
+        context.textBaseline = 'top';
+        context.fillStyle = '#ffffff';
+        context.fillText(message,0,0);
+      }
     }
   }
 }
