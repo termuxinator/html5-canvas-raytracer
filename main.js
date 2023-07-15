@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '547';
+let build = '548';
 
 (function() {
   let output = document.createElement('pre');
@@ -269,18 +269,18 @@ function intersectWorld (segs,objs,org,dir) {
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
       let shadow_vec = between3D(hit.p,light);
-      let lm = mag3D(shadow_vec);
-      let ll = Math.sqrt(lm);
-      if (ll != 0) shadow_vec = scale3D(shadow_vec,1/ll);
+      let light_mag = mag3D(shadow_vec);
+      let light_len = Math.sqrt(light_mag);
+      if (light_len != 0) shadow_vec = scale3D(shadow_vec,1/light_len);
       let shadow_dot = dot3D(shadow_vec,hit.n);
       if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
         let o = objs[j];
         let t = o.intersectT(o,hit.p,shadow_vec);
-        if (t < ll) {shadow_dot=0; break;} // occluded
+        if (t < light_len) {shadow_dot=0; break;} // occluded
       }
       if (shadow_dot == 0) continue;
-      diffuse_intensity += light_intensity * shadow_dot / lm;
+      diffuse_intensity += light_intensity * shadow_dot / light_mag;
       let light_dir = oppose3D(shadow_vec);
       let light_ref = reflect3D(light_dir,hit.n);
           light_ref = normal3D(light_ref);
@@ -304,27 +304,18 @@ function intersectWorld (segs,objs,org,dir) {
   ];
 }
 
-function sampleTexture (texture,u,v) {
-  let x = Math.max(0, Math.ceil(u * texture.width) - 1);
-  let y = Math.max(0, Math.ceil(v * texture.height) - 1);
-  let i = (y * texture.width + x) * 4;
-  let r = texture.texels[i+0] / 255;
-  let g = texture.texels[i+1] / 255;
-  let b = texture.texels[i+2] / 255;
+function sampleTexture (t,u,v) {
+  const x = Math.max(0, Math.ceil(u * t.width) - 1);
+  const y = Math.max(0, Math.ceil(v * t.height) - 1);
+  const i = (y * t.width + x) * 4;
+  const r = t.texels[i+0] / 255;
+  const g = t.texels[i+1] / 255;
+  const b = t.texels[i+2] / 255;
   return [r,g,b];
 }
 
-function createTexture () {
-  return {
-    width: 0,
-    height: 0,
-    texels: [],
-    loaded: false // all loadable resources must have this property
-  };
-}
-
 function loadTexture (src) {
-  let texture = createTexture();
+  let texture = {width:0, height:0, texels:[], loaded:false};
   var image = new Image();
   image.onload = function (e) {
     let canvas = document.createElement('canvas');
