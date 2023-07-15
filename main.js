@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '533';
+let build = '534';
 
 (function() {
   let output = document.createElement('pre');
@@ -17,9 +17,22 @@ let build = '533';
   document.body.onload = main;
 })();
 
-function distance (a,b) {
+function dot3D (a,b) {
+  return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
+}
+
+function mag3D (v) {
+  return dot3D(v,v);
+}
+
+function length3D (v) {
+  const m = mag3D(v);
+  return Math.sqrt(m);
+}
+
+function distance3D (a,b) {
   let v = [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
-  return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+  return length3D(v);
 }
 
 function main () {
@@ -81,8 +94,8 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
   };
   // sort objects based on surface area and distance from camera
   objects.sort(function (a,b) {
-    let aa = a.surface_area / distance(origin,a.origin);
-    let bb = b.surface_area / distance(origin,b.origin);
+    let aa = a.surface_area / distance3D(origin,a.origin);
+    let bb = b.surface_area / distance3D(origin,b.origin);
     return(aa - bb);
   });
 
