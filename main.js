@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '546';
+let build = '547';
 
 (function() {
   let output = document.createElement('pre');
@@ -176,7 +176,8 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
           origin[1] + axisX[1]*dist[1] + axisY[1]*dist[1] + axisZ[1]*dist[1],
           origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
         ];
-        let ray = normal3D(between3D(origin,target));
+        let ray = between3D(origin,target);
+            ray = normal3D(ray);
         let rgb = intersectWorld(8,objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
         colorbuf.data[ipixel++] = 255 * rgb[1];
@@ -384,7 +385,8 @@ function intersectSphereM (obj,org,dir) {
   hit.t = intersectSphereT(obj,org,dir);
   if (hit.t == Infinity) return hit;
   hit.p = project3D(org,dir,hit.t);
-  hit.n = normal3D(between3D(obj.origin,hit.p));
+  hit.n = between3D(obj.origin,hit.p);
+  hit.n = normal3D(hit.n);
   hit.u = Math.atan2(-hit.n[2],-hit.n[0]) / Math.PI / 2 + 0.5;
   hit.v = Math.asin(-hit.n[1]) / (Math.PI/2) / 2 + 0.5;
   hit.m = obj.mtl;
