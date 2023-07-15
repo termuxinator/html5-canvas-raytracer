@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '532';
+let build = '533';
 
 (function() {
   let output = document.createElement('pre');
@@ -207,11 +207,12 @@ function intersectWorld (segs,objs,org,dir) {
     specular_intensity = 0;
   } else {
     let lights = [[5.0,10.0,5.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
-let light_intensity = 100;
+let light_intensity = 150;
     for (let k=0; k<lights.length; k++) {
       let light = lights[k];
       let lv = [light[0]-hit.p[0], light[1]-hit.p[1], light[2]-hit.p[2]];
-      let ll = Math.sqrt(lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2]);
+      let lm = lv[0]*lv[0] + lv[1]*lv[1] + lv[2]*lv[2];
+      let ll = Math.sqrt(lm);
       if (ll != 0) {lv[0]/=ll; lv[1]/=ll; lv[2]/=ll;}
       let ld = lv[0]*hit.n[0] + lv[1]*hit.n[1] + lv[2]*hit.n[2];
       if (ld <= 0) continue; // surface not facing light source
@@ -222,7 +223,7 @@ let light_intensity = 100;
       }
       if (ld == 0) continue;
       //diffuse_intensity += ld;
-diffuse_intensity += light_intensity * ld / (ll * ll);
+diffuse_intensity += light_intensity * ld / lm;
       let slv = [-lv[0],-lv[1],-lv[2]];
       let srt = -(2 * (slv[0]*hit.n[0] + slv[1]*hit.n[1] + slv[2]*hit.n[2]));
       let srv = [slv[0]+hit.n[0]*srt, slv[1]+hit.n[1]*srt, slv[2]+hit.n[2]*srt];
