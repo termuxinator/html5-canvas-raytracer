@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '536';
+let build = '537';
 
 (function() {
   let output = document.createElement('pre');
@@ -19,6 +19,15 @@ let build = '536';
 
 function scale3D (v,t) {
   return [v[0]*t, v[1]*t, v[2]*t];
+}
+
+function project3D (o,v,t) {
+  return [o[0]+v[0]*t, o[1]+v[1]*t, o[2]+v[2]*t];
+}
+
+function reflect3D (v,n) {
+  const t = -(2 * dot3D(v,n));
+  return project3D(v,n,t);
 }
 
 function dot3D (a,b) {
@@ -176,10 +185,9 @@ function intersectWorld (segs,objs,org,dir) {
   let reflect_dir = [0,0,0];
   let reflect_len = 0;
   if (hit.m.albedo[2] > 0) { // has reflective properties
-    let t = -(2 * (dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2]));
-    reflect_dir = [dir[0]+hit.n[0]*t, dir[1]+hit.n[1]*t, dir[2]+hit.n[2]*t];
-    reflect_len = Math.sqrt(reflect_dir[0]*reflect_dir[0] + reflect_dir[1]*reflect_dir[1] + reflect_dir[2]*reflect_dir[2]);
-    if (reflect_len != 0) {reflect_dir[2]/=reflect_len; reflect_dir[1]/=reflect_len; reflect_dir[2]/=reflect_len;}
+    reflect_dir = reflect3D(dir,hit.n);
+    reflect_len = length3D(reflect_dir);
+    if (reflect_len != 0) reflect_dir = scale3D(reflect_dir,1/reflect_len);
   }
 
   let refract_dir = [0,0,0];
