@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '537';
+let build = '540';
 
 (function() {
   let output = document.createElement('pre');
@@ -16,6 +16,14 @@ let build = '537';
   window.onerror = console.log;
   document.body.onload = main;
 })();
+
+function copy3D (v) {
+  return [v[0], v[1], v[2]];
+}
+
+function oppose3D (v) {
+  return [-v[0], -v[1], -v[2]];
+}
 
 function scale3D (v,t) {
   return [v[0]*t, v[1]*t, v[2]*t];
@@ -194,14 +202,14 @@ function intersectWorld (segs,objs,org,dir) {
   let refract_len = 0;
   if (hit.m.albedo[3] > 0) { // has refractive properties
     let norm, eta;
-    let dot = dir[0]*hit.n[0] + dir[1]*hit.n[1] + dir[2]*hit.n[2];
+    let dot = dot3D(dir,hit.n);
     let cosi = -Math.max(-1, Math.min(1, dot));
     if (cosi < 0) { // from inside toward outside
       cosi = -cosi;
-      norm = [-hit.n[0],-hit.n[1],-hit.n[2]];
+      norm = oppose3D(hit.n);
       eta = hit.m.refract_index;
     } else {
-      norm = [hit.n[0],hit.n[1],hit.n[2]];
+      norm = copy3D(hit.n);
       eta = 1 / hit.m.refract_index;
     }
     let k = 1 - eta*eta * (1 - cosi*cosi);
@@ -210,8 +218,8 @@ function intersectWorld (segs,objs,org,dir) {
       refract_dir[0] = dir[0] * eta + norm[0] * q;
       refract_dir[1] = dir[1] * eta + norm[1] * q;
       refract_dir[2] = dir[2] * eta + norm[2] * q;
-      refract_len = Math.sqrt(refract_dir[0]*refract_dir[0] + refract_dir[1]*refract_dir[1] + refract_dir[2]*refract_dir[2]);
-      if (refract_len != 0) {refract_dir[0]/=refract_len; refract_dir[1]/=refract_len; refract_dir[2]/=refract_len;}
+      refract_len = length3D(refract_dir);
+      if (refract_len != 0) refract_dir = scale3D(refract_dir,1/refract_len);
     }
   }
 
