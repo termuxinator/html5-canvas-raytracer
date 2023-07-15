@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '544';
+let build = '545';
 
 (function() {
   let output = document.createElement('pre');
@@ -93,7 +93,7 @@ function main () {
     origin = org;
     axisZ = between3D(org,tgt);
     axisX = cross3D(up,axisZ);
-    axisY = cross3D(axisX,axisZ);
+    axisY = cross3D(axisZ,axisX);
     axisX = normal3D(axisX);
     axisY = normal3D(axisY);
     axisZ = normal3D(axisZ);
