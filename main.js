@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '534';
+let build = '536';
 
 (function() {
   let output = document.createElement('pre');
@@ -17,6 +17,10 @@ let build = '534';
   document.body.onload = main;
 })();
 
+function scale3D (v,t) {
+  return [v[0]*t, v[1]*t, v[2]*t];
+}
+
 function dot3D (a,b) {
   return a[0]*b[0] + a[1]*b[1] + a[2]*b[2];
 }
@@ -30,8 +34,18 @@ function length3D (v) {
   return Math.sqrt(m);
 }
 
+function normal3D (v) {
+  let l = length3D(v);
+  if (l == 0) return v;
+  return scale3D(v,1/l);
+}
+
+function between3D (a,b) {
+  return [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+}
+
 function distance3D (a,b) {
-  let v = [b[0]-a[0], b[1]-a[1], b[2]-a[2]];
+  let v = between3D(a,b);
   return length3D(v);
 }
 
@@ -125,9 +139,7 @@ createSphere([ 0.0,0.25,4.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
           origin[1] + axisX[1]*dist[1] + axisY[1]*dist[1] + axisZ[1]*dist[1],
           origin[2] + axisX[2]*dist[2] + axisY[2]*dist[2] + axisZ[2]*dist[2]
         ];
-        let ray = [target[0]-origin[0], target[1]-origin[1], target[2]-origin[2]];
-        let len = Math.sqrt(ray[0]*ray[0] + ray[1]*ray[1] + ray[2]*ray[2]);
-        if (len != 0) {ray[0]/=len; ray[1]/=len; ray[2]/=len;}
+        let ray = normal3D(between3D(origin,target));
         let rgb = intersectWorld(8,objects,origin,ray);
         colorbuf.data[ipixel++] = 255 * rgb[0];
         colorbuf.data[ipixel++] = 255 * rgb[1];
