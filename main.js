@@ -1,6 +1,6 @@
 'use strict';
 
-let build = '543';
+let build = '544';
 
 (function() {
   let output = document.createElement('pre');
@@ -92,7 +92,7 @@ function main () {
   function lookAt (org,tgt,up) {
     origin = org;
     axisZ = between3D(org,tgt);
-    axisX = cross3D(axisZ,up);
+    axisX = cross3D(up,axisZ);
     axisY = cross3D(axisX,axisZ);
     axisX = normal3D(axisX);
     axisY = normal3D(axisY);
