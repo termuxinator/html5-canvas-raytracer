@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '587';
+const build = '588';
 
 (function() {
   const output = document.createElement('pre');
@@ -134,19 +134,22 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
     c *= 1000; return [c,c,c];
   };
   // override earth material sampler to use texture mapper
-  const earth_texture = loadTexture(createTexture(),'./earth.png');
+  const texture_unit0 = createTexture();
+  loadTexture(texture_unit0,'./earth.png');
   objects[2].mtl.sampler = function (hit) {
-    return sampleTexture(earth_texture,hit.u,hit.v);
+    return sampleTexture(texture_unit0,hit.u,hit.v);
   };
   // override mars material sampler to use texture mapper
-  const mars_texture = loadTexture(createTexture(),'./mars.png');
+  const texture_unit1 = createTexture();
+  loadTexture(texture_unit1,'./mars.png');
   objects[3].mtl.sampler = function (hit) {
-    return sampleTexture(mars_texture,hit.u,hit.v);
+    return sampleTexture(texture_unit1,hit.u,hit.v);
   };
   // override matte sphere material sampler to use checker texture map
-  const matte_texture = checkerTexture(createTexture(),16,8,[0,0,0],[1,1,1]);
+  const texture_unit2 = createTexture();
+  checkerTexture(texture_unit2,16,8,[0,0,0],[1,1,1]);
   objects[4].mtl.sampler = function (hit) {
-    return sampleTexture(matte_texture,hit.u,hit.v);
+    return sampleTexture(texture_unit2,hit.u,hit.v);
   };
   // sort objects based on surface area and distance from camera
   objects.sort(function (a,b) {
@@ -155,8 +158,8 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
     return aa - bb;
   });
 
-  const resource_list = [earth_texture, mars_texture]; // register resources
-  setTimeout(loading,500);
+  const resource_list = [texture_unit0, texture_unit1, texture_unit2];
+  setTimeout(loading,0);
   function loading () {
     let callback = redraw;
     let timeout = 0;
@@ -266,13 +269,11 @@ function intersectWorld (segs,objs,org,dir) {
     refract_color = scale3D(refract_color,hit.m.albedo[3]);
   }
 
-  // zero albedo will bypass shader (full bright hack)
-  let diffuse_intensity = 0;
+  // no diffuse properties will bypass shader (full bright hack)
+  let diffuse_intensity = 1;
   let specular_intensity = 0;
-  if ((hit.m.albedo[0] == 0) && (hit.m.albedo[1] == 0)) {
-    diffuse_intensity = 1;
-//  specular_intensity = 0;
-  } else {
+  if (hit.m.albedo[0] > 0) { // has diffuse properties
+    diffuse_intensity = 0;
     const lights = [[5.0,10.0,5.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
     const light_intensity = 150; // common (for now)
     for (let k=0; k<lights.length; k++) {
@@ -290,12 +291,14 @@ function intersectWorld (segs,objs,org,dir) {
       }
       if (shadow_dot == 0) continue;
       diffuse_intensity += light_intensity * shadow_dot / light_mag;
-      const light_dir = oppose3D(shadow_vec);
-      let light_ref = reflect3D(light_dir,hit.n);
-          light_ref = normal3D(light_ref);
-      const spec_dir = oppose3D(light_ref);
-      const spec_dot = dot3D(dir,spec_dir);
-      if (spec_dot > 0) specular_intensity += Math.pow(spec_dot,hit.m.specular_exponent);
+      if (hit.m.albedo[1] > 0) { // has specular properties
+        const light_dir = oppose3D(shadow_vec);
+        let light_ref = reflect3D(light_dir,hit.n);
+            light_ref = normal3D(light_ref);
+        const spec_dir = oppose3D(light_ref);
+        const spec_dot = dot3D(dir,spec_dir);
+        if (spec_dot > 0) specular_intensity += Math.pow(spec_dot,hit.m.specular_exponent);
+      }
     }
     diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
     specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[1];
@@ -327,46 +330,48 @@ function sampleTexture (texture,u,v) {
   return [r,g,b];
 }
 
-function checkerTexture (texture,w,h,c1,c2) {
-  for (let y=0; y<h; y++) {
-    for (let x=0; x<w; x++) {
-      const i = (y * w + x) * 4;
+function checkerTexture (texture,width,height,color1,color2) {
+  for (let y=0; y<height; y++) {
+    for (let x=0; x<width; x++) {
+      const i = (y * width + x) * 4;
       if ((x&1) ^ (y&1)) {
-        texture.texels[i+0] = 255 * c2[0];
-        texture.texels[i+1] = 255 * c2[1];
-        texture.texels[i+2] = 255 * c2[2];
+        texture.texels[i+0] = 255 * color2[0];
+        texture.texels[i+1] = 255 * color2[1];
+        texture.texels[i+2] = 255 * color2[2];
         texture.texels[i+3] = 255;
       } else {
-        texture.texels[i+0] = 255 * c1[0];
-        texture.texels[i+1] = 255 * c1[1];
-        texture.texels[i+2] = 255 * c1[2];
+        texture.texels[i+0] = 255 * color1[0];
+        texture.texels[i+1] = 255 * color1[1];
+        texture.texels[i+2] = 255 * color1[2];
         texture.texels[i+3] = 255;
       }
     }
   }
-  texture.width = w;
-  texture.height = h;
+  texture.width = width;
+  texture.height = height;
   texture.loaded = true;
-  return texture;
 }
 
 function loadTexture (texture,src) {
   const image = new Image();
   image.onload = function (e) {
+    const self = e.target;
+    const width = e.target.width;
+    const height = e.target.height;
     const canvas = document.createElement('canvas');
-    canvas.width = e.target.width;
-    canvas.height = e.target.height;
+    canvas.width = width;
+    canvas.height = height;
     const context = canvas.getContext('2d');
     context.imageSmoothingEnabled = false;
-    context.drawImage(e.target,0,0,canvas.width,canvas.height);
-    const data = context.getImageData(0,0,canvas.width,canvas.height);
-    texture.width = canvas.width;
-    texture.height = canvas.height;
+  //context.globalAlpha = 1.0;
+    context.drawImage(self,0,0,width,height);
+    const data = context.getImageData(0,0,width,height);
+    texture.width = width;
+    texture.height = height;
     texture.texels = data.data;
     texture.loaded = true;
   };
   image.src = src;
-  return texture;
 }
 
 function createMaterial (color,albedo,se,ri) {
