@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '576';
+const build = '577';
 
 (function() {
   const output = document.createElement('pre');
@@ -303,7 +303,7 @@ function intersectWorld (segs,objs,org,dir) {
 
   const rgb = hit.m.sampler(hit);
 
-  const diffuse_color = scale3D(rgb,diffuse_intensity);
+  const diffuse_color = rgb;//scale3D(rgb,diffuse_intensity);
   const specular_color = scale3D(rgb,specular_intensity);
 
   return [
