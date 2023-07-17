@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '718';
+const build = '719';
 
 (function() {
   const output = document.createElement('pre');
@@ -9,7 +9,7 @@ const build = '718';
   console.log = function (...items) {
     oldLog.apply(this,items);
     items.forEach(function (item,i) {
-      items[i] = (typeof item === 'object') ? JSON.stringify(item,null,4) : item;
+      items[i] = (typeof item === 'object') ? JSON.stringify(item) : item;
     });
     output.innerHTML += items.join(' ') + '<br>';
   };
@@ -418,7 +418,6 @@ function intersectSphere (obj,org,dir,ext) {
   const thc = Math.sqrt(obj.r2 - d2);
   const t0 = tca - thc;
   const t1 = tca + thc;
-/*
   if (t0 < t1) {
     if (t0 < 0) {
       if (t1 < 0) return t;
@@ -430,10 +429,9 @@ function intersectSphere (obj,org,dir,ext) {
       else t = t0;
     } else t = t1;
   }
-*/
-  if (t0 > 0.001) t = t0;
-  else if (t1 > 0.001) t = t1;
-  else return t;
+  //if (t0 > 0.001) t = t0;
+  //else if (t1 > 0.001) t = t1;
+  //else return t;
   if (ext != null) {
     ext.t = t;
     ext.p = project3D(org,dir,ext.t);
