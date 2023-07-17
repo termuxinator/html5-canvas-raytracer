@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '632';
+const build = '633';
 
 (function() {
   const output = document.createElement('pre');
@@ -219,7 +219,7 @@ function createIntersect () {
 function intersectWorld (segs,objs,org,dir) {
   if (segs == 0) return [0,0,0];
 
-//let hit_i = -1;
+  let hit_i = -1;
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
     const o = objs[i];
