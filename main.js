@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '705';
+const build = '706';
 
 (function() {
   const output = document.createElement('pre');
@@ -440,7 +440,7 @@ function intersectSphere (obj,org,dir,ext) {
     ext.n = normal3D(ext.n);
     // allow inner specular reflect on hollow bubble but not on solid glass
     //if ((obj.mtl.refract_index == 1) && (t0<0.001 || t1<0.001)) ext.n = oppose3D(ext.n);
-    if ((obj.mtl.albedo[4] > 0) && (t0<0.001 || t1<0.001)) ext.n = oppose3D(ext.n);
+    if ((obj.mtl.albedo[4] > 0) && (t0 < 0.001)) ext.n = oppose3D(ext.n);
     ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
     ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
     ext.m = obj.mtl;
