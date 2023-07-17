@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '581';
+const build = '582';
 
 (function() {
   const output = document.createElement('pre');
@@ -269,7 +269,7 @@ function intersectWorld (segs,objs,org,dir) {
   // zero albedo will bypass shader (full bright hack)
   let diffuse_intensity = 0;
   let specular_intensity = 0;
-  if ((hit.m.albedo[0] == 0.0) && (hit.m.albedo[1] == 0.0)) {
+  if ((hit.m.albedo[0] == 0) && (hit.m.albedo[1] == 0)) {
     diffuse_intensity = 1;
 //  specular_intensity = 0;
   } else {
@@ -328,7 +328,7 @@ function sampleTexture (texture,u,v) {
 }
 
 function checkerTexture (w,h,c1,c2) {
-  let texture = createTexture();
+  const texture = createTexture();
   for (let y=0; y<h; y++) {
     for (let x=0; x<w; x++) {
       const i = (y * w + x) * 4;
@@ -352,19 +352,19 @@ function checkerTexture (w,h,c1,c2) {
 }
 
 function loadTexture (src) {
-  let texture = createTexture();
-  let image = new Image();
+  const texture = createTexture();
+  const image = new Image();
   image.onload = function (e) {
-    let canvas = document.createElement('canvas');
+    const canvas = document.createElement('canvas');
     canvas.width = e.target.width;
     canvas.height = e.target.height;
-    let context = canvas.getContext('2d');
+    const context = canvas.getContext('2d');
     context.imageSmoothingEnabled = false;
     context.drawImage(e.target,0,0,canvas.width,canvas.height);
-    let data = context.getImageData(0,0,canvas.width,canvas.height);
+    const data = context.getImageData(0,0,canvas.width,canvas.height);
     texture.width = canvas.width;
     texture.height = canvas.height;
-    texture.texels = data.data.slice();
+    texture.texels = data.data;
     texture.loaded = true;
   };
   image.src = src;
