@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '571';
+const build = '572';
 
 (function() {
   const output = document.createElement('pre');
@@ -74,6 +74,10 @@ function distance3D (a,b) {
   return length3D(v);
 }
 
+function scaleColor(c,s) {
+  return [c[0]*s, c[1]*s, c[2]*s, c[3]];
+}
+
 function main () {
   const canvas = document.getElementById('canvasID');
   canvas.width = document.body.clientWidth;
@@ -136,8 +140,7 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
   // override earth material sampler to use texture mapper
   const earth_texture = loadTexture('./earth.png');
   objects[2].mtl.sampler = function (hit) {
-    //return sampleTexture(earth_texture,hit.u,hit.v);
-    return [1,1,1,1];
+    return sampleTexture(earth_texture,hit.u,hit.v);
   };
   // override mars material sampler to use texture mapper
   const mars_texture = loadTexture('./mars.png');
@@ -258,13 +261,13 @@ function intersectWorld (segs,objs,org,dir) {
   let reflect_color = [0,0,0];
   if (reflect_len != 0) {
     reflect_color = intersectWorld(segs-1,objs,hit.p,reflect_dir);
-    reflect_color = scale3D(reflect_color,hit.m.albedo[2]);
+    reflect_color = scaleColor(reflect_color,hit.m.albedo[2]);
   }
 
   let refract_color = [0,0,0];
   if (refract_len != 0) {
     refract_color = intersectWorld(segs-1,objs,hit.p,refract_dir);
-    refract_color = scale3D(refract_color,hit.m.albedo[3]);
+    refract_color = scaleColor(refract_color,hit.m.albedo[3]);
   }
 
   let diffuse_intensity = 0;
@@ -305,8 +308,8 @@ function intersectWorld (segs,objs,org,dir) {
 
   const rgb = hit.m.sampler(hit);
 
-  const diffuse_color = scale3D(rgb,diffuse_intensity);
-  const specular_color = scale3D(rgb,specular_intensity);
+  const diffuse_color = scaleColor(rgb,diffuse_intensity);
+  const specular_color = scaleColor(rgb,specular_intensity);
 
   return [
     Math.min(1, diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
