@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '684';
+const build = '685';
 
 (function() {
   const output = document.createElement('pre');
@@ -295,12 +295,12 @@ function intersectWorld (segs,objs,org,dir) {
         const t = o.intersect(o,hit.p,shadow_vec,null);
         if (t < light_len) {
           // hollow bubble cast less shadow than solid objects
-          if (o.mtl.refract_index != 1) shadow_dot = 0; // solid glass
-          else shadow_dot *= o.mtl.albedo[3]; // everything else
+          if (o.mtl.refract_index != 1) light_intensity = 0; // solid glass
+          else light_intensity *= o.mtl.albedo[3]; // everything else
           break;
         }
       }
-      if (shadow_dot == 0) continue;
+      if (light_intensity == 0) continue;
       diffuse_intensity += light_intensity * shadow_dot / light_mag;
       if (hit.m.albedo[1] > 0) { // has specular properties
         const light_dir = oppose3D(shadow_vec);
