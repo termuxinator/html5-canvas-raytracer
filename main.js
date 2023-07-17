@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '602';
+const build = '603';
 
 (function() {
   const output = document.createElement('pre');
@@ -278,7 +278,7 @@ function intersectWorld (segs,objs,org,dir) {
   if (hit.m.albedo[0] > 0) { // has diffuse properties
     diffuse_intensity = 0;
     const lights = [[5.0,10.0,5.0],[5.0,10.0,0.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
-    let light_intensity = 150; // common (for now)
+    let light_intensity = 100; // common (for now)
     for (let k=0; k<lights.length; k++) {
       const light = lights[k];
       let shadow_vec = between3D(hit.p,light);
@@ -293,7 +293,7 @@ if (shadow_dot > 0) {
         const o = objs[j];
         const t = o.intersectT(o,hit.p,shadow_vec);
         //if (t < light_len) {shadow_dot=0; break;} // occluded
-        if (t < light_len) {light_intensity*=0.25; break;}
+        if (t < light_len) {shadow_dot=1; light_intensity*=0.1; break;}
       }
 }
       //if (shadow_dot == 0) continue;
