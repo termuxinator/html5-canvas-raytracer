@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '625';
+const build = '626';
 
 (function() {
   const output = document.createElement('pre');
@@ -405,7 +405,6 @@ function createSphere (o,r,m) {
 
 function intersectSphere (obj,org,dir,ext) {
   let t = Infinity;
-  let flip;
   const L = between3D(org,obj.origin);
   const tca = dot3D(dir,L);
   const d2 = mag3D(L) - tca*tca;
@@ -413,15 +412,15 @@ function intersectSphere (obj,org,dir,ext) {
   const thc = Math.sqrt(obj.r2 - d2);
   const t0 = tca - thc;
   const t1 = tca + thc;
-  if (t0 > 0.001) {t=t0; flip=true;}
-  if (t1 > 0.001) {t=t1; flip=false;}
+  if (t0 > 0.001) t = t0;
+  if (t1 > 0.001) t = t1;
   if (t == Infinity) return t;
   if (ext != null) {
     ext.t = t;
     ext.p = project3D(org,dir,ext.t);
     ext.n = between3D(obj.origin,ext.p);
     ext.n = normal3D(ext.n);
-    if (flip) ext.n = oppose3D(ext.n);
+    if (t1 > t0) ext.n = oppose3D(ext.n);
     ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
     ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
     ext.m = obj.mtl;
