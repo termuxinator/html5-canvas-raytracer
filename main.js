@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '692';
+const build = '693';
 
 (function() {
   const output = document.createElement('pre');
@@ -113,6 +113,7 @@ createSphere([ 0.0,0.25,3.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
 createSphere([0.0,0.75,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.5,0.2,0.0,0.9],10,1.5)), // glass
 
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,1.0,0.4,0.0],20,1.0)),  // chrome
+createSphere([ 1.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,1.0,0.2,0.0],20,1.0)),  // chrome
 
 createSphere([ 2.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,0.5,0.2,0.8],20,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.5,0.6,0.0],500,1.0)), // mirror
