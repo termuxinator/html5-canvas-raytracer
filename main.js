@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '585';
+const build = '586';
 
 (function() {
   const output = document.createElement('pre');
@@ -156,7 +156,7 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
   });
 
   const resource_list = [earth_texture, mars_texture]; // register resources
-  setTimeout(loading,0);
+  setTimeout(loading,500);
   function loading () {
     let callback = redraw;
     let timeout = 0;
