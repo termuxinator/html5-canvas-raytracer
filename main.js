@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '642';
+const build = '643';
 
 (function() {
   const output = document.createElement('pre');
@@ -420,7 +420,7 @@ function intersectSphere (obj,org,dir,ext) {
       ext.p = project3D(org,dir,ext.t);
       ext.n = between3D(obj.origin,ext.p);
       ext.n = normal3D(ext.n);
-      if (t0<-0.001 || t1<-0.001) ext.n = oppose3D(ext.n);
+      if (t0<=0 || t1<=0) ext.n = oppose3D(ext.n);
       ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
       ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
       ext.m = obj.mtl;
