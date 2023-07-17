@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '595';
+const build = '596';
 
 (function() {
   const output = document.createElement('pre');
@@ -290,7 +290,7 @@ function intersectWorld (segs,objs,org,dir) {
       for (let j=0; j<objs.length; j++) {
         const o = objs[j];
         const t = o.intersectT(o,hit.p,shadow_vec);
-        if (t < light_len) {shadow_dot=0; break;} // occluded
+        if (t < light_len) {shadow_dot*=0.5; break;} // occluded
       }
       if (shadow_dot == 0) continue;
       diffuse_intensity += light_intensity * shadow_dot / light_mag;
