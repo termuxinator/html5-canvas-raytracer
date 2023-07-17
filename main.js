@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '719';
+const build = '720';
 
 (function() {
   const output = document.createElement('pre');
@@ -419,13 +419,13 @@ function intersectSphere (obj,org,dir,ext) {
   const t0 = tca - thc;
   const t1 = tca + thc;
   if (t0 < t1) {
-    if (t0 < 0) {
-      if (t1 < 0) return t;
+    if (t0 < 0.001) {
+      if (t1 < 0.001) return t;
       else t = t1;
     } else t = t0;
   } else {
-    if (t1 < 0) {
-      if (t0 < 0) return t;
+    if (t1 < 0.001) {
+      if (t0 < 0.001) return t;
       else t = t0;
     } else t = t1;
   }
