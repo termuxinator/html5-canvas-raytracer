@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '641';
+const build = '642';
 
 (function() {
   const output = document.createElement('pre');
@@ -290,7 +290,7 @@ function intersectWorld (segs,objs,org,dir) {
       let shadow_dot = dot3D(shadow_vec,hit.n);
       if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
-        //if (j == hit_i) continue; // self intersect
+        if (j == hit_i) continue; // allow self intersect
         const o = objs[j];
         const t = o.intersect(o,hit.p,shadow_vec,null);
         if (t < light_len) {shadow_dot=0; break;} // occluded
@@ -420,7 +420,7 @@ function intersectSphere (obj,org,dir,ext) {
       ext.p = project3D(org,dir,ext.t);
       ext.n = between3D(obj.origin,ext.p);
       ext.n = normal3D(ext.n);
-      if (t0<0.001 || t1<0.001) ext.n = oppose3D(ext.n);
+      if (t0<-0.001 || t1<-0.001) ext.n = oppose3D(ext.n);
       ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
       ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
       ext.m = obj.mtl;
