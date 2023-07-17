@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '722';
+const build = '723';
 
 (function() {
   const output = document.createElement('pre');
@@ -115,7 +115,7 @@ createSphere([-2.5,0.5,3.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.5,0.2,0.0,0.
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.5,1.0,0.4,0.0],20,1.0)),  // chrome
 createSphere([ 1.0,0.25,3.0],0.25,createMaterial([0.5,0.5,0.5],[0.0,0.5,1.0,0.5,0.0],20,1.0)),  // chrome
 
-createSphere([ 2.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.4,0.5,0.2,0.8],20,1.0),false),  // bubble
+createSphere([ 2.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.4,0.5,0.2,0.8],20,1.0)),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.1,0.5,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.8,0.2,0.1,0.0],50,1.0)),  // metal
 createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.0,0.8,0.3,0.5,0.0],50,1.0)),  // ornament
@@ -279,6 +279,7 @@ function intersectWorld (segs,objs,org,dir) {
   let specular_intensity = 0;
 //if (hit.m.albedo[1] > 0 || hit.m.albedo[2] > 0) // has diffuse or specular properties
   {
+    const surf_normal = obj.refracting_inside ? oppose3D(hit.n) : copy3D(hit.n);
     const lights = [[5.0,10.0,5.0],[5.0,10.0,0.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
     let light_intensity = 75; // common (for now)
     for (let k=0; k<lights.length; k++) {
@@ -287,7 +288,7 @@ function intersectWorld (segs,objs,org,dir) {
       const light_mag = mag3D(shadow_vec);
       const light_len = Math.sqrt(light_mag);
       if (light_len != 0) shadow_vec = scale3D(shadow_vec,1/light_len);
-      let shadow_dot = dot3D(shadow_vec,hit.n);
+      let shadow_dot = dot3D(shadow_vec,surf_normal);
       if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
         if (j == hit_i) continue; // allow self intersect
@@ -303,7 +304,7 @@ function intersectWorld (segs,objs,org,dir) {
       diffuse_intensity += light_intensity * shadow_dot / light_mag;
       if (hit.m.albedo[2] > 0) { // has specular properties
         const light_dir = oppose3D(shadow_vec);
-        let light_ref = reflect3D(light_dir,hit.n);
+        let light_ref = reflect3D(light_dir,surf_normal);
             light_ref = normal3D(light_ref);
         const spec_dir = oppose3D(light_ref);
         const spec_dot = dot3D(dir,spec_dir);
@@ -396,16 +397,16 @@ function createMaterial (color,albedo,se,ri) {
   };
 }
 
-function createSphere (o,r,m,s=true) {
+function createSphere (o,r,m) {
   const r2 = r * r;
   return {
     origin: o,
   //radius: r,
     r2: r2,
     mtl: m,
-    solid: s,
     surface_area: 4 * Math.PI * r2,
-    intersect: intersectSphere
+    intersect: intersectSphere,
+    refracting_inside: false
   };
 }
 
@@ -437,12 +438,10 @@ function intersectSphere (obj,org,dir,ext) {
     ext.p = project3D(org,dir,ext.t);
     ext.n = between3D(obj.origin,ext.p);
     ext.n = normal3D(ext.n);
-    // hacks, allow inner specular reflect on hollow bubble but not on solid glass
-    //if (!obj.solid && (t0 < 0.001 || t1 < 0.001)) ext.n = oppose3D(ext.n);
-    //if ((obj.mtl.albedo[4] > 0) && (t0 < 0.001 || t1 < 0.001)) ext.n = oppose3D(ext.n);
     ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
     ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
     ext.m = obj.mtl;
+    ext.refracting_inside = (t0 < 0.001) || (t1 < 0.001);
   }
   return t;
 }
