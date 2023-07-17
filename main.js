@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '654';
+const build = '655';
 
 (function() {
   const output = document.createElement('pre');
@@ -113,7 +113,7 @@ createSphere([ 0.0,0.25,3.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0]
 createSphere([0.0,0.75,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.5,0.2,0.0,0.9],10,1.5)), // glass
 
 //createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.8,0.0],20,1.0)),  // bubble
-  createSphere([ 2.5,0.5,3.0],0.5,createMaterial([1.0,1.0,1.0],[0.5,0.5,0.2,0.8],20,1.0)),  // bubble
+  createSphere([ 2.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,0.5,0.2,0.8],20,1.0)),  // bubble
 
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.5,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
@@ -420,7 +420,7 @@ function intersectSphere (obj,org,dir,ext) {
       ext.p = project3D(org,dir,ext.t);
       ext.n = between3D(obj.origin,ext.p);
       ext.n = normal3D(ext.n);
-      // allow specular refract on bubble but not on glass :/
+      // allow specular refract on bubble but not on glass (hollow vs solid refractors)
       if ((obj.mtl.refract_index == 1) && (t0<0.001 || t1<0.001)) ext.n = oppose3D(ext.n);
       ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
       ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
