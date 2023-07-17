@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '596';
+const build = '597';
 
 (function() {
   const output = document.createElement('pre');
@@ -290,9 +290,10 @@ function intersectWorld (segs,objs,org,dir) {
       for (let j=0; j<objs.length; j++) {
         const o = objs[j];
         const t = o.intersectT(o,hit.p,shadow_vec);
-        if (t < light_len) {shadow_dot*=0.5; break;} // occluded
+        //if (t < light_len) {shadow_dot=0; break;} // occluded
+        if (t < light_len) {light_intensity*=0.5: break;}
       }
-      if (shadow_dot == 0) continue;
+      //if (shadow_dot == 0) continue;
       diffuse_intensity += light_intensity * shadow_dot / light_mag;
       if (hit.m.albedo[1] > 0) { // has specular properties
         const light_dir = oppose3D(shadow_vec);
