@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '603';
+const build = '604';
 
 (function() {
   const output = document.createElement('pre');
@@ -293,7 +293,7 @@ if (shadow_dot > 0) {
         const o = objs[j];
         const t = o.intersectT(o,hit.p,shadow_vec);
         //if (t < light_len) {shadow_dot=0; break;} // occluded
-        if (t < light_len) {shadow_dot=1; light_intensity*=0.1; break;}
+        if (t < light_len) {shadow_dot*=0.5; light_intensity*=0.5; break;}
       }
 }
       //if (shadow_dot == 0) continue;
