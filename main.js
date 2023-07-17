@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '701';
+const build = '702';
 
 (function() {
   const output = document.createElement('pre');
@@ -321,9 +321,9 @@ function intersectWorld (segs,objs,org,dir) {
   const specular_color = scale3D(rgb,specular_intensity);
 
   return [
-    Math.min(ambient_color[0], diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
-    Math.min(ambient_color[1], diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1]),
-    Math.min(ambient_color[2], diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2])
+    Math.max(ambient_color[0], Math.min(1,diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0])),
+    Math.max(ambient_color[1], Math.min(1,diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1])),
+    Math.max(ambient_color[2], Math.min(1,diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2]))
   ];
 }
 
