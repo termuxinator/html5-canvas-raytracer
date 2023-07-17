@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '611';
+const build = '612';
 
 (function() {
   const output = document.createElement('pre');
@@ -219,11 +219,12 @@ function createIntersect () {
 function intersectWorld (segs,objs,org,dir) {
   if (segs == 0) return [0,0,0];
 
+  let hit_i = -1;
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
     const o = objs[i];
     const check = o.intersectM(o,org,dir);
-    if (check.t < hit.t) hit = check;
+    if (check.t < hit.t) {hit = check; hit_i=i;}
   }
   if (hit.t == Infinity) return [1,0,0]; // wtf no skybox bro?
 
@@ -288,6 +289,7 @@ function intersectWorld (segs,objs,org,dir) {
       let shadow_dot = dot3D(shadow_vec,hit.n);
       if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
+        if (i == hit_i) continue;
         const o = objs[j];
         const t = o.intersectT(o,hit.p,shadow_vec);
         if (t < light_len) {shadow_dot=0; break;} // occluded
