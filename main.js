@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '586';
+const build = '587';
 
 (function() {
   const output = document.createElement('pre');
@@ -134,17 +134,17 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
     c *= 1000; return [c,c,c];
   };
   // override earth material sampler to use texture mapper
-  let earth_texture = loadTexture('./earth.png');
+  const earth_texture = loadTexture(createTexture(),'./earth.png');
   objects[2].mtl.sampler = function (hit) {
     return sampleTexture(earth_texture,hit.u,hit.v);
   };
   // override mars material sampler to use texture mapper
-  let mars_texture = loadTexture('./mars.png');
+  const mars_texture = loadTexture(createTexture(),'./mars.png');
   objects[3].mtl.sampler = function (hit) {
     return sampleTexture(mars_texture,hit.u,hit.v);
   };
   // override matte sphere material sampler to use checker texture map
-  let matte_texture = checkerTexture(16,8,[0,0,0],[1,1,1]);
+  const matte_texture = checkerTexture(createTexture(),16,8,[0,0,0],[1,1,1]);
   objects[4].mtl.sampler = function (hit) {
     return sampleTexture(matte_texture,hit.u,hit.v);
   };
@@ -327,8 +327,7 @@ function sampleTexture (texture,u,v) {
   return [r,g,b];
 }
 
-function checkerTexture (w,h,c1,c2) {
-  let texture = createTexture();
+function checkerTexture (texture,w,h,c1,c2) {
   for (let y=0; y<h; y++) {
     for (let x=0; x<w; x++) {
       const i = (y * w + x) * 4;
@@ -351,9 +350,8 @@ function checkerTexture (w,h,c1,c2) {
   return texture;
 }
 
-function loadTexture (src) {
-  let texture = createTexture();
-  let image = new Image();
+function loadTexture (texture,src) {
+  const image = new Image();
   image.onload = function (e) {
     const canvas = document.createElement('canvas');
     canvas.width = e.target.width;
