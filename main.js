@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '579';
+const build = '580';
 
 (function() {
   const output = document.createElement('pre');
@@ -345,6 +345,8 @@ function checkerTexture (w,h,c1,c2) {
       }
     }
   }
+  texture.width = w;
+  texture.height = h;
   texture.loaded = true;
   return texture;
 }
