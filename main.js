@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '577';
+const build = '578';
 
 (function() {
   const output = document.createElement('pre');
@@ -303,7 +303,7 @@ function intersectWorld (segs,objs,org,dir) {
 
   const rgb = hit.m.sampler(hit);
 
-  const diffuse_color = rgb;//scale3D(rgb,diffuse_intensity);
+  const diffuse_color = scale3D(rgb,diffuse_intensity);
   const specular_color = scale3D(rgb,specular_intensity);
 
   return [
@@ -346,15 +346,15 @@ function checkerTexture (w,h,c1,c2) {
 
 function loadTexture (src) {
   let texture = {width:0, height:0, texels:[], loaded:false};
-  const image = new Image();
+  let image = new Image();
   image.onload = function (e) {
-    const canvas = document.createElement('canvas');
+    let canvas = document.createElement('canvas');
     canvas.width = e.target.width;
     canvas.height = e.target.height;
-    const context = canvas.getContext('2d');
+    let context = canvas.getContext('2d');
     context.imageSmoothingEnabled = false;
     context.drawImage(e.target,0,0,canvas.width,canvas.height);
-    const data = context.getImageData(0,0,canvas.width,canvas.height);
+    let data = context.getImageData(0,0,canvas.width,canvas.height);
     texture.width = canvas.width;
     texture.height = canvas.height;
     texture.texels = data.data;
