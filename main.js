@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '707';
+const build = '708';
 
 (function() {
   const output = document.createElement('pre');
@@ -115,7 +115,7 @@ createSphere([-1.5,0.5,3.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.5,0.2,0.0,0.
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.5,1.0,0.4,0.0],20,1.0)),  // chrome
 createSphere([ 1.0,0.25,3.0],0.25,createMaterial([0.5,0.5,0.5],[0.0,0.5,1.0,0.5,0.0],20,1.0)),  // chrome
 
-createSphere([ 2.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.4,0.5,0.2,0.8],20,1.0)),  // bubble
+createSphere([ 2.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.4,0.5,0.2,0.8],20,1.0),false),  // bubble
 createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.1,0.5,0.6,0.0],500,1.0)), // mirror
 createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.8,0.2,0.1,0.0],50,1.0)),  // metal
 createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.0,0.8,0.3,0.5,0.0],50,1.0)),  // ornament
@@ -396,13 +396,14 @@ function createMaterial (color,albedo,se,ri) {
   };
 }
 
-function createSphere (o,r,m) {
+function createSphere (o,r,m,s=true) {
   const r2 = r * r;
   return {
     origin: o,
   //radius: r,
     r2: r2,
     mtl: m,
+    solid: s,
     surface_area: 4 * Math.PI * r2,
     intersect: intersectSphere
   };
@@ -438,9 +439,8 @@ function intersectSphere (obj,org,dir,ext) {
     ext.p = project3D(org,dir,ext.t);
     ext.n = between3D(obj.origin,ext.p);
     ext.n = normal3D(ext.n);
-    // allow inner specular reflect on hollow bubble but not on solid glass
-    //if ((obj.mtl.refract_index == 1) && (t0<0.001 || t1<0.001)) ext.n = oppose3D(ext.n);
-    if ((obj.mtl.albedo[4] > 0) && (t1 < 0.001)) ext.n = oppose3D(ext.n);
+    // hacks, allow inner specular reflect on hollow bubble but not on solid glass
+    if (!obj.solid && (t0 < 0.001 || t1 < 0.001)) ext.n = oppose3D(ext.n);
     ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
     ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
     ext.m = obj.mtl;
