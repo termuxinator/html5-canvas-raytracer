@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '570';
+const build = '571';
 
 (function() {
   const output = document.createElement('pre');
@@ -136,7 +136,8 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
   // override earth material sampler to use texture mapper
   const earth_texture = loadTexture('./earth.png');
   objects[2].mtl.sampler = function (hit) {
-    return sampleTexture(earth_texture,hit.u,hit.v);
+    //return sampleTexture(earth_texture,hit.u,hit.v);
+    return [1,1,1,1];
   };
   // override mars material sampler to use texture mapper
   const mars_texture = loadTexture('./mars.png');
