@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '572';
+const build = '573';
 
 (function() {
   const output = document.createElement('pre');
@@ -72,10 +72,6 @@ function between3D (a,b) {
 function distance3D (a,b) {
   const v = between3D(a,b);
   return length3D(v);
-}
-
-function scaleColor(c,s) {
-  return [c[0]*s, c[1]*s, c[2]*s, c[3]];
 }
 
 function main () {
@@ -261,23 +257,19 @@ function intersectWorld (segs,objs,org,dir) {
   let reflect_color = [0,0,0];
   if (reflect_len != 0) {
     reflect_color = intersectWorld(segs-1,objs,hit.p,reflect_dir);
-    reflect_color = scaleColor(reflect_color,hit.m.albedo[2]);
+    reflect_color = scale3D(reflect_color,hit.m.albedo[2]);
   }
 
   let refract_color = [0,0,0];
   if (refract_len != 0) {
     refract_color = intersectWorld(segs-1,objs,hit.p,refract_dir);
-    refract_color = scaleColor(refract_color,hit.m.albedo[3]);
+    refract_color = scale3D(refract_color,hit.m.albedo[3]);
   }
 
-  let diffuse_intensity = 0;
-  let specular_intensity = 0;
-
   // zero albedo will bypass shader (full bright hack)
-  if ((hit.m.albedo[0] == 0) && (hit.m.albedo[1] == 0)) {
-    diffuse_intensity = 1;
-    specular_intensity = 0;
-  } else {
+  let diffuse_intensity = 1;
+  let specular_intensity = 0;
+  if ((hit.m.albedo[0] != 0) || (hit.m.albedo[1] != 0)) {
     const lights = [[5.0,10.0,5.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
     const light_intensity = 150; // common (for now)
     for (let k=0; k<lights.length; k++) {
@@ -308,8 +300,8 @@ function intersectWorld (segs,objs,org,dir) {
 
   const rgb = hit.m.sampler(hit);
 
-  const diffuse_color = scaleColor(rgb,diffuse_intensity);
-  const specular_color = scaleColor(rgb,specular_intensity);
+  const diffuse_color = scale3D(rgb,diffuse_intensity);
+  const specular_color = scale3D(rgb,specular_intensity);
 
   return [
     Math.min(1, diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
@@ -318,13 +310,13 @@ function intersectWorld (segs,objs,org,dir) {
   ];
 }
 
-function sampleTexture (t,u,v) {
-  const x = Math.max(0, Math.ceil(u * t.width) - 1);
-  const y = Math.max(0, Math.ceil(v * t.height) - 1);
-  const i = (y * t.width + x) * 4;
-  const r = t.texels[i+0] / 255;
-  const g = t.texels[i+1] / 255;
-  const b = t.texels[i+2] / 255;
+function sampleTexture (texture,u,v) {
+  const x = Math.max(0, Math.ceil(u * texture.width) - 1);
+  const y = Math.max(0, Math.ceil(v * texture.height) - 1);
+  const i = (y * texture.width + x) * 4;
+  const r = texture.texels[i+0] / 255;
+  const g = texture.texels[i+1] / 255;
+  const b = texture.texels[i+2] / 255;
   return [r,g,b];
 }
 
