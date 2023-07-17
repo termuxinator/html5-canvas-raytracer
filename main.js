@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '583';
+const build = '584';
 
 (function() {
   const output = document.createElement('pre');
@@ -328,7 +328,7 @@ function sampleTexture (texture,u,v) {
 }
 
 function checkerTexture (w,h,c1,c2) {
-  const texture = createTexture();
+  let texture = createTexture();
   for (let y=0; y<h; y++) {
     for (let x=0; x<w; x++) {
       const i = (y * w + x) * 4;
@@ -352,7 +352,7 @@ function checkerTexture (w,h,c1,c2) {
 }
 
 function loadTexture (src) {
-  const texture = createTexture();
+  let texture = createTexture();
   const image = new Image();
   image.onload = function (e) {
     const canvas = document.createElement('canvas');
