@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '613';
+const build = '614';
 
 (function() {
   const output = document.createElement('pre');
@@ -223,8 +223,9 @@ function intersectWorld (segs,objs,org,dir) {
   let hit = createIntersect();
   for (let i=0; i<objs.length; i++) {
     const o = objs[i];
-    const check = o.intersectM(o,org,dir);
-    if (check.t < hit.t) {hit = check; hit_i=i;}
+    const check = createIntersect();
+    const t = o.intersect(o,org,dir,check);
+    if (t < hit.t) {hit = check; hit_i=i;}
   }
   if (hit.t == Infinity) return [1,0,0]; // wtf no skybox bro?
 
@@ -291,7 +292,7 @@ function intersectWorld (segs,objs,org,dir) {
       for (let j=0; j<objs.length; j++) {
         if (j == hit_i) continue; // allow inside rays
         const o = objs[j];
-        const t = o.intersectT(o,hit.p,shadow_vec);
+        const t = o.intersect(o,hit.p,shadow_vec,null);
         if (t < light_len) {shadow_dot=0; break;} // occluded
       }
       if (shadow_dot == 0) continue;
@@ -398,33 +399,30 @@ function createSphere (o,r,m) {
     r2: r2,
     mtl: m,
     surface_area: 4 * Math.PI * r2,
-    intersectT: intersectSphereT,
-    intersectM: intersectSphereM
+    intersect: intersectSphere
   };
 }
 
-function intersectSphereT (obj,org,dir) {
+function intersectSphere (obj,org,dir,ext) {
+  let t = Infinity;
   const L = between3D(org,obj.origin);
   const tca = dot3D(dir,L);
   const d2 = mag3D(L) - tca*tca;
-  if (d2 > obj.r2) return Infinity;
+  if (d2 > obj.r2) return t;
   const thc = Math.sqrt(obj.r2 - d2);
   const t0 = tca - thc;
   const t1 = tca + thc;
-  if (t0 > 0.001) return t0;
-  if (t1 > 0.001) return t1;
-  return Infinity;
-}
-
-function intersectSphereM (obj,org,dir) {
-  const hit = createIntersect();
-  hit.t = intersectSphereT(obj,org,dir);
-  if (hit.t == Infinity) return hit;
-  hit.p = project3D(org,dir,hit.t);
-  hit.n = between3D(obj.origin,hit.p);
-  hit.n = normal3D(hit.n);
-  hit.u = Math.atan2(-hit.n[2],-hit.n[0]) / Math.PI / 2 + 0.5;
-  hit.v = Math.asin(-hit.n[1]) / (Math.PI/2) / 2 + 0.5;
-  hit.m = obj.mtl;
-  return hit;
+  if (t0 > 0.001) t = t0;
+  if (t1 > 0.001) t = t1;
+  if (t < 0.001) return Infinity;
+  if (ext == null) return t;
+  ext.t = t;
+  ext.p = project3D(org,dir,ext.t);
+  ext.n = between3D(obj.origin,ext.p);
+  ext.n = normal3D(ext.n);
+  if (t1 < t0) ext.n = oppose3D(ext.n);
+  ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
+  ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
+  ext.m = obj.mtl;
+  return t;
 }
