@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '575';
+const build = '576';
 
 (function() {
   const output = document.createElement('pre');
@@ -269,8 +269,9 @@ function intersectWorld (segs,objs,org,dir) {
   // zero albedo will bypass shader (full bright hack)
   let diffuse_intensity = 0;
   let specular_intensity = 0;
-  if ((hit.m.albedo[0] == 0) && (hit.m.albedo[1] == 0)) {
+  if ((hit.m.albedo[0] == 0.0) && (hit.m.albedo[1] == 0.0)) {
     diffuse_intensity = 1;
+//  specular_intensity = 0;
   } else {
     const lights = [[5.0,10.0,5.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
     const light_intensity = 150; // common (for now)
