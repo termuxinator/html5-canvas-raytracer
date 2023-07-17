@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '717';
+const build = '718';
 
 (function() {
   const output = document.createElement('pre');
@@ -109,8 +109,8 @@ createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[0.0,0.5,0.8,0.0,
 createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[1.0,0.0,0.0,0.0,0.0],0,1.0)), // skybox
 createSphere([50.0,20.0,-100.0],4.0,createMaterial([1.0,1.0,1.0],[1.0,0.0,0.0,0.0,0.0],0,1.0)),  // earth
 createSphere([-50.0,20.0,-100.0],2.0,createMaterial([1.0,1.0,1.0],[1.0,0.0,0.0,0.0,0.0],0,1.0)),  // mars
-createSphere([-1.5,0.25,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.0,1.0,0.1,0.0,0.0],10,1.0)),  // matte
-createSphere([0.0,0.5,1.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.5,0.2,0.0,0.8],50,1.5)), // glass
+createSphere([0.0,0.25,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.0,1.0,0.1,0.0,0.0],10,1.0)),  // matte
+createSphere([-2.5,0.5,3.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.5,0.2,0.0,0.8],50,1.5)), // glass
 
 createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.5,1.0,0.4,0.0],20,1.0)),  // chrome
 createSphere([ 1.0,0.25,3.0],0.25,createMaterial([0.5,0.5,0.5],[0.0,0.5,1.0,0.5,0.0],20,1.0)),  // chrome
@@ -126,8 +126,8 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.0,0.8,0.3,0.5,0.
   objects[0].mtl.sampler = function (hit) {
     const u = Math.atan2(-hit.n[1],-hit.n[0]) / Math.PI / 2 + 0.5;
     const v = Math.asin(-hit.n[2]) / (Math.PI/2) / 2 + 0.5;
-    const s = (u * 5000 / (Math.PI/2)) & 1;
-    const t = (v * 2500 / (Math.PI/2)) & 1;
+    const s = (u * 5000) & 1;
+    const t = (v * 2500) & 1;
     const c = [[1,1,0],[1,0,1]];
     return c[s^t];
   };
