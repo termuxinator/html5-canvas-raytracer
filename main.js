@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '640';
+const build = '641';
 
 (function() {
   const output = document.createElement('pre');
@@ -290,7 +290,7 @@ function intersectWorld (segs,objs,org,dir) {
       let shadow_dot = dot3D(shadow_vec,hit.n);
       if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
-        if (j == hit_i) continue; // self intersect
+        //if (j == hit_i) continue; // self intersect
         const o = objs[j];
         const t = o.intersect(o,hit.p,shadow_vec,null);
         if (t < light_len) {shadow_dot=0; break;} // occluded
