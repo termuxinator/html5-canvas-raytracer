@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '578';
+const build = '579';
 
 (function() {
   const output = document.createElement('pre');
@@ -313,6 +313,10 @@ function intersectWorld (segs,objs,org,dir) {
   ];
 }
 
+function createTexture () {
+  return {width:0, height:0, texels:[], loaded:false};
+}
+
 function sampleTexture (texture,u,v) {
   const x = Math.max(0, Math.ceil(u * texture.width) - 1);
   const y = Math.max(0, Math.ceil(v * texture.height) - 1);
@@ -324,7 +328,7 @@ function sampleTexture (texture,u,v) {
 }
 
 function checkerTexture (w,h,c1,c2) {
-  let texture = {width:w, height:h, texels:[], loaded:true};
+  let texture = createTexture();
   for (let y=0; y<h; y++) {
     for (let x=0; x<w; x++) {
       const i = (y * w + x) * 4;
@@ -341,11 +345,12 @@ function checkerTexture (w,h,c1,c2) {
       }
     }
   }
+  texture.loaded = true;
   return texture;
 }
 
 function loadTexture (src) {
-  let texture = {width:0, height:0, texels:[], loaded:false};
+  let texture = createTexture();
   let image = new Image();
   image.onload = function (e) {
     let canvas = document.createElement('canvas');
