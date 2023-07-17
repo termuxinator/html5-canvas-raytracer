@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '606';
+const build = '607';
 
 (function() {
   const output = document.createElement('pre');
@@ -286,19 +286,14 @@ function intersectWorld (segs,objs,org,dir) {
       const light_len = Math.sqrt(light_mag);
       if (light_len != 0) shadow_vec = scale3D(shadow_vec,1/light_len);
       let shadow_dot = dot3D(shadow_vec,hit.n);
-      //if (shadow_dot <= 0) continue; // surface not facing light source
-if (shadow_dot > 0) {
+      if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
         const o = objs[j];
         const t = o.intersectT(o,hit.p,shadow_vec);
-        //if (t < light_len) {shadow_dot=0; break;} // occluded
-        if (t < light_len) {light_intensity*=0.25; break;}
+        if (t < light_len) {shadow_dot*=0.5; break;} // occluded
       }
-}
       //if (shadow_dot == 0) continue;
-      if (shadow_dot > 0) light_intensity *= shadow_dot;
-      diffuse_intensity += light_intensity / light_mag;
-      if (shadow_dot <= 0) continue;
+      diffuse_intensity += light_intensity * shadow_dot / light_mag;
       if (hit.m.albedo[1] > 0) { // has specular properties
         const light_dir = oppose3D(shadow_vec);
         let light_ref = reflect3D(light_dir,hit.n);
