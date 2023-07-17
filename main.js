@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '647';
+const build = '648';
 
 (function() {
   const output = document.createElement('pre');
@@ -110,7 +110,7 @@ createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0
 createSphere([50.0,20.0,-100.0],4.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // earth
 createSphere([-50.0,20.0,-100.0],2.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // mars
 createSphere([ 0.0,0.25,3.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
-createSphere([0.0,0.75,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.0,0.9],10,1.5)), // glass
+createSphere([0.0,0.75,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.5,0.2,0.0,0.9],10,1.5)), // glass
 
 //createSphere([ 1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.2,0.3,0.8,0.0],20,1.0)),  // bubble
   createSphere([ 2.5,0.5,3.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.8,0.2,0.8],20,1.0)),  // bubble
@@ -290,7 +290,7 @@ function intersectWorld (segs,objs,org,dir) {
       let shadow_dot = dot3D(shadow_vec,hit.n);
       if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
-        if (j == hit_i) continue; // allow self intersect
+        if (j == hit_i && hit.m.albedo[3] == 1) continue; // allow self intersect on some
         const o = objs[j];
         const t = o.intersect(o,hit.p,shadow_vec,null);
         if (t < light_len) {shadow_dot=0; break;} // occluded
