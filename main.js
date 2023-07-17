@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '614';
+const build = '615';
 
 (function() {
   const output = document.createElement('pre');
@@ -414,7 +414,7 @@ function intersectSphere (obj,org,dir,ext) {
   const t1 = tca + thc;
   if (t0 > 0.001) t = t0;
   if (t1 > 0.001) t = t1;
-  if (t < 0.001) return Infinity;
+  if (t == Infinity || t < 0.001) return Infinity;
   if (ext == null) return t;
   ext.t = t;
   ext.p = project3D(org,dir,ext.t);
