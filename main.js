@@ -105,22 +105,22 @@ function main () {
   const projD = projW / Math.tan(projA/2);
 
   const objects = [
-createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[0.5,0.8,0.0,0.0],10,1.0)), // home
-createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[0.0,0.0,0.0,0.0],0,1.0)), // skybox
-createSphere([50.0,20.0,-100.0],4.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // earth
-createSphere([-50.0,20.0,-100.0],2.0,createMaterial([1.0,1.0,1.0],[0.0,0.0,0.0,0.0],0,1.0)),  // mars
-createSphere([ 0.0,0.25,3.0],0.25,createMaterial([1.0,1.0,1.0],[1.0,0.1,0.0,0.0],10,1.0)),  // matte
-createSphere([0.0,0.75,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.5,0.2,0.0,0.9],10,1.5)), // glass
+createSphere([0.0,-500.0,0.0],500,createMaterial([1.0,1.0,1.0],[0.0,0.5,0.8,0.0,0.0],10,1.0)), // home
+createSphere([0.0,0.0,0.0],5000,createMaterial([0.0,0.0,0.0],[1.0,0.0,0.0,0.0,0.0],0,1.0)), // skybox
+createSphere([50.0,20.0,-100.0],4.0,createMaterial([1.0,1.0,1.0],[1.0,0.0,0.0,0.0,0.0],0,1.0)),  // earth
+createSphere([-50.0,20.0,-100.0],2.0,createMaterial([1.0,1.0,1.0],[1.0,0.0,0.0,0.0,0.0],0,1.0)),  // mars
+createSphere([ 0.0,0.25,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.0,1.0,0.1,0.0,0.0],10,1.0)),  // matte
+createSphere([0.0,0.75,3.0],0.25,createMaterial([1.0,1.0,1.0],[0.0,0.5,0.2,0.0,0.9],10,1.5)), // glass
 
-createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.5,1.0,0.4,0.0],20,1.0)),  // chrome
-createSphere([ 1.0,0.25,3.0],0.25,createMaterial([0.5,0.5,0.5],[0.5,1.0,0.5,0.0],20,1.0)),  // chrome
+createSphere([ 1.5,2.5,0.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.5,1.0,0.4,0.0],20,1.0)),  // chrome
+createSphere([ 1.0,0.25,3.0],0.25,createMaterial([0.5,0.5,0.5],[0.0,0.5,1.0,0.5,0.0],20,1.0)),  // chrome
 
-createSphere([ 2.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.4,0.5,0.2,0.8],20,1.0)),  // bubble
-createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.1,0.5,0.6,0.0],500,1.0)), // mirror
-createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.8,0.2,0.1,0.0],50,1.0)),  // metal
-createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornament
-createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornament
-createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],50,1.0)),  // ornamemt
+createSphere([ 2.5,0.5,3.0],0.5,createMaterial([0.5,0.5,0.5],[0.0,0.4,0.5,0.2,0.8],20,1.0)),  // bubble
+createSphere([0.0,2.5,-2.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.1,0.5,0.6,0.0],500,1.0)), // mirror
+createSphere([-1.5,2.5,0.0],0.5,createMaterial([1.0,1.0,1.0],[0.0,0.8,0.2,0.1,0.0],50,1.0)),  // metal
+createSphere([-1.5,1.0,0.0],1.0,createMaterial([1.0,0.0,0.0],[0.0,0.8,0.3,0.5,0.0],50,1.0)),  // ornament
+createSphere([ 1.5,1.0,0.0],1.0,createMaterial([0.0,1.0,0.0],[0.0,0.8,0.3,0.5,0.0],50,1.0)),  // ornament
+createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.0,0.8,0.3,0.5,0.0],50,1.0)),  // ornamemt
   ];
   // override home material sampler with sphere checker mapper
   objects[0].mtl.sampler = function (hit) {
@@ -159,7 +159,7 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.8,0.3,0.5,0.0],5
   objects.sort(function (a,b) {
     const aa = a.surface_area / distance3D(origin,a.origin);
     const bb = b.surface_area / distance3D(origin,b.origin);
-    return aa - bb;
+    return (aa - bb);
   });
 
   const resource_list = [texture_unit0, texture_unit1, texture_unit2];
@@ -225,14 +225,14 @@ function intersectWorld (segs,objs,org,dir) {
   for (let i=0; i<objs.length; i++) {
     const o = objs[i];
     const check = createIntersect();
-    const t = o.intersect(o,org,dir,check);
-    if (t < hit.t) {hit = check; hit_i=i;}
+    check.t = o.intersect(o,org,dir,check); // check.* not written on miss so grab it
+    if (check.t < hit.t) {hit = check; hit_i=i;}
   }
   if (hit.t == Infinity) return [1,0,0]; // wtf no skybox bro?
 
   let reflect_dir = [0,0,0];
   let reflect_len = 0;
-  if (hit.m.albedo[2] > 0) { // has reflective properties
+  if (hit.m.albedo[3] > 0) { // has reflective properties
     reflect_dir = reflect3D(dir,hit.n);
     reflect_len = length3D(reflect_dir);
     if (reflect_len != 0) reflect_dir = scale3D(reflect_dir,1/reflect_len);
@@ -240,7 +240,7 @@ function intersectWorld (segs,objs,org,dir) {
 
   let refract_dir = [0,0,0];
   let refract_len = 0;
-  if (hit.m.albedo[3] > 0) { // has refractive properties
+  if (hit.m.albedo[4] > 0) { // has refractive properties
     let norm, eta;
     const dot = dot3D(dir,hit.n);
     let cosi = -Math.max(-1, Math.min(1, dot));
@@ -266,20 +266,19 @@ function intersectWorld (segs,objs,org,dir) {
   let reflect_color = [0,0,0];
   if (reflect_len != 0) {
     reflect_color = intersectWorld(segs-1,objs,hit.p,reflect_dir);
-    reflect_color = scale3D(reflect_color,hit.m.albedo[2]);
+    reflect_color = scale3D(reflect_color,hit.m.albedo[3]);
   }
 
   let refract_color = [0,0,0];
   if (refract_len != 0) {
     refract_color = intersectWorld(segs-1,objs,hit.p,refract_dir);
-    refract_color = scale3D(refract_color,hit.m.albedo[3]);
+    refract_color = scale3D(refract_color,hit.m.albedo[4]);
   }
 
-  // no diffuse properties will bypass shader (full bright hack)
-  let diffuse_intensity = 1;
+  let diffuse_intensity = 0;
   let specular_intensity = 0;
-  if (hit.m.albedo[0] > 0) { // has diffuse properties
-    diffuse_intensity = 0;
+//if (hit.m.albedo[1] > 0 || hit.m.albedo[2] > 0) // has diffuse or specular properties
+  {
     const lights = [[5.0,10.0,5.0],[5.0,10.0,0.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
     let light_intensity = 75; // common (for now)
     for (let k=0; k<lights.length; k++) {
@@ -295,14 +294,14 @@ function intersectWorld (segs,objs,org,dir) {
         const o = objs[j];
         const t = o.intersect(o,hit.p,shadow_vec,null);
         if (t < light_len) {
-          // hollow bubble cast less shadow than solid glass than solid object
-          light_intensity *= o.mtl.albedo[3] / (o.mtl.refract_index * o.mtl.refract_index);
+          // hacks, hollow bubble cast less shadow than solid glass than solid object
+          light_intensity *= o.mtl.albedo[4] / (o.mtl.refract_index * o.mtl.refract_index);
           break;
         }
       }
       if (light_intensity == 0) continue;
       diffuse_intensity += light_intensity * shadow_dot / light_mag;
-      if (hit.m.albedo[1] > 0) { // has specular properties
+      if (hit.m.albedo[2] > 0) { // has specular properties
         const light_dir = oppose3D(shadow_vec);
         let light_ref = reflect3D(light_dir,hit.n);
             light_ref = normal3D(light_ref);
@@ -311,19 +310,20 @@ function intersectWorld (segs,objs,org,dir) {
         if (spec_dot > 0) specular_intensity += Math.pow(spec_dot,hit.m.specular_exponent);
       }
     }
-    diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[0];
-    specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[1];
+    diffuse_intensity = Math.min(1,diffuse_intensity) * hit.m.albedo[1];
+    specular_intensity = Math.min(1,specular_intensity) * hit.m.albedo[2];
   }
 
   const rgb = hit.m.sampler(hit);
 
+  const ambient_color = scale3D(rgb,hit.m.albedo[0]);
   const diffuse_color = scale3D(rgb,diffuse_intensity);
   const specular_color = scale3D(rgb,specular_intensity);
 
   return [
-    Math.min(1, diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
-    Math.min(1, diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1]),
-    Math.min(1, diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2])
+    Math.min(ambient_color[0], diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0]),
+    Math.min(ambient_color[1], diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1]),
+    Math.min(ambient_color[2], diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2])
   ];
 }
 
@@ -387,12 +387,12 @@ function loadTexture (texture,src) {
 
 function createMaterial (color,albedo,se,ri) {
   return {
-    diffuse_color: color,
-    albedo: albedo,
+    color: color,
+    albedo: albedo, // ambient,diffuse,specular,reflect,refract
     specular_exponent: se,
     refract_index: ri,
     // default sampler, can be overidden later
-    sampler: function (hit) {return hit.m.diffuse_color;}
+    sampler: function (hit) {return hit.m.color;}
   };
 }
 
@@ -417,21 +417,27 @@ function intersectSphere (obj,org,dir,ext) {
   const thc = Math.sqrt(obj.r2 - d2);
   const t0 = tca - thc;
   const t1 = tca + thc;
-  if (t0 > 0.001) t = t0;
-  else if (t1 > 0.001) t = t1;
-//else t = Infinity;
+  if (t0 < t1) {
+    if (t0 < 0) {
+      if (t1 < 0) return t;
+      else t = t1;
+    } else t = t0;
+  } else {
+    if (t1 < 0) {
+      if (t0 < 0) return t;
+      else t = t0;
+    } else t = t1;
+  }
   if (ext != null) {
     ext.t = t;
-    if (ext.t != Infinity) {
-      ext.p = project3D(org,dir,ext.t);
-      ext.n = between3D(obj.origin,ext.p);
-      ext.n = normal3D(ext.n);
-      // allow inner specular reflect on hollow bubble but not on solid glass
-      if ((obj.mtl.refract_index == 1) && (t0<0.001 || t1<0.001)) ext.n = oppose3D(ext.n);
-      ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
-      ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
-      ext.m = obj.mtl;
-    }
+    ext.p = project3D(org,dir,ext.t);
+    ext.n = between3D(obj.origin,ext.p);
+    ext.n = normal3D(ext.n);
+    // allow inner specular reflect on hollow bubble but not on solid glass
+    if ((obj.mtl.refract_index == 1) && (t0<0.001 || t1<0.001)) ext.n = oppose3D(ext.n);
+    ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
+    ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
+    ext.m = obj.mtl;
   }
   return t;
 }
