@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '580';
+const build = '581';
 
 (function() {
   const output = document.createElement('pre');
@@ -364,7 +364,7 @@ function loadTexture (src) {
     let data = context.getImageData(0,0,canvas.width,canvas.height);
     texture.width = canvas.width;
     texture.height = canvas.height;
-    texture.texels = data.data;
+    texture.texels = data.data.slice();
     texture.loaded = true;
   };
   image.src = src;
