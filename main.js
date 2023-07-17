@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '604';
+const build = '605';
 
 (function() {
   const output = document.createElement('pre');
@@ -293,11 +293,13 @@ if (shadow_dot > 0) {
         const o = objs[j];
         const t = o.intersectT(o,hit.p,shadow_vec);
         //if (t < light_len) {shadow_dot=0; break;} // occluded
-        if (t < light_len) {shadow_dot*=0.5; light_intensity*=0.5; break;}
+        if (t < light_len) {light_intensity*=0.25; break;}
       }
 }
       //if (shadow_dot == 0) continue;
-      diffuse_intensity += light_intensity * shadow_dot / light_mag;
+      if (shadow_dot != 0) light_intensity *= shadow_dot;
+      diffuse_intensity += light_intensity / light_mag;
+      if (shadow_dot == 0) continue;
       if (hit.m.albedo[1] > 0) { // has specular properties
         const light_dir = oppose3D(shadow_vec);
         let light_ref = reflect3D(light_dir,hit.n);
