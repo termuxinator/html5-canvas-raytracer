@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '630';
+const build = '631';
 
 (function() {
   const output = document.createElement('pre');
@@ -414,16 +414,17 @@ function intersectSphere (obj,org,dir,ext) {
   const t1 = tca + thc;
   if (t0 > 0.001) t = t0;
   if (t1 > 0.001) t = t1;
-  if (t == Infinity) return t;
   if (ext != null) {
     ext.t = t;
-    ext.p = project3D(org,dir,ext.t);
-    ext.n = between3D(obj.origin,ext.p);
-    ext.n = normal3D(ext.n);
-    //if (t0 > t1) ext.n = oppose3D(ext.n);
-    ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
-    ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
-    ext.m = obj.mtl;
+    if (ext.t != Infinity) {
+      ext.p = project3D(org,dir,ext.t);
+      ext.n = between3D(obj.origin,ext.p);
+      ext.n = normal3D(ext.n);
+      //if (t0 > t1) ext.n = oppose3D(ext.n);
+      ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
+      ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
+      ext.m = obj.mtl;
+    }
   }
   return t;
 }
