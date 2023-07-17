@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '723';
+const build = '724';
 
 (function() {
   const output = document.createElement('pre');
@@ -279,7 +279,7 @@ function intersectWorld (segs,objs,org,dir) {
   let specular_intensity = 0;
 //if (hit.m.albedo[1] > 0 || hit.m.albedo[2] > 0) // has diffuse or specular properties
   {
-    const surf_normal = obj.refracting_inside ? oppose3D(hit.n) : copy3D(hit.n);
+    const surf_normal = hit.refracting_inside ? oppose3D(hit.n) : hit.n;
     const lights = [[5.0,10.0,5.0],[5.0,10.0,0.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
     let light_intensity = 75; // common (for now)
     for (let k=0; k<lights.length; k++) {
