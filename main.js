@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '685';
+const build = '686';
 
 (function() {
   const output = document.createElement('pre');
@@ -294,9 +294,8 @@ function intersectWorld (segs,objs,org,dir) {
         const o = objs[j];
         const t = o.intersect(o,hit.p,shadow_vec,null);
         if (t < light_len) {
-          // hollow bubble cast less shadow than solid objects
-          if (o.mtl.refract_index != 1) light_intensity = 0; // solid glass
-          else light_intensity *= o.mtl.albedo[3]; // everything else
+          // hollow bubble cast less shadow than solid glass
+          light_intensity *= o.mtl.albedo[3] * o.mtl.refract_index;
           break;
         }
       }
