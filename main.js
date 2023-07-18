@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '727';
+const build = '728';
 
 (function() {
   const output = document.createElement('pre');
@@ -442,7 +442,6 @@ function intersectSphere (obj,org,dir,ext) {
     ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
     ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
     ext.m = obj.mtl;
-    ext.refracting_inside = (t0 < 0.001) || (t1 < 0.001);
   }
   return t;
 }
