@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '725';
+const build = '726';
 
 (function() {
   const output = document.createElement('pre');
@@ -214,7 +214,7 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.0,0.8,0.3,0.5,0.
 }
 
 function createIntersect () {
-  return {t:Infinity, p:[], n:[], u:0, v:0, m:{}};
+  return {t:Infinity, p:[], n:[], l:[], u:0, v:0, m:{}};
 }
 
 function intersectWorld (segs,objs,org,dir) {
@@ -279,7 +279,6 @@ function intersectWorld (segs,objs,org,dir) {
   let specular_intensity = 0;
 //if (hit.m.albedo[1] > 0 || hit.m.albedo[2] > 0) // has diffuse or specular properties
   {
-    const surf_normal = hit.refracting_inside ? oppose3D(hit.n) : hit.n;
     const lights = [[5.0,10.0,5.0],[5.0,10.0,0.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
     let light_intensity = 75; // common (for now)
     for (let k=0; k<lights.length; k++) {
@@ -288,24 +287,22 @@ function intersectWorld (segs,objs,org,dir) {
       const light_mag = mag3D(shadow_vec);
       const light_len = Math.sqrt(light_mag);
       if (light_len != 0) shadow_vec = scale3D(shadow_vec,1/light_len);
-      let shadow_dot = dot3D(shadow_vec,surf_normal);
+      let shadow_dot = dot3D(shadow_vec,hit.l);
       if (shadow_dot <= 0) continue; // surface not facing light source
       for (let j=0; j<objs.length; j++) {
-        if (j == hit_i) continue; // allow self intersect
+        if (j == hit_i) continue; // no shadow on self intersect
         const o = objs[j];
         const t = o.intersect(o,hit.p,shadow_vec,null);
-        if (t < light_len) {
-        //light_intensity *= o.mtl.albedo[4] / o.mtl.refract_index;
-          shadow_dot *= o.mtl.albedo[4] / o.mtl.refract_index;
+        if (t < light_len) { // refractive surfaces can bend light
+          light_intensity *= o.mtl.albedo[4] / o.mtl.refract_index;
           break;
         }
       }
-      //if (light_intensity == 0) continue;
-      if (shadow_dot == 0) continue;
+      if (light_intensity == 0) continue;
       diffuse_intensity += light_intensity * shadow_dot / light_mag;
       if (hit.m.albedo[2] > 0) { // has specular properties
         const light_dir = oppose3D(shadow_vec);
-        let light_ref = reflect3D(light_dir,surf_normal);
+        let light_ref = reflect3D(light_dir,hit.l);
             light_ref = normal3D(light_ref);
         const spec_dir = oppose3D(light_ref);
         const spec_dot = dot3D(dir,spec_dir);
@@ -322,10 +319,16 @@ function intersectWorld (segs,objs,org,dir) {
   const diffuse_color = scale3D(rgb,diffuse_intensity);
   const specular_color = scale3D(rgb,specular_intensity);
 
+  const shader_color = [
+    diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0],
+    diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1],
+    diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2]
+  ];
+
   return [
-    Math.max(ambient_color[0], Math.min(1,diffuse_color[0] + specular_color[0] + reflect_color[0] + refract_color[0])),
-    Math.max(ambient_color[1], Math.min(1,diffuse_color[1] + specular_color[1] + reflect_color[1] + refract_color[1])),
-    Math.max(ambient_color[2], Math.min(1,diffuse_color[2] + specular_color[2] + reflect_color[2] + refract_color[2]))
+    Math.max(ambient_color[0],Math.min(1,shader_color[0])),
+    Math.max(ambient_color[1],Math.min(1,shader_color[1])),
+    Math.max(ambient_color[2],Math.min(1,shader_color[2]))
   ];
 }
 
@@ -406,8 +409,7 @@ function createSphere (o,r,m) {
     r2: r2,
     mtl: m,
     surface_area: 4 * Math.PI * r2,
-    intersect: intersectSphere,
-    refracting_inside: false
+    intersect: intersectSphere
   };
 }
 
@@ -431,14 +433,12 @@ function intersectSphere (obj,org,dir,ext) {
       else t = t0;
     } else t = t1;
   }
-  //if (t0 > 0.001) t = t0;
-  //else if (t1 > 0.001) t = t1;
-  //else return t;
   if (ext != null) {
     ext.t = t;
     ext.p = project3D(org,dir,ext.t);
     ext.n = between3D(obj.origin,ext.p);
     ext.n = normal3D(ext.n);
+    ext.l = ((t0 < 0.001) || (t1 < 0.001)) ? oppose3D(hit.n) : hit.n;
     ext.u = Math.atan2(-ext.n[2],-ext.n[0]) / Math.PI / 2 + 0.5;
     ext.v = Math.asin(-ext.n[1]) / (Math.PI/2) / 2 + 0.5;
     ext.m = obj.mtl;
