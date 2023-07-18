@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '729';
+const build = '730';
 
 (function() {
   const output = document.createElement('pre');
@@ -197,10 +197,10 @@ createSphere([0.0,1.0,-2.0],1.0,createMaterial([0.0,0.0,1.0],[0.0,0.8,0.3,0.5,0.
         colorbuf.data[i++] = 255 * rgb[2];
         colorbuf.data[i++] = 255;
       }
-      //context.putImageData(colorbuf,0,0,0,y,canvas.width,1);
+      context.putImageData(colorbuf,0,0,0,y,canvas.width,1);
       if (y < canvas.height-1) setTimeout(spanish,0,y+1);
       else {
-        context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
+        //context.putImageData(colorbuf,0,0,0,0,canvas.width,canvas.height);
         const elapsed = Date.now() - timestamp;
         const message = 'build #' + build + ' (' + elapsed + 'ms)';
         context.font = '16px monospace';
@@ -218,7 +218,7 @@ function createIntersect () {
 }
 
 function intersectWorld (segs,objs,org,dir) {
-  if (segs == 0) return [0,0,0];
+  if (segs == 0) return [0,0,0]; // no affect
 
   let hit_i = -1;
   let hit = createIntersect();
@@ -277,8 +277,7 @@ function intersectWorld (segs,objs,org,dir) {
 
   let diffuse_intensity = 0;
   let specular_intensity = 0;
-//if (hit.m.albedo[1] > 0 || hit.m.albedo[2] > 0) // has diffuse or specular properties
-  {
+  if ((hit.m.albedo[1] > 0) || (hit.m.albedo[2] > 0)) { // has diffuse or specular properties
     const lights = [[5.0,10.0,5.0],[5.0,10.0,0.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
     let light_intensity = 75; // common (for now)
     for (let k=0; k<lights.length; k++) {
