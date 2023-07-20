@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '735';
+const build = '736';
 
 (function() {
   const output = document.createElement('pre');
@@ -294,7 +294,7 @@ function intersectWorld (segs,objs,org,dir) {
         const t = o.intersect(o,hit.p,shadow_vec,null);
         if (t < light_len) { // refractive surfaces can bend light
           if (o.mtl.albedo[4] == 0) light_intensity *= 0.5; //*= o.mtl.albedo[4] / o.mtl.refract_index;
-          else light_intensity *= 1 + o.mtl.albedo[4] / o.mtl.refract_index;
+          else light_intensity *= 1 + o.mtl.albedo[4] * o.mtl.refract_index;
           break;
         }
       }
