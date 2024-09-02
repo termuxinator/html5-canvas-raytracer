@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '740';
+const build = '741';
 
 (function() {
   const output = document.createElement('pre');
@@ -281,7 +281,7 @@ function intersectWorld (segs,objs,org,dir) {
   let specular_intensity = 0;
   if ((hit.m.albedo[1] > 0) || (hit.m.albedo[2] > 0)) { // has diffuse or specular properties
     const lights = [[5.0,10.0,5.0],[5.0,10.0,0.0]/*,[0.0,7.5,0.0],[-5.0,10.0,0.0]*/];
-    let light_intensity = 75; // common (for now)
+    let light_intensity = 50; // common (for now)
     for (let k=0; k<lights.length; k++) {
       const light = lights[k];
       let shadow_vec = between3D(hit.p,light);
