@@ -1,6 +1,6 @@
 'use strict';
 
-const build = '739';
+const build = '740';
 
 (function() {
   const output = document.createElement('pre');
@@ -258,9 +258,11 @@ function intersectWorld (segs,objs,org,dir) {
       refract_dir[0] = dir[0] * eta + norm[0] * q;
       refract_dir[1] = dir[1] * eta + norm[1] * q;
       refract_dir[2] = dir[2] * eta + norm[2] * q;
-      refract_len = length3D(refract_dir);
-      if (refract_len != 0) refract_dir = scale3D(refract_dir,1/refract_len);
+    } else { // total internal reflection
+      refract_dir = reflect3D(dir,norm);
     }
+    refract_len = length3D(refract_dir);
+    if (refract_len != 0) refract_dir = scale3D(refract_dir,1/refract_len);
   }
 
   let reflect_color = [0,0,0];
@@ -292,9 +294,12 @@ function intersectWorld (segs,objs,org,dir) {
         if (j == hit_i) continue; // no shadow on self intersect
         const o = objs[j];
         const t = o.intersect(o,hit.p,shadow_vec,null);
-        if (t < light_len) { // refractive surfaces cast less shadow
-          light_intensity *= o.mtl.albedo[4] / o.mtl.refract_index;
-          break;
+        if (t < light_len) {
+          if (o.mtl.albedo[4] != 0) {
+            light_intensity /= o.mtl.albedo[4];
+          } else {
+            light_intensity = 0; break;
+          }
         }
       }
       if (light_intensity == 0) continue;
